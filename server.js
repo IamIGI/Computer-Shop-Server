@@ -1,13 +1,18 @@
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const app = express();
-const path = require('path');
 const cors = require('cors');
 const { logger } = require('./middleware/logEvents');
-const errorHandler = require('./middleware/errorHandler');
-const PORT = process.env.PORT || 3500;
+const { errorHandler } = require('./middleware/errorHandlers');
+const connectDB = require('./config/dbConn');
+const PORT = process.env.PORT || 5000;
 
-//LOG TRAFFIC
-//on top to log all traffic
+//Connect to MongoDB
+connectDB();
+
+//LOG TRAFFIC - on top to log all traffic
+
 app.use(logger);
 
 //server config
@@ -35,9 +40,12 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-app.get('/', (req, res) => {
-    res.send('Hello world');
-});
+// app.get('/', (req, res) => {
+//     res.send('Hello world');
+// });
+
+//routes
+app.use('/product', require('./routes/api/products'));
 
 //handle UNKNOWN URL REQUESTS
 app.all('*', (req, res) => {
