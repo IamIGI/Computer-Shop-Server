@@ -3,6 +3,7 @@ require('dotenv').config({ path: path.join(__dirname, '.env') });
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const corsOptions = require('./config/corsOptions');
 const { logger } = require('./middleware/logEvents');
 const { errorHandler } = require('./middleware/errorHandlers');
 const connectDB = require('./config/dbConn');
@@ -18,42 +19,25 @@ app.use(logger);
 //server config
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname, '/public')));
+// app.use(express.static(path.join(__dirname, '/public')));
 
 //CORS configuration
-//approved url
-const whiteList = [
-    'http://127.0.0.1:5000',
-    'http://localhost:3500',
-    'http://localhost:3000', //working with react :)
-];
-const corsOptions = {
-    origin: (origin, callback) => {
-        if (whiteList.indexOf(origin) !== -1 || !origin) {
-            //remove '!origin' after development
-            callback(null, true); //send true when origin url in the whitelist
-        } else {
-            callback(new Error('not allowed by CORS'));
-        }
-    },
-    optionsSuccessStatus: 200,
-};
 app.use(cors(corsOptions));
 
-// app.get('/', (req, res) => {
-//     res.send('Hello world');
-// });
-
 //routes
-app.use('/product', require('./routes/api/products'));
+app.use('/products', require('./routes/api/products'));
+app.use('/register', require('./routes/api/register'));
+app.use('/user', require('./routes/api/user'));
+app.use('/order', require('./routes/api/order'));
+app.use('/auth', require('./routes/api/auth'));
 
-//handle UNKNOWN URL REQUESTS
+// handle UNKNOWN URL REQUESTS
 app.all('*', (req, res) => {
     res.status(404);
-    if (req.accepts('html')) {
-        res.sendFile(path.join(__dirname, 'views', '404.html'));
-    } else if (req.accepts('json')) {
+    if (req.accepts('json')) {
         res.json({ error: '404: not found' });
+    } else if (req.accepts('html')) {
+        res.sendFile(path.join(__dirname, 'views', '404.html'));
     } else {
         res.type('txt').send('404: not found');
     }
