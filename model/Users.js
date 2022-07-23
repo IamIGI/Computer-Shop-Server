@@ -17,6 +17,7 @@ const userSchema = new Schema({
     Enlistments: {
         type: userEnlistmentsSchema,
     },
+    refreshToken: String,
 });
 
 module.exports = mongoose.model('users', userSchema);

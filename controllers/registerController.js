@@ -36,6 +36,7 @@ const handleNewUser = async (req, res) => {
                 phone: phoneEnlistments,
                 adjustedOffers: adjustedOffersEnlistments,
             },
+            refreshToken: '',
         });
         console.log(result);
         res.status(201).json({ success: `New user ${firstName} created!` });
