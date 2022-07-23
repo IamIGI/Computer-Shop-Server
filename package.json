@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/IamIGI/Computer-Shop-Server#readme",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "cors": "^2.8.5",
     "date-fns": "^2.28.0",
     "dotenv": "^16.0.1",
