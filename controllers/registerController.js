@@ -36,10 +36,11 @@ const handleNewUser = async (req, res) => {
                 phone: phoneEnlistments,
                 adjustedOffers: adjustedOffersEnlistments,
             },
+            roles: { User: 2001 }, //change after to make it flexible
             refreshToken: '',
         });
         console.log(result);
-        res.status(201).json({ success: `New user ${firstName} created!` });
+        res.status(201).json({ success: `New user ${result._id} created!` });
     } catch (err) {
         apiErrorHandler(req, res, err);
     }
