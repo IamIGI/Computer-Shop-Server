@@ -6,7 +6,7 @@ const makeOrder = async (req, res) => {
     const { orderTemplateDocument: doc } = req.body;
 
     const newOrder = new Orders({
-        orderCode: doc.orderCode,
+        orderCode: doc.orderCode, //to delete, we can use mongoDB _id
         products: doc.products,
         transactionInfo: {
             deliveryMethod: doc.transactionInfo.deliveryMethod,
@@ -23,10 +23,9 @@ const makeOrder = async (req, res) => {
         },
     });
 
-    newOrder.save((err) => {
+    newOrder.save((err, result) => {
         if (!err) {
-            console.log('Successfully save new order');
-            res.status(201).json('Successfully save new order');
+            res.status(201).json({ message: 'Successfully save new order', OrderId: `${result._id}` });
         } else {
             apiErrorHandler(req, res, err);
         }
