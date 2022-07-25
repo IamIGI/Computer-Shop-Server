@@ -27,13 +27,13 @@ const handleLogin = async (req, res) => {
                 expiresIn: '1d',
             });
 
-            const result = await foundUser.updateOne({ refreshToken: refreshToken });
-            console.log(result);
+            // save refreshToken = log in user
+            await foundUser.updateOne({ refreshToken: refreshToken });
 
             res.cookie('jwt', refreshToken, {
                 httpOnly: true,
                 // sameSite: 'None',
-                // secure: true,
+                // secure: true,    //back when running on chrome.
                 maxAge: 24 * 50 * 60 * 1000,
             });
 

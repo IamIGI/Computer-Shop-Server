@@ -10,6 +10,7 @@ const connectDB = require('./config/dbConn');
 const verifyJWT = require('./middleware/verifyJWT');
 const cookieParser = require('cookie-parser');
 const credentials = require('./middleware/credentials');
+const { default: mongoose } = require('mongoose');
 
 const PORT = process.env.PORT || 5000;
 
@@ -61,6 +62,9 @@ app.all('*', (req, res) => {
 //LOG ERRORS
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+mongoose.connection.once('open', () => {
+    console.log('Connected to MongoDB');
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
 });

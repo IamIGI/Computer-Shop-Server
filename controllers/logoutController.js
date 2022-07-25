@@ -18,6 +18,7 @@ const handleLogout = async (req, res) => {
         });
         return res.status(200).json({ message: 'Erased JWT cookie nad user refreshToken propriety', user: 'logout' });
     }
+    //Delete refresh Token in db
     await foundUser.updateOne({ refreshToken: '' });
     res.clearCookie('jwt', {
         httpOnly: true,
