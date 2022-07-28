@@ -1,6 +1,7 @@
 const Users = require('../model/Users');
 const { apiErrorHandler } = require('../middleware/errorHandlers');
 const bcrypt = require('bcrypt');
+const { logEvents } = require('../middleware/logEvents');
 
 const handleNewUser = async (req, res) => {
     console.log(`${req.originalUrl}`);
@@ -20,8 +21,7 @@ const handleNewUser = async (req, res) => {
     if (!firstName || !hashedPassword || !email)
         return res.status(400).json({ message: 'Username, password, email are required.' });
     const duplicateEmail = await Users.findOne({ email }).exec();
-    const duplicateFirstName = await Users.findOne({ firstName }).exec();
-    if (duplicateEmail || duplicateFirstName) return res.sendStatus(409);
+    if (duplicateEmail) return res.sendStatus(409);
     try {
         const hashedPwd = await bcrypt.hash(hashedPassword, 10);
         const result = await Users.create({
@@ -39,7 +39,8 @@ const handleNewUser = async (req, res) => {
             roles: { User: 2001 }, //change after to make it flexible
             refreshToken: '',
         });
-        console.log(result);
+        console.log(`Status: 201 success: New user ${result._id} created!`);
+        logEvents(`$Status: 201\t User_Id: ${result._id}\t New user created! \t`, 'reqLog.Log');
         res.status(201).json({ success: `New user ${result._id} created!` });
     } catch (err) {
         apiErrorHandler(req, res, err);

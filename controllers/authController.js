@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 const { apiErrorHandler } = require('../middleware/errorHandlers');
+const { logEvents } = require('../middleware/logEvents');
 
 const handleLogin = async (req, res) => {
     console.log(`${req.originalUrl}`);
@@ -37,12 +38,18 @@ const handleLogin = async (req, res) => {
                 maxAge: 24 * 50 * 60 * 1000,
             });
 
+            console.log(`$Status: 200\t User_Id: ${foundUser._id}\t Logged successfully\t token : ${accessToken}`);
+            logEvents(
+                `$Status: 200\t User_Id: ${foundUser._id}\t Logged successfully\t token : ${accessToken}`,
+                'reqLog.Log'
+            );
+
             res.status(200).json({ message: 'Log in successfully', token: accessToken });
         } catch (err) {
             apiErrorHandler(req, res, err);
         }
     } else {
-        res.sendStatus(401);
+        res.status(406).json({ message: `Wrong password for: ${email}` });
     }
 };
 
