@@ -31,7 +31,7 @@ app.use(cors(corsOptions));
 app.use(cookieParser());
 
 //server config
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 // app.use(express.static(path.join(__dirname, '/public')));
 
