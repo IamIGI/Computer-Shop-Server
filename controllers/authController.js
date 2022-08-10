@@ -44,7 +44,12 @@ const handleLogin = async (req, res) => {
                 'reqLog.Log'
             );
 
-            res.status(200).json({ message: 'Log in successfully', token: accessToken });
+            res.status(200).json({
+                message: 'Log in successfully',
+                userName: foundUser.firstName,
+                role: roles,
+                accessToken: accessToken,
+            });
         } catch (err) {
             apiErrorHandler(req, res, err);
         }
