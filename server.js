@@ -27,13 +27,13 @@ app.use(credentials);
 //CORS configuration
 app.use(cors(corsOptions));
 
-// Cookies handler
-app.use(cookieParser());
-
 //server config
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 // app.use(express.static(path.join(__dirname, '/public')));
+
+// Cookies handler
+app.use(cookieParser());
 
 //public Routes
 app.use('/products', require('./routes/api/products'));

@@ -24,9 +24,11 @@ const makeOrder = async (req, res) => {
 
     newOrder.save(async (err, result) => {
         if (!err) {
+            console.log('UserOrder: Checking if user exists');
+            console.log(doc);
             const user = await Users.findOne({ _id: doc.user }).exec();
-            if (!user) return user;
-
+            if (!user) return res.status(406).json({ message: 'No user found' });
+            console.log('UserOrder: Updating user data');
             await Users.updateOne(
                 { _id: doc.user },
                 {
