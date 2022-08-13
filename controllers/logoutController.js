@@ -12,8 +12,8 @@ const handleLogout = async (req, res) => {
     if (!foundUser) {
         res.clearCookie('jwt', {
             httpOnly: true,
-            // sameSite: 'None',
-            // secure: true,
+            sameSite: 'None',
+            secure: true,
             maxAge: 24 * 50 * 60 * 1000,
         });
         return res.status(200).json({ message: 'Erased JWT cookie nad user refreshToken propriety', user: 'logout' });
@@ -22,8 +22,8 @@ const handleLogout = async (req, res) => {
     await foundUser.updateOne({ refreshToken: '' });
     res.clearCookie('jwt', {
         httpOnly: true,
-        // sameSite: 'None',
-        // secure: true,
+        sameSite: 'None',
+        secure: true,
         maxAge: 24 * 50 * 60 * 1000,
     });
     return res.status(200).json({ message: 'Erased JWT cookie nad user refreshToken propriety', user: 'logout' });

@@ -50,7 +50,7 @@ const handleLogin = async (req, res) => {
                 message: 'Log in successfully',
                 id: foundUser._id,
                 userName: foundUser.firstName,
-                role: roles,
+                roles: roles,
                 accessToken: accessToken,
             });
         } catch (err) {
