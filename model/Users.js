@@ -22,6 +22,7 @@ const userSchema = new Schema({
         Editor: Number,
         Admin: Number,
     },
+    userOrders: [Array],
 });
 
 module.exports = mongoose.model('users', userSchema);

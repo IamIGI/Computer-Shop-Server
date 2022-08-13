@@ -12,6 +12,7 @@ const verifyRoles = (...allowedRoles) => {
                 Credentials_level: `Needed credentials on level ${rolesArray}`,
             });
         }
+        console.log(`User have right role: ${result2}`);
 
         next();
     };
