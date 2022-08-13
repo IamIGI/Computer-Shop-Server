@@ -17,15 +17,16 @@ const handleLogin = async (req, res) => {
 
     const match = await bcrypt.compare(hashedPassword, foundUser.hashedPassword);
     if (match) {
+        console.log(foundUser._id);
         const roles = Object.values(foundUser.roles);
         try {
             //creating Tokens
             const accessToken = jwt.sign({ _id: foundUser._id, roles: roles }, process.env.ACCESS_TOKEN_SECRET, {
-                expiresIn: '30s', //change to 5 min in production
+                expiresIn: process.env.REFRESH_ACCESS_TOKEN_TIME, //change to 5 min (5m) in production
             });
 
             const refreshToken = jwt.sign({ _id: foundUser._id }, process.env.REFRESH_TOKEN_SECRET, {
-                expiresIn: '1d',
+                expiresIn: process.env.REFRESH_REFRESH_TOKEN_TIME,
             });
 
             // save refreshToken = log in user
@@ -33,12 +34,13 @@ const handleLogin = async (req, res) => {
 
             res.cookie('jwt', refreshToken, {
                 httpOnly: true,
-                // sameSite: 'None',
-                // secure: true,    //back when running on chrome.
+                sameSite: 'None',
+                secure: true, //back when running on chrome.
                 maxAge: 24 * 50 * 60 * 1000,
             });
 
-            console.log(`$Status: 200\t User_Id: ${foundUser._id}\t Logged successfully\t token : ${accessToken}`);
+            // console.log(`$Status: 200\t User_Id: ${foundUser._id}\t Logged successfully\t token : ${accessToken}`);
+            console.log(`$Status: 200\t User_Id: ${foundUser._id}\t Logged successfully`);
             logEvents(
                 `$Status: 200\t User_Id: ${foundUser._id}\t Logged successfully\t token : ${accessToken}`,
                 'reqLog.Log'
@@ -46,6 +48,7 @@ const handleLogin = async (req, res) => {
 
             res.status(200).json({
                 message: 'Log in successfully',
+                id: foundUser._id,
                 userName: foundUser.firstName,
                 role: roles,
                 accessToken: accessToken,
