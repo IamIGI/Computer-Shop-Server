@@ -1,5 +1,6 @@
 const Users = require('../model/Users');
 const Orders = require('../model/Orders');
+const Products = require('../model/Products');
 const { apiErrorHandler } = require('../middleware/errorHandlers');
 
 const makeOrder = async (req, res) => {
@@ -45,6 +46,35 @@ const makeOrder = async (req, res) => {
     });
 };
 
+const getUserHistory = async (req, res) => {
+    console.log(`${req.originalUrl}`);
+    const { userId, pageNr } = req.body;
+    console.log(`UserOrderHistory, parameters:\n UserId:  ${userId},\t pageNr: ${pageNr}`);
+
+    const user = await Users.findOne({ _id: userId }).exec();
+    if (!user) return res.status(406).json({ message: 'No user found' });
+    console.log('Searching for user order history');
+    const a = pageNr * 5 - 4 - 1;
+    const b = pageNr * 5 - 1;
+    let userOrders = [];
+    for (let i = a; i <= b; i++) {
+        let product_id = JSON.stringify(user.userOrders[i]).split('"')[1];
+        userOrders.push(product_id);
+    }
+    Orders.find(
+        { _id: { $in: [userOrders[0], userOrders[1], userOrders[2], userOrders[3], userOrders[4]] } },
+        function (err, msg) {
+            if (!err) {
+                console.log(`Status: 200, msg: User ${userId} order history sent `);
+                res.status(200).send(msg);
+            } else {
+                apiErrorHandler(req, res, err);
+            }
+        }
+    );
+};
+
 module.exports = {
     makeOrder,
+    getUserHistory,
 };
