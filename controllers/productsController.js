@@ -18,10 +18,11 @@ const getProduct = async (req, res) => {
     console.log(`${req.originalUrl}`);
 
     const productCode = req.params.code;
+    console.log(productCode);
 
     Products.findOne(
         {
-            code: productCode,
+            _id: productCode,
         },
         function (err, msg) {
             if (!err) {
