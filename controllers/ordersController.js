@@ -10,7 +10,7 @@ const makeOrder = async (req, res) => {
         status: 1,
         products: doc.products,
         transactionInfo: {
-            date: format(new Date(), 'yyyy:MM:dd'),
+            date: format(new Date(), 'yyyy.MM.dd'),
             deliveryMethod: doc.transactionInfo.deliveryMethod,
             paymentMethod: doc.transactionInfo.paymentMethod,
             price: doc.transactionInfo.price,
@@ -66,12 +66,13 @@ const getUserHistory = async (req, res) => {
         userOrders.push(product_id);
     }
     console.log(`User orders: ${userOrders}`);
+    const countOrders = user.userOrders.length;
     Orders.find(
         { _id: { $in: [userOrders[0], userOrders[1], userOrders[2], userOrders[3], userOrders[4]] } },
         function (err, msg) {
             if (!err) {
                 console.log(`Status: 200, msg: User ${userId} order history sent.`);
-                res.status(200).send(msg);
+                res.status(200).json({ orderData: msg, orderCount: countOrders });
             } else {
                 apiErrorHandler(req, res, err);
             }
