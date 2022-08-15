@@ -1,14 +1,16 @@
 const Users = require('../model/Users');
 const Orders = require('../model/Orders');
-const Products = require('../model/Products');
 const { apiErrorHandler } = require('../middleware/errorHandlers');
+const { format } = require('date-fns');
 
 const makeOrder = async (req, res) => {
     console.log(`${req.originalUrl}`);
     const doc = req.body;
     const newOrder = new Orders({
+        status: 1,
         products: doc.products,
         transactionInfo: {
+            date: format(new Date(), 'yyyy:MM:dd'),
             deliveryMethod: doc.transactionInfo.deliveryMethod,
             paymentMethod: doc.transactionInfo.paymentMethod,
             price: doc.transactionInfo.price,
@@ -48,6 +50,7 @@ const makeOrder = async (req, res) => {
 
 const getUserHistory = async (req, res) => {
     console.log(`${req.originalUrl}`);
+    console.log(`Body: ${JSON.stringify(req.body)}`);
     const { userId, pageNr } = req.body;
     console.log(`UserOrderHistory, parameters:\n UserId:  ${userId},\t pageNr: ${pageNr}`);
 
@@ -58,14 +61,16 @@ const getUserHistory = async (req, res) => {
     const b = pageNr * 5 - 1;
     let userOrders = [];
     for (let i = a; i <= b; i++) {
-        let product_id = JSON.stringify(user.userOrders[i]).split('"')[1];
+        // let product_id = JSON.stringify(user.userOrders[i]).split('"')[1];
+        let product_id = user.userOrders[i];
         userOrders.push(product_id);
     }
+    console.log(`User orders: ${userOrders}`);
     Orders.find(
         { _id: { $in: [userOrders[0], userOrders[1], userOrders[2], userOrders[3], userOrders[4]] } },
         function (err, msg) {
             if (!err) {
-                console.log(`Status: 200, msg: User ${userId} order history sent `);
+                console.log(`Status: 200, msg: User ${userId} order history sent.`);
                 res.status(200).send(msg);
             } else {
                 apiErrorHandler(req, res, err);

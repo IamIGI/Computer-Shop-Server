@@ -9,5 +9,5 @@ const verifyRoles = require('../../middleware/verifyRoles');
 router
     .route('/make')
     .post(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor, ROLES_LIST.User), ordersController.makeOrder);
-router.route('/history').get(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.User), ordersController.getUserHistory);
+router.route('/history').post(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.User), ordersController.getUserHistory);
 module.exports = router;
