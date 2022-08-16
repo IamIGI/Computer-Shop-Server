@@ -80,7 +80,24 @@ const getUserHistory = async (req, res) => {
     );
 };
 
+const getUserHistoryItem = async (req, res) => {
+    console.log(`${req.originalUrl}`);
+    console.log(`Params: ${JSON.stringify(req.params.orderId)}`);
+    const orderId = req.params.orderId;
+    console.log(`UserOrderItem: ${orderId},`);
+    console.log('Searching for user order item data');
+    Orders.find({ _id: orderId }, function (err, msg) {
+        if (!err) {
+            console.log(`Status: 200, msg: User order find ${orderId}`);
+            res.status(200).json({ msg });
+        } else {
+            apiErrorHandler(req, res, err);
+        }
+    });
+};
+
 module.exports = {
     makeOrder,
     getUserHistory,
+    getUserHistoryItem,
 };
