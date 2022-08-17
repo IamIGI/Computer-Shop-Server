@@ -11,7 +11,7 @@ router
     .post(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor, ROLES_LIST.User), ordersController.makeOrder);
 router
     .route('/history/:orderId')
-    .post(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor, ROLES_LIST.User), ordersController.getUserHistoryItem);
+    .get(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor, ROLES_LIST.User), ordersController.getUserHistoryItem);
 router
     .route('/history')
     .post(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor, ROLES_LIST.User), ordersController.getUserHistory);

@@ -89,7 +89,8 @@ const getUserHistoryItem = async (req, res) => {
     Orders.find({ _id: orderId }, function (err, msg) {
         if (!err) {
             console.log(`Status: 200, msg: User order find ${orderId}`);
-            res.status(200).json({ msg });
+            console.log(msg[0]);
+            res.status(200).send(msg[0]);
         } else {
             apiErrorHandler(req, res, err);
         }
