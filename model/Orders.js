@@ -9,6 +9,7 @@ const orderSchema = new Schema({
             prevImg: String,
             price: Number,
             code: Number,
+            quantity: Number,
         },
     ],
     transactionInfo: {
