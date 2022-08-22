@@ -23,6 +23,7 @@ const userSchema = new Schema({
         Admin: Number,
     },
     userOrders: [Array],
+    userComments: [Array],
 });
 
 module.exports = mongoose.model('users', userSchema);
