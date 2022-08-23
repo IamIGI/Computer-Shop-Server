@@ -36,7 +36,6 @@ const addComment = async (req, res) => {
                     for (let j = 0; j < userOrders_Content[i].products.length; j++) {
                         if (doc.productId == userOrders_Content[i].products[j]._id) {
                             confirmed = true;
-                            console.log(`Found product in user Orders: ${doc.productId}`);
                             break;
                         }
                     }
@@ -67,7 +66,6 @@ const addComment = async (req, res) => {
 
     newComment.save(async (err, result) => {
         if (!err) {
-            console.log(`Saved comment for product ${doc.productId}`);
             if (confirmed) {
                 await Users.updateOne(
                     { _id: doc.userId },
