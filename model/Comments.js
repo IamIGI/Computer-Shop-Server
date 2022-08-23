@@ -8,8 +8,14 @@ const commentSchema = new Schema({
     date: String,
     confirmed: Boolean,
     likes: {
-        up: Number,
-        down: Number,
+        up: {
+            type: Number,
+            default: 0,
+        },
+        down: {
+            type: Number,
+            default: 0,
+        },
     },
     content: {
         rating: Number,
