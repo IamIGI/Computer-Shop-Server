@@ -30,6 +30,7 @@ const addComment = async (req, res) => {
     for (let i = 0; i < commentDocuments.length; i++) {
         if (commentDocuments[i].productId == doc.productId) {
             createProductDocument = false;
+            break;
         }
     }
     if (createProductDocument) {
