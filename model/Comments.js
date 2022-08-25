@@ -23,6 +23,7 @@ const commentSchema = new Schema({
                 rating: Number,
                 description: String,
             },
+            usersWhoLiked: [{ userId: String, likeUp: Boolean }],
         },
     ],
 });
