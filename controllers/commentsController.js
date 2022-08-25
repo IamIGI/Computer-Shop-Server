@@ -4,6 +4,19 @@ const ForbiddenWords = require('../model/ForbiddenWords');
 const Comments = require('../model/Comments');
 const { apiErrorHandler } = require('../middleware/errorHandlers');
 const { format } = require('date-fns');
+const { createSearchParams } = require('react-router-dom');
+
+const getComments = async (req, res) => {
+    console.log(`${req.originalUrl}`);
+    console.log(`Params: ${JSON.stringify(req.params.productId)}`);
+    const productId = req.params.productId;
+    try {
+        const comments = await Comments.findOne({ productId }).exec();
+        return res.send(comments);
+    } catch (err) {
+        apiErrorHandler(req, res, err);
+    }
+};
 
 const addComment = async (req, res) => {
     console.log(`${req.originalUrl}`);
@@ -133,8 +146,26 @@ const likeComment = async (req, res) => {
     let likeType = '';
     let likedComment = {};
 
+    try {
+        const response = await Comments.updateOne(
+            {
+                productId,
+                comments: { $elemMatch: { usersWhoLiked: { $elemMatch: { userId } } } },
+            },
+            {
+                $set: { 'comments.$[outer].usersWhoLiked.$[inner].likeUp': likes.up },
+            },
+            {
+                arrayFilters: [{ 'outer._id': commentId }, { 'inner._userId': userId }],
+            }
+        ).exec();
+        return res.status(201).json({ response });
+    } catch (err) {
+        console.log(err);
+        return res.send(err);
+    }
+
     //Check if user liked already given product
-    console.log(`productId: ${productId}\t userId: ${userId}`);
     const givenProductComments = (
         await Comments.findOne({
             productId,
@@ -156,24 +187,9 @@ const likeComment = async (req, res) => {
             }
         }
     }
-
+    console.log(`firstLikeForComment: ${firstLikeForComment} \t userLikedAlready : ${userLikedAlready}`);
     //------commment--------
-    if (!firstLikeForComment) {
-        if (userLikedAlready) {
-            //Check if user want to use the same like action again
-            if (likedComment.likeUp == likes.up) {
-                return res.status(403).json({ message: 'Like action: The user can only change his choice' });
-            }
-            console.log('userChangeHisChoice');
-            if (likes.up) {
-                likeType = 'Up';
-                increment = { 'comments.$.likes.up': 1, 'comments.$.likes.down': -1 };
-            } else {
-                likeType = 'Down';
-                increment = { 'comments.$.likes.up': -1, 'comments.$.likes.down': 1 };
-            }
-        }
-    } else {
+    if (firstLikeForComment || !userLikedAlready) {
         //First likes from given user
         if (likes.up) {
             likeType = 'Up';
@@ -193,24 +209,43 @@ const likeComment = async (req, res) => {
                     $push: { 'comments.$.usersWhoLiked': { userId, likeUp: likes.up } },
                 }
             );
-            console.log({ usersWhoLiked: 'Added new user', userId });
+            console.log({ message: 'Added new user', userId });
         } catch (err) {
             console.log(err);
             return res.send(err);
         }
+    } else {
+        if (userLikedAlready) {
+            //Check if user want to use the same like action again
+            if (likedComment.likeUp == likes.up) {
+                return res.status(403).json({ message: 'Like action: The user can only change his choice' });
+            }
+            console.log('userChangeHisChoice');
+            if (likes.up) {
+                likeType = 'Up';
+                increment = { 'comments.$.likes.up': 1, 'comments.$.likes.down': -1 };
+            } else {
+                likeType = 'Down';
+                increment = { 'comments.$.likes.up': -1, 'comments.$.likes.down': 1 };
+            }
+        }
     }
 
     try {
-        await Comments.findOneAndUpdate(
+        const response = await Comments.findOne(
             {
                 productId,
-                'comments._id': commentId,
-            },
-            {
-                $inc: increment,
-                'comments.$.usersWhoLiked': { userId, likeUp: likes.up },
+                comments: { $elemMatch: { _id: commentId, 'usersWhoLiked._userId': userId } },
             }
-        );
+            // {
+            //     // $inc: increment,
+            //     $set: { 'comments.$[outer].usersWhoLiked.$[inner].likeUp': likes.up },
+            // },
+            // {
+            //     arrayFilters: [{ 'outer._id': commentId }, { 'inner._userId': userId }],
+            // }
+        ).exec();
+        console.log(response);
         return res.status(201).json({ message: `Updated likes`, like: `${likeType}`, commentId: `${commentId}` });
     } catch (err) {
         console.log(err);
@@ -219,6 +254,7 @@ const likeComment = async (req, res) => {
 };
 
 module.exports = {
+    getComments,
     addComment,
     likeComment,
 };
