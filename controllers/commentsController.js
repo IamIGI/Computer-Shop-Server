@@ -126,8 +126,96 @@ const addComment = async (req, res) => {
 
 const likeComment = async (req, res) => {
     console.log(`${req.originalUrl}`);
-    console.log(`Body: ${req.body.commentId}`);
-    return res.status(200).json({ message: 'Like section' });
+    const { productId, commentId, userId, likes } = req.body;
+    let firstLikeForComment = false;
+    let userLikedAlready = false;
+    let increment = {};
+    let likeType = '';
+    let likedComment = {};
+
+    //Check if user liked already given product
+    console.log(`productId: ${productId}\t userId: ${userId}`);
+    const givenProductComments = (
+        await Comments.findOne({
+            productId,
+        }).exec()
+    ).comments;
+
+    for (var i = 0; i < givenProductComments.length; i++) {
+        if (givenProductComments[i]._id == commentId) {
+            if (givenProductComments[i].usersWhoLiked.length === 0) {
+                firstLikeForComment = true;
+                break;
+            }
+            for (var j = 0; j < givenProductComments[i].usersWhoLiked.length; j++) {
+                if (givenProductComments[i].usersWhoLiked[j].userId == userId) {
+                    likedComment = givenProductComments[i].usersWhoLiked[j];
+                    userLikedAlready = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    //------commment--------
+    if (!firstLikeForComment) {
+        if (userLikedAlready) {
+            //Check if user want to use the same like action again
+            if (likedComment.likeUp == likes.up) {
+                return res.status(403).json({ message: 'Like action: The user can only change his choice' });
+            }
+            console.log('userChangeHisChoice');
+            if (likes.up) {
+                likeType = 'Up';
+                increment = { 'comments.$.likes.up': 1, 'comments.$.likes.down': -1 };
+            } else {
+                likeType = 'Down';
+                increment = { 'comments.$.likes.up': -1, 'comments.$.likes.down': 1 };
+            }
+        }
+    } else {
+        //First likes from given user
+        if (likes.up) {
+            likeType = 'Up';
+            increment = { 'comments.$.likes.up': 1 };
+        } else {
+            likeType = 'Down';
+            increment = { 'comments.$.likes.down': 1 };
+        }
+
+        try {
+            await Comments.findOneAndUpdate(
+                {
+                    productId,
+                    'comments._id': commentId,
+                },
+                {
+                    $push: { 'comments.$.usersWhoLiked': { userId, likeUp: likes.up } },
+                }
+            );
+            console.log({ usersWhoLiked: 'Added new user', userId });
+        } catch (err) {
+            console.log(err);
+            return res.send(err);
+        }
+    }
+
+    try {
+        await Comments.findOneAndUpdate(
+            {
+                productId,
+                'comments._id': commentId,
+            },
+            {
+                $inc: increment,
+                'comments.$.usersWhoLiked': { userId, likeUp: likes.up },
+            }
+        );
+        return res.status(201).json({ message: `Updated likes`, like: `${likeType}`, commentId: `${commentId}` });
+    } catch (err) {
+        console.log(err);
+        return res.send(err);
+    }
 };
 
 module.exports = {
