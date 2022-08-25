@@ -26,6 +26,7 @@ const getProduct = async (req, res) => {
         },
         function (err, msg) {
             if (!err) {
+                console.log(msg);
                 console.log('Status: 200');
                 res.status(200).send(msg);
             } else {

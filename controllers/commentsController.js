@@ -137,6 +137,29 @@ const addComment = async (req, res) => {
     }
 };
 
+const getProductAverageScore = async (req, res) => {
+    console.log(`${req.originalUrl}`);
+    console.log(`Params: ${JSON.stringify(req.params.productId)}`);
+    const productId = req.params.productId;
+
+    let averageScore = 0;
+
+    try {
+        const productComments = await Comments.findOne({ productId }).exec();
+
+        //get average score
+        for (let i = 0; i < productComments.comments.length; i++) {
+            averageScore += productComments.comments[i].content.rating;
+        }
+        averageScore = averageScore / productComments.comments.length;
+        averageScore = Math.round(averageScore * 2) / 2;
+        console.log({ averageScore });
+        return res.status(200).json({ averageScore });
+    } catch (err) {
+        apiErrorHandler(req, res, err);
+    }
+};
+
 const likeComment = async (req, res) => {
     console.log(`${req.originalUrl}`);
     const { productId, commentId, userId, likes } = req.body;
@@ -145,15 +168,16 @@ const likeComment = async (req, res) => {
     let increment = {};
     let likeType = '';
     let likedComment = {};
-
+    console.log(likes.up);
     try {
         const response = await Comments.updateOne(
             {
                 productId,
-                comments: { $elemMatch: { usersWhoLiked: { $elemMatch: { userId } } } },
+                'comments._id': commentId,
+                'comments.usersWhoLiked.userId': userId,
             },
             {
-                $set: { 'comments.$[outer].usersWhoLiked.$[inner].likeUp': likes.up },
+                $set: { 'comments._id.$[outer].usersWhoLiked._userId.$[inner].likeUp': likes.up },
             },
             {
                 arrayFilters: [{ 'outer._id': commentId }, { 'inner._userId': userId }],
@@ -164,6 +188,25 @@ const likeComment = async (req, res) => {
         console.log(err);
         return res.send(err);
     }
+
+    // try {
+    //     const response = await Comments.findOneAndUpdate(
+    //         {
+    //             productId,
+    //             comments: { $elemMatch: { usersWhoLiked: { $elemMatch: { userId } } } },
+    //         },
+    //         {
+    //             $set: { 'comments.$[outer].usersWhoLiked.$[inner].likeUp': likes.up },
+    //         },
+    //         {
+    //             arrayFilters: [{ 'outer._id': commentId }, { 'inner._userId': userId }],
+    //         }
+    //     ).exec();
+    //     return res.status(201).json({ response });
+    // } catch (err) {
+    //     console.log(err);
+    //     return res.send(err);
+    // }
 
     //Check if user liked already given product
     const givenProductComments = (
@@ -256,5 +299,6 @@ const likeComment = async (req, res) => {
 module.exports = {
     getComments,
     addComment,
+    getProductAverageScore,
     likeComment,
 };
