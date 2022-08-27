@@ -145,34 +145,41 @@ const getProductAverageScore = async (req, res) => {
     let averageScore = 0;
     let averageScore_Stars = 0;
     let averageScore_View = 0;
-    let eachScore = { one: 0, two: 0, three: 0, four: 0, five: 0, six: 0 };
+    let eachScore = [
+        { number: 0, percentage: 0 },
+        { number: 0, percentage: 0 },
+        { number: 0, percentage: 0 },
+        { number: 0, percentage: 0 },
+        { number: 0, percentage: 0 },
+        { number: 0, percentage: 0 },
+    ];
 
     try {
         const productComments = await Comments.findOne({ productId }).exec();
-        if (!productComments) return res.status(204).send([]);
-
+        if (!productComments) return res.status(204).send({});
+        const numberOfComments = productComments.comments.length;
         //get average score
-        for (let i = 0; i < productComments.comments.length; i++) {
+        for (let i = 0; i < numberOfComments; i++) {
             let score = productComments.comments[i].content.rating;
 
             switch (score) {
                 case 1:
-                    eachScore.one += 1;
+                    eachScore[0].number += 1;
                     break;
                 case 2:
-                    eachScore.two += 1;
+                    eachScore[1].number += 1;
                     break;
                 case 3:
-                    eachScore.three += 1;
+                    eachScore[2].number += 1;
                     break;
                 case 4:
-                    eachScore.four += 1;
+                    eachScore[3].number += 1;
                     break;
                 case 5:
-                    eachScore.five += 1;
+                    eachScore[4].number += 1;
                     break;
                 case 6:
-                    eachScore.six += 1;
+                    eachScore[5].number += 1;
                     break;
 
                 default:
@@ -182,11 +189,21 @@ const getProductAverageScore = async (req, res) => {
 
             averageScore += productComments.comments[i].content.rating;
         }
-        averageScore = averageScore / productComments.comments.length;
-        averageScore_Stars = Math.round(averageScore * 2) / 2;
+
+        averageScore = averageScore / numberOfComments;
+        averageScore_Stars = Math.round(averageScore);
         averageScore_View = Math.round(averageScore * 10) / 10;
 
-        return res.status(200).json({ averageScore_View, averageScore_Stars, eachScore });
+        function getPercentage(score, number) {
+            return (score / number) * 100;
+        }
+        for (var i = 0; i < eachScore.length; i++) {
+            eachScore[i].percentage = getPercentage(eachScore[i].number, numberOfComments);
+        }
+
+        console.log(eachScore[1].number);
+
+        return res.status(200).json({ numberOfComments, averageScore_View, averageScore_Stars, eachScore });
     } catch (err) {
         apiErrorHandler(req, res, err);
     }
