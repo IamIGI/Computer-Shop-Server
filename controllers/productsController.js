@@ -18,7 +18,6 @@ const getProduct = async (req, res) => {
     console.log(`${req.originalUrl}`);
 
     const productCode = req.params.code;
-    console.log(productCode);
 
     Products.findOne(
         {
@@ -26,8 +25,7 @@ const getProduct = async (req, res) => {
         },
         function (err, msg) {
             if (!err) {
-                console.log(msg);
-                console.log('Status: 200');
+                console.log({ message: 'return product data', productId: productCode });
                 res.status(200).send(msg);
             } else {
                 apiErrorHandler(req, res, err);
