@@ -12,7 +12,7 @@ const getComments = async (req, res) => {
     try {
         const productComments = await Comments.findOne({ productId }).exec();
         if (!productComments) return res.status(204).send([]);
-        return res.send(productComments.comments);
+        return res.status(200).json({ comments: productComments.comments, length: productComments.comments.length });
     } catch (err) {
         apiErrorHandler(req, res, err);
     }
@@ -26,7 +26,7 @@ const addComment = async (req, res) => {
     let userName = '';
     let userId = req.body.userId;
     let createProductDocument = true;
-
+    console.log(doc);
     //Check for vulgar and offensive content
     const forbiddenWords = (await ForbiddenWords.find({}).exec())[0].forbiddenWords;
     let userComment = doc.content.description.toLowerCase();
