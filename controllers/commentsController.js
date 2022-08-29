@@ -283,7 +283,7 @@ const likeComment = async (req, res) => {
             if (likedComment.likeUp == likes.up) {
                 console.log({ message: 'Like action: The user can only change his choice', userId: `${userId}` });
                 return res
-                    .status(403)
+                    .status(405) //405 for frontend statement
                     .json({ message: 'Like action: The user can only change his choice', userId: `${userId}` });
             }
             console.log('userChangeHisChoice');
