@@ -4,16 +4,30 @@ const ForbiddenWords = require('../model/ForbiddenWords');
 const Comments = require('../model/Comments');
 const { apiErrorHandler } = require('../middleware/errorHandlers');
 const { format } = require('date-fns');
+const commentsFilters = require('../middleware/filters/commentsFilters');
 
 const getComments = async (req, res) => {
     console.log(`${req.originalUrl}`);
-    console.log(`Params: ${JSON.stringify(req.params.productId)}`);
-    const productId = req.params.productId;
+    console.log(`Params: ${JSON.stringify(req.body)}`);
+    const {
+        productId,
+        filters: { rating, confirmed },
+        sortBy,
+    } = req.body;
     try {
         const productComments = await Comments.findOne({ productId }).exec();
         if (!productComments) return res.status(204).send([]);
-        return res.status(200).json({ comments: productComments.comments, length: productComments.comments.length });
+        //Init values for comments (before filtering)
+        let filteredComments = { comments: productComments.comments, length: productComments.comments.length };
+
+        filteredComments = commentsFilters.filterRating(filteredComments, rating);
+        filteredComments = commentsFilters.filterConfirmed(filteredComments, confirmed);
+
+        filteredComments.comments = commentsFilters.sortComments(filteredComments.comments, sortBy);
+
+        return res.status(200).json({ comments: filteredComments.comments, length: filteredComments.length });
     } catch (err) {
+        console.log(err);
         apiErrorHandler(req, res, err);
     }
 };
