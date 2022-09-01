@@ -30,36 +30,33 @@ function filterConfirmed(filteredComments, confirmed) {
 
 function sortComments(arr, prop) {
     if (prop == 'none') return arr;
-    try {
-        let reverse = false;
-        if (prop[0] === '-') {
-            reverse = true;
-            prop = prop.substr(1);
-        }
 
-        prop = prop.split('.');
-        var len = prop.length;
-
-        arr.sort(function (a, b) {
-            var i = 0;
-            while (i < len) {
-                a = a[prop[i]];
-                b = b[prop[i]];
-                i++;
-            }
-            if (a < b) {
-                return 1;
-            } else if (a > b) {
-                return -1;
-            } else {
-                return 0;
-            }
-        });
-        if (reverse) return arr.reverse();
-        return arr;
-    } catch (err) {
-        console.log(err);
+    let reverse = false;
+    if (prop[0] === '-') {
+        reverse = true;
+        prop = prop.substr(1);
     }
+
+    prop = prop.split('.');
+    var len = prop.length;
+
+    arr.sort(function (a, b) {
+        var i = 0;
+        while (i < len) {
+            a = a[prop[i]];
+            b = b[prop[i]];
+            i++;
+        }
+        if (a < b) {
+            return 1;
+        } else if (a > b) {
+            return -1;
+        } else {
+            return 0;
+        }
+    });
+    if (reverse) return arr.reverse();
+    return arr;
 }
 
 module.exports = {
