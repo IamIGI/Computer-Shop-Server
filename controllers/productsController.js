@@ -1,17 +1,40 @@
 const Products = require('../model/Products');
+const Comments = require('../model/Comments');
 const { apiErrorHandler } = require('../middleware/errorHandlers');
+const productFilters = require('../middleware/filters/productFilters');
 
 const getAllProducts = async (req, res) => {
     console.log(`${req.originalUrl}`);
+    const {
+        filters: { producers, processors, ram, disk },
+        sortBy,
+    } = req.body;
 
-    Products.find({}, function (err, msg) {
-        if (!err) {
-            console.log('Status: 200');
-            res.status(200).send(msg);
-        } else {
-            apiErrorHandler(req, res, err); //send products as a response
+    try {
+        const products = await Products.find({}).lean();
+        let filteredProducts = productFilters.filterProducers(products, producers);
+        filteredProducts = productFilters.filterProcessors(filteredProducts, processors);
+        filteredProducts = productFilters.filterRAM(filteredProducts, ram);
+        filteredProducts = productFilters.filterDisk(filteredProducts, disk);
+
+        if (sortBy !== 'none') {
+            if (sortBy === 'popular' || sortBy === 'rating') {
+                const comments = await Comments.find({}).exec();
+                if (sortBy === 'popular')
+                    filteredProducts = productFilters.sortProductsByPopularity(filteredProducts, comments);
+                if (sortBy === 'rating')
+                    filteredProducts = await productFilters.sortProductsByRating(filteredProducts, comments);
+            } else {
+                filteredProducts = productFilters.sortProductsByPrice(filteredProducts, sortBy);
+            }
         }
-    });
+
+        console.log('Status: 200');
+        res.status(200).send(filteredProducts);
+    } catch (err) {
+        console.log(err);
+        apiErrorHandler(req, res, err); //send products as a response
+    }
 };
 
 const getProduct = async (req, res) => {

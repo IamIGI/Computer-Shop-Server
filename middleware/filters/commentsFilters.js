@@ -1,5 +1,6 @@
 //---------------------------
 //For an input size of 1 million numbers, Array. map() takes about 2,000ms, whereas a for loop takes about 250ms
+const Comments = require('../..//model/Comments');
 
 function filterRating(filteredComments, rating) {
     if (rating === 0) return filteredComments;
@@ -8,7 +9,6 @@ function filterRating(filteredComments, rating) {
         const comment = filteredComments.comments[i];
         if (comment.content.rating === rating) filtered.push(comment);
     }
-    // console.log(filtered);
     return { comments: filtered, length: filtered.length };
 }
 
@@ -29,8 +29,6 @@ function filterConfirmed(filteredComments, confirmed) {
 }
 
 function sortComments(arr, prop) {
-    if (prop == 'none') return arr;
-
     let reverse = false;
     if (prop[0] === '-') {
         reverse = true;
@@ -59,8 +57,73 @@ function sortComments(arr, prop) {
     return arr;
 }
 
+async function getAverageScore(productId) {
+    let averageScore = 0;
+    let averageScore_Stars = 0;
+    let averageScore_View = 0;
+    let eachScore = [
+        { number: 0, percentage: 0 },
+        { number: 0, percentage: 0 },
+        { number: 0, percentage: 0 },
+        { number: 0, percentage: 0 },
+        { number: 0, percentage: 0 },
+        { number: 0, percentage: 0 },
+    ];
+
+    const productComments = await Comments.findOne({ productId }).exec();
+    if (!productComments) return res.status(204).send({});
+    const numberOfComments = productComments.comments.length;
+    //get average score
+    for (let i = 0; i < numberOfComments; i++) {
+        let score = productComments.comments[i].content.rating;
+
+        switch (score) {
+            case 1:
+                eachScore[0].number += 1;
+                break;
+            case 2:
+                eachScore[1].number += 1;
+                break;
+            case 3:
+                eachScore[2].number += 1;
+                break;
+            case 4:
+                eachScore[3].number += 1;
+                break;
+            case 5:
+                eachScore[4].number += 1;
+                break;
+            case 6:
+                eachScore[5].number += 1;
+                break;
+
+            default:
+                console.log('Bad score value given');
+                return res.send('Bad score value given');
+        }
+
+        averageScore += productComments.comments[i].content.rating;
+    }
+
+    averageScore = averageScore / numberOfComments;
+    averageScore_Stars = Math.round(averageScore);
+    averageScore_View = Math.round(averageScore * 10) / 10;
+
+    function getPercentage(score, number) {
+        return (score / number) * 100;
+    }
+    for (var i = 0; i < eachScore.length; i++) {
+        eachScore[i].percentage = parseInt(getPercentage(eachScore[i].number, numberOfComments).toFixed(2));
+    }
+
+    // console.log(eachScore[1].number);
+    const data = { numberOfComments, averageScore_View, averageScore_Stars, eachScore };
+    return data;
+}
+
 module.exports = {
     filterRating,
     filterConfirmed,
     sortComments,
+    getAverageScore,
 };
