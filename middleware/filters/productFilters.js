@@ -122,6 +122,7 @@ function sortProductsByPopularity(arrProducts, arrComments) {
 
 async function sortProductsByRating(arrProducts, arrComments) {
     let productsAverageScore = [];
+    let productId = '';
     //get averageScore of each product
     for (let i = 0; i < arrComments.length; i++) {
         productId = arrComments[i].productId;

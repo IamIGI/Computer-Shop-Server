@@ -2,6 +2,7 @@ const Products = require('../model/Products');
 const Comments = require('../model/Comments');
 const { apiErrorHandler } = require('../middleware/errorHandlers');
 const productFilters = require('../middleware/filters/productFilters');
+const commentsFilters = require('../middleware/filters/commentsFilters');
 
 const getAllProducts = async (req, res) => {
     console.log(`${req.originalUrl}`);
@@ -12,6 +13,7 @@ const getAllProducts = async (req, res) => {
 
     try {
         const products = await Products.find({}).lean();
+
         let filteredProducts = productFilters.filterProducers(products, producers);
         filteredProducts = productFilters.filterProcessors(filteredProducts, processors);
         filteredProducts = productFilters.filterRAM(filteredProducts, ram);
@@ -27,6 +29,19 @@ const getAllProducts = async (req, res) => {
             } else {
                 filteredProducts = productFilters.sortProductsByPrice(filteredProducts, sortBy);
             }
+        }
+
+        //get averageScore and numberOfOpinions of filtered products
+        let productId = '';
+        let averageScore = 0;
+        let productComments = {};
+        for (let i = 0; i < filteredProducts.length; i++) {
+            productId = filteredProducts[i]._id;
+            averageScore = await commentsFilters.getAverageScore(productId);
+            productComments = await Comments.findOne({ productId }).exec();
+            filteredProducts[i].averageScore = averageScore.averageScore_View;
+            filteredProducts[i].averageStars = averageScore.averageScore_Stars;
+            filteredProducts[i].numberOfOpinions = productComments.comments.length;
         }
 
         console.log('Status: 200');
