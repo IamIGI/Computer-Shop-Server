@@ -3,7 +3,7 @@ const router = express.Router();
 const commentsController = require('../../controllers/commentsController');
 
 router.route('/averageScore/:productId').get(commentsController.getProductAverageScore);
-router.route('/get').get(commentsController.getComments);
+router.route('/get').post(commentsController.getComments);
 router.route('/add').post(commentsController.addComment);
 router.route('/like').post(commentsController.likeComment);
 

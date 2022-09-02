@@ -20,8 +20,8 @@ const getComments = async (req, res) => {
         //Init values for comments (before filtering)
         let filteredComments = { comments: productComments.comments, length: productComments.comments.length };
 
-        filteredComments = commentsFilters.filterRating(filteredComments, rating);
-        filteredComments = commentsFilters.filterConfirmed(filteredComments, confirmed);
+        filteredComments = commentsFilters.filterRating(filteredComments, rating); // 0 = all
+        filteredComments = commentsFilters.filterConfirmed(filteredComments, confirmed); //0 - true, 1- false, 2 - mean "No filter"
 
         filteredComments.comments = commentsFilters.sortComments(filteredComments.comments, sortBy);
 
@@ -156,69 +156,11 @@ const getProductAverageScore = async (req, res) => {
     console.log(`Params: ${JSON.stringify(req.params.productId)}`);
     const productId = req.params.productId;
 
-    let averageScore = 0;
-    let averageScore_Stars = 0;
-    let averageScore_View = 0;
-    let eachScore = [
-        { number: 0, percentage: 0 },
-        { number: 0, percentage: 0 },
-        { number: 0, percentage: 0 },
-        { number: 0, percentage: 0 },
-        { number: 0, percentage: 0 },
-        { number: 0, percentage: 0 },
-    ];
-
     try {
-        const productComments = await Comments.findOne({ productId }).exec();
-        if (!productComments) return res.status(204).send({});
-        const numberOfComments = productComments.comments.length;
-        //get average score
-        for (let i = 0; i < numberOfComments; i++) {
-            let score = productComments.comments[i].content.rating;
-
-            switch (score) {
-                case 1:
-                    eachScore[0].number += 1;
-                    break;
-                case 2:
-                    eachScore[1].number += 1;
-                    break;
-                case 3:
-                    eachScore[2].number += 1;
-                    break;
-                case 4:
-                    eachScore[3].number += 1;
-                    break;
-                case 5:
-                    eachScore[4].number += 1;
-                    break;
-                case 6:
-                    eachScore[5].number += 1;
-                    break;
-
-                default:
-                    console.log('Bad score value given');
-                    return res.send('Bad score value given');
-            }
-
-            averageScore += productComments.comments[i].content.rating;
-        }
-
-        averageScore = averageScore / numberOfComments;
-        averageScore_Stars = Math.round(averageScore);
-        averageScore_View = Math.round(averageScore * 10) / 10;
-
-        function getPercentage(score, number) {
-            return (score / number) * 100;
-        }
-        for (var i = 0; i < eachScore.length; i++) {
-            eachScore[i].percentage = getPercentage(eachScore[i].number, numberOfComments);
-        }
-
-        console.log(eachScore[1].number);
-
-        return res.status(200).json({ numberOfComments, averageScore_View, averageScore_Stars, eachScore });
+        const response = await commentsFilters.getAverageScore(productId);
+        return res.status(200).json(response);
     } catch (err) {
+        console.log(err);
         apiErrorHandler(req, res, err);
     }
 };
