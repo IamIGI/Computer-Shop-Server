@@ -3,6 +3,7 @@
 const Comments = require('../..//model/Comments');
 
 function filterRating(filteredComments, rating) {
+    rating = parseInt(rating);
     if (rating === 0) return filteredComments;
     const filtered = [];
     for (let i = 0; i < filteredComments.length; i++) {
@@ -14,11 +15,7 @@ function filterRating(filteredComments, rating) {
 
 function filterConfirmed(filteredComments, confirmed) {
     //0 - true, 1- false, 2 - mean "No filter"
-    if (confirmed === 2) return filteredComments;
-
-    console.log(confirmed);
-    confirmed === 0 ? (confirmed = true) : (confirmed = false);
-    console.log(confirmed);
+    if (confirmed === false) return filteredComments;
 
     const filtered = [];
     for (let i = 0; i < filteredComments.length; i++) {
@@ -29,6 +26,7 @@ function filterConfirmed(filteredComments, confirmed) {
 }
 
 function sortComments(arr, prop) {
+    if (prop === 'none') return arr;
     let reverse = false;
     if (prop[0] === '-') {
         reverse = true;

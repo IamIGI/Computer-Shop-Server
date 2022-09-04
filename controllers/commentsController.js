@@ -23,7 +23,7 @@ const getComments = async (req, res) => {
         filteredComments = commentsFilters.filterRating(filteredComments, rating); // 0 = all
         filteredComments = commentsFilters.filterConfirmed(filteredComments, confirmed); //0 - true, 1- false, 2 - mean "No filter"
 
-        filteredComments.comments = commentsFilters.sortComments(filteredComments.comments, sortBy);
+        filteredComments.comments = commentsFilters.sortComments(filteredComments.comments, sortBy); //date, -date, content.rating, likes.up
 
         return res.status(200).json({ comments: filteredComments.comments, length: filteredComments.length });
     } catch (err) {
