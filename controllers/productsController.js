@@ -56,20 +56,15 @@ const getProduct = async (req, res) => {
     console.log(`${req.originalUrl}`);
 
     const productCode = req.params.code;
-
-    Products.findOne(
-        {
-            _id: productCode,
-        },
-        function (err, msg) {
-            if (!err) {
-                console.log({ message: 'return product data', productId: productCode });
-                res.status(200).send(msg);
-            } else {
-                apiErrorHandler(req, res, err);
-            }
-        }
-    );
+    try {
+        const product = await Products.findOne({ _id: productCode }).lean();
+        const comments = await Comments.findOne({ productId: productCode }).exec();
+        product.numberOfOpinions = comments.comments.length;
+        console.log({ message: 'return product data', productId: productCode });
+        res.status(200).send(product);
+    } catch (err) {
+        apiErrorHandler(req, res, err);
+    }
 };
 
 module.exports = {

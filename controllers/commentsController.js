@@ -8,7 +8,6 @@ const commentsFilters = require('../middleware/filters/commentsFilters');
 
 const getComments = async (req, res) => {
     console.log(`${req.originalUrl}`);
-    console.log(`Params: ${JSON.stringify(req.body)}`);
     const {
         productId,
         filters: { rating, confirmed },
@@ -25,7 +24,13 @@ const getComments = async (req, res) => {
 
         filteredComments.comments = commentsFilters.sortComments(filteredComments.comments, sortBy); //date, -date, content.rating, likes.up
 
-        return res.status(200).json({ comments: filteredComments.comments, length: filteredComments.length });
+        return res
+            .status(200)
+            .json({
+                comments: filteredComments.comments,
+                length: filteredComments.length,
+                length_AllComments: productComments.comments.length,
+            });
     } catch (err) {
         console.log(err);
         apiErrorHandler(req, res, err);
@@ -153,7 +158,6 @@ const addComment = async (req, res) => {
 
 const getProductAverageScore = async (req, res) => {
     console.log(`${req.originalUrl}`);
-    console.log(`Params: ${JSON.stringify(req.params.productId)}`);
     const productId = req.params.productId;
 
     try {
