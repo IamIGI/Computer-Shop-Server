@@ -18,7 +18,7 @@ function filterProducers(arr, producers) {
 
 function filterProcessors(arr, processors) {
     if (processors.length === 0) return arr;
-    // console.log(processors)
+    console.log(processors);
     let processor = '';
     let brand = '';
     let series = '';
@@ -40,6 +40,9 @@ function filterProcessors(arr, processors) {
 }
 
 function filterRAM(arr, ram) {
+    ram.min === '' && (ram.min = 0);
+    ram.max === '' && (ram.max = 500);
+
     let product = '';
     let productRAM = 0;
     let filtered = [];
@@ -47,12 +50,15 @@ function filterRAM(arr, ram) {
     for (let i = 0; i < arr.length; i++) {
         product = arr[i];
         productRAM = product.specification.ram.size;
-        if (productRAM >= ram.min && productRAM <= ram.max) filtered.push(product);
+        if (productRAM >= parseInt(ram.min) && productRAM <= parseInt(ram.max)) filtered.push(product);
     }
     return filtered;
 }
 
 function filterDisk(arr, disk) {
+    disk.min === '' && (disk.min = 0);
+    disk.max === '' && (disk.max = 4000);
+
     let product = '';
     let productDisk = 0;
     let filtered = [];
@@ -60,7 +66,7 @@ function filterDisk(arr, disk) {
     for (let i = 0; i < arr.length; i++) {
         product = arr[i];
         productDisk = product.specification.disk.size;
-        if (productDisk >= disk.min && productDisk <= disk.max) filtered.push(product);
+        if (productDisk >= parseInt(disk.min) && productDisk <= parseInt(disk.max)) filtered.push(product);
     }
     return filtered;
 }
