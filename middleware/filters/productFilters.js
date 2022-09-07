@@ -66,7 +66,7 @@ function filterDisk(arr, disk) {
     for (let i = 0; i < arr.length; i++) {
         product = arr[i];
         productDisk = product.specification.disk.size;
-        if (productDisk >= disk.min && productDisk <= disk.max) filtered.push(product);
+        if (productDisk >= parseInt(disk.min) && productDisk <= parseInt(disk.max)) filtered.push(product);
     }
     return filtered;
 }
