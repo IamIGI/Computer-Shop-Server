@@ -6,9 +6,14 @@ const verifyRoles = require('../../middleware/verifyRoles');
 
 // logic----------
 router
+    .route('/accountInfo')
+    .get(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor, ROLES_LIST.User), userController.getUserData);
+router
     .route('/accountData')
     .put(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor, ROLES_LIST.User), userController.updateAccountData);
-router.route('/enlistments').put(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor), userController.updateEnlistments); //change for everyone
-router.route('/delete').delete(verifyRoles(ROLES_LIST.Admin), userController.deleteUser);
+router
+    .route('/enlistments')
+    .put(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor, ROLES_LIST.User), userController.updateEnlistments); //change for everyone
+router.route('/delete').delete(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.User), userController.deleteUser);
 
 module.exports = router;
