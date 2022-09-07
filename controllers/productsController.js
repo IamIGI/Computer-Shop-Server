@@ -14,10 +14,10 @@ const getAllProducts = async (req, res) => {
     try {
         const products = await Products.find({}).lean();
 
-        let filteredProducts = productFilters.filterProducers(products, producers);
-        filteredProducts = productFilters.filterProcessors(filteredProducts, processors);
-        filteredProducts = productFilters.filterRAM(filteredProducts, ram);
+        let filteredProducts = productFilters.filterRAM(products, ram);
         filteredProducts = productFilters.filterDisk(filteredProducts, disk);
+        filteredProducts = productFilters.filterProducers(filteredProducts, producers);
+        filteredProducts = productFilters.filterProcessors(filteredProducts, processors);
 
         if (sortBy !== 'none') {
             if (sortBy === 'popular' || sortBy === 'rating') {
@@ -27,7 +27,7 @@ const getAllProducts = async (req, res) => {
                 if (sortBy === 'rating')
                     filteredProducts = await productFilters.sortProductsByRating(filteredProducts, comments);
             } else {
-                filteredProducts = productFilters.sortProductsByPrice(filteredProducts, sortBy);
+                filteredProducts = productFilters.sortProductsByPrice(filteredProducts, sortBy); //price, -price
             }
         }
 
@@ -45,6 +45,7 @@ const getAllProducts = async (req, res) => {
         }
 
         console.log('Status: 200');
+        console.log(filteredProducts);
         res.status(200).send(filteredProducts);
     } catch (err) {
         console.log(err);

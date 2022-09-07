@@ -85,10 +85,9 @@ const getUserHistoryItem = async (req, res) => {
     console.log(`Params: ${JSON.stringify(req.params.orderId)}`);
     const orderId = req.params.orderId;
     console.log(`UserOrderItem: ${orderId},`);
-    console.log('Searching for user order item data');
     Orders.find({ _id: orderId }, function (err, msg) {
         if (!err) {
-            console.log(`Status: 200, msg: User order find ${orderId}`);
+            console.log(`Status: 200, msg: User order item send`);
             console.log(msg[0]);
             res.status(200).send(msg[0]);
         } else {
