@@ -6,7 +6,6 @@ const { logEvents } = require('../middleware/logEvents');
 const getUserData = async (req, res) => {
     console.log(req.originalUrl);
     const { userId } = req.body;
-    console.log(userId);
     const user = await Users.findOne({ _id: userId }).exec();
     if (!user) return res.status(204).json({ message: `UserID: ${userId}. Given user does not exists in db` });
 
@@ -69,7 +68,6 @@ const updateEnlistments = async (req, res) => {
 const deleteUser = async (req, res) => {
     console.log(`${req.originalUrl}`);
     let { _id, password } = req.body;
-    console.log(_id, password);
 
     const user = await Users.findOne({ _id }).exec();
     if (!user) return res.status(204).json({ message: `UserID: ${_id}. Given user does not exists in db` });
