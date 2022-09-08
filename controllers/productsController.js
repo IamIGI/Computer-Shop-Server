@@ -7,6 +7,7 @@ const commentsFilters = require('../middleware/filters/commentsFilters');
 const getAllProducts = async (req, res) => {
     console.log(`${req.originalUrl}`);
     const {
+        searchTerm,
         filters: { producers, processors, ram, disk },
         sortBy,
     } = req.body;
@@ -29,6 +30,12 @@ const getAllProducts = async (req, res) => {
             } else {
                 filteredProducts = productFilters.sortProductsByPrice(filteredProducts, sortBy); //price, -price
             }
+        }
+
+        if (searchTerm !== '') {
+            filteredProducts = filteredProducts.filter((product) => {
+                return product.name.toLowerCase().includes(searchTerm.toLowerCase());
+            });
         }
 
         //get averageScore and numberOfOpinions of filtered products
