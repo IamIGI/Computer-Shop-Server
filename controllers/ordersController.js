@@ -50,9 +50,7 @@ const makeOrder = async (req, res) => {
 
 const getUserHistory = async (req, res) => {
     console.log(`${req.originalUrl}`);
-    console.log(`Body: ${JSON.stringify(req.body)}`);
     const { userId, pageNr } = req.body;
-    console.log(`UserOrderHistory, parameters:\n UserId:  ${userId},\t pageNr: ${pageNr}`);
 
     const user = await Users.findOne({ _id: userId }).exec();
     if (!user) return res.status(406).json({ message: 'No user found' });

@@ -45,7 +45,6 @@ const getAllProducts = async (req, res) => {
         }
 
         console.log('Status: 200');
-        console.log(filteredProducts);
         res.status(200).send(filteredProducts);
     } catch (err) {
         console.log(err);
