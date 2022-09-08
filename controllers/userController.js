@@ -6,7 +6,7 @@ const { logEvents } = require('../middleware/logEvents');
 const getUserData = async (req, res) => {
     console.log(req.originalUrl);
     const { userId } = req.body;
-
+    console.log(userId);
     const user = await Users.findOne({ _id: userId }).exec();
     if (!user) return res.status(204).json({ message: `UserID: ${userId}. Given user does not exists in db` });
 
@@ -38,6 +38,7 @@ const updateAccountData = async (req, res) => {
 
 const updateEnlistments = async (req, res) => {
     console.log(`${req.originalUrl}`);
+    console.log(req.body);
 
     const { _id, email, sms, phone, adjustedOffers } = req.body;
 
@@ -68,6 +69,7 @@ const updateEnlistments = async (req, res) => {
 const deleteUser = async (req, res) => {
     console.log(`${req.originalUrl}`);
     let { _id, password } = req.body;
+    console.log(_id, password);
 
     const user = await Users.findOne({ _id }).exec();
     if (!user) return res.status(204).json({ message: `UserID: ${_id}. Given user does not exists in db` });
@@ -76,9 +78,10 @@ const deleteUser = async (req, res) => {
     if (!match) return res.status(406).json({ message: `Wrong password for user: ${_id}` });
 
     try {
+        console.log('deleting user.');
         result = await user.deleteOne({ _id });
         logEvents(`Status: 202\t UserID: ${_id}.\t Account was deleted.`, `reqLog.Log`);
-        res.status(202).json({ message: `UserID: ${_id}. Account was deleted` });
+        res.status(202).json({ message: `UserID: ${_id}. Account was successfully deleted` });
     } catch (err) {
         apiErrorHandler(req, res, err);
     }
