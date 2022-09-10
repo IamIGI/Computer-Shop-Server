@@ -9,8 +9,7 @@ const errorHandler = (err, req, res) => {
 const apiErrorHandler = (req, res, err) => {
     logEvents(`${req.method}\t${req.headers.origin}\t${req.originalUrl}\t ${err}`, `errApiLog.Log`);
     console.log(`Status: 500 \t ${req.originalUrl}\t ${err}`);
-    res.status(500).json({ message: err.message });
-    return;
+    return res.status(500).json({ message: err.message });
 };
 
 module.exports = { errorHandler, apiErrorHandler };
