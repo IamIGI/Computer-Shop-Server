@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { NIL } = require('uuid');
 const Schema = mongoose.Schema;
 
 const orderSchema = new Schema({

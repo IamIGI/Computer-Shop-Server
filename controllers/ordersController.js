@@ -6,7 +6,6 @@ const { format } = require('date-fns');
 const makeOrder = async (req, res) => {
     console.log(`${req.originalUrl}`);
     const doc = req.body;
-    console.log(doc);
     const newOrder = new Orders({
         status: 1,
         products: doc.products,
