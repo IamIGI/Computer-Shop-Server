@@ -32,6 +32,7 @@ const getAllProducts = async (req, res) => {
             }
         }
 
+        //SearchBar
         if (searchTerm !== '') {
             filteredProducts = filteredProducts.filter((product) => {
                 return product.name.toLowerCase().includes(searchTerm.toLowerCase());
