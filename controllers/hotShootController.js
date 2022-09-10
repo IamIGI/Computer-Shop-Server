@@ -74,16 +74,27 @@ const getHotShoot = async (req, res) => {
             //remove item
             const removeItem = noLongerBlockedProducts(hotShoot.blocked, 48);
             if (removeItem.length !== 0) {
-                const deleteResult = await HotShoot.updateOne(
+                //update product data
+                await Products.findOneAndUpdate(
+                    { _id: removeItem[0].productId },
+                    {
+                        special_offer: {
+                            mode: false,
+                            price: 0,
+                        },
+                    },
+                    { new: true }
+                ).exec();
+
+                await HotShoot.updateOne(
                     { _id: '631b62207137bd1bfd2c60aa' },
                     {
                         $pull: { blocked: { productId: removeItem[0].productId } },
                     }
                 );
-                console.log(deleteResult);
             }
         }
-        return res.status(200).json({ productForHotShoot, discount: productForHotShoot.discount });
+        return res.status(200).json(productForHotShoot);
     } catch (err) {
         console.log(err);
         apiErrorHandler(req, res, err);

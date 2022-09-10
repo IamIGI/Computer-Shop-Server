@@ -8,6 +8,8 @@ const orderSchema = new Schema({
             name: String,
             prevImg: String,
             price: Number,
+            priceBeforeDiscount: Number,
+            isDiscount: Boolean,
             code: Number,
             quantity: Number,
         },
