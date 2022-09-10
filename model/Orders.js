@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { NIL } = require('uuid');
 const Schema = mongoose.Schema;
 
 const orderSchema = new Schema({
@@ -8,6 +9,8 @@ const orderSchema = new Schema({
             name: String,
             prevImg: String,
             price: Number,
+            priceBeforeDiscount: Number,
+            isDiscount: Boolean,
             code: Number,
             quantity: Number,
         },
