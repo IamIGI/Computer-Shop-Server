@@ -2,7 +2,6 @@ const Products = require('../model/Products');
 const HotShoot = require('../model/HotShoot');
 const getRandomInt = require('../middleware/externalFunctions/getRandomInt');
 const isChangePromotionNow = require('../middleware/externalFunctions/isChangePromotionNow');
-const getDateDiffInHours = require('../middleware/externalFunctions/getDateDiffInHours');
 const noLongerBlockedProducts = require('../middleware/externalFunctions/noLongerBlockedProducts');
 const { apiErrorHandler } = require('../middleware/errorHandlers');
 const { format } = require('date-fns');
@@ -93,7 +92,7 @@ const getHotShoot = async (req, res) => {
 
 const setHotShoot = async (req, res) => {
     console.log(`${req.originalUrl}`);
-    res.status(200).json({ message: 'Hot SHoot promotion', send: req.body });
+    res.status(200).json({ message: 'Hot Shoot promotion', send: req.body });
 };
 
 module.exports = {
