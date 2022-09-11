@@ -42,7 +42,8 @@ app.use('/auth', require('./routes/auth'));
 app.use('/refresh', require('./routes/refresh'));
 app.use('/logout', require('./routes/logout'));
 app.use('/comments', require('./routes/api/comments'));
-app.use('/hotShoot', require('./routes/api/HotShoot'));
+app.use('/hotShoot', require('./routes/api/hotShoot'));
+app.use('/content', require('./routes/api/content'));
 
 //protected Routes
 app.use(verifyJWT);

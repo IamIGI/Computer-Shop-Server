@@ -69,11 +69,11 @@ const getHotShoot = async (req, res) => {
                     }
                 }
             }
-            // later write there else so if there is something in queue then use this item for promotion
+            // later write there "else" so if there is something in queue then use this item for promotion
 
-            //remove item
-            const removeItem = noLongerBlockedProducts(hotShoot.blocked, 48);
-            if (removeItem.length !== 0) {
+            //remove promotion after 12 hours left
+            const removeDiscount = noLongerBlockedProducts(hotShoot.blocked, 12);
+            if (removeDiscount.length !== 0) {
                 //update product data
                 await Products.findOneAndUpdate(
                     { _id: removeItem[0].productId },
@@ -85,7 +85,12 @@ const getHotShoot = async (req, res) => {
                     },
                     { new: true }
                 ).exec();
+            }
 
+            //remove item from blocked list
+            const removeItemFromBlockedList = noLongerBlockedProducts(hotShoot.blocked, 48);
+            if (removeItemFromBlockedList.length !== 0) {
+                //update blocked list
                 await HotShoot.updateOne(
                     { _id: '631b62207137bd1bfd2c60aa' },
                     {
