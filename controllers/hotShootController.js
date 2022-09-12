@@ -76,7 +76,7 @@ const getHotShoot = async (req, res) => {
             if (removeDiscount.length !== 0) {
                 //update product data
                 await Products.findOneAndUpdate(
-                    { _id: removeItem[0].productId },
+                    { _id: removeDiscount[0].productId },
                     {
                         special_offer: {
                             mode: false,
@@ -94,7 +94,7 @@ const getHotShoot = async (req, res) => {
                 await HotShoot.updateOne(
                     { _id: '631b62207137bd1bfd2c60aa' },
                     {
-                        $pull: { blocked: { productId: removeItem[0].productId } },
+                        $pull: { blocked: { productId: removeItemFromBlockedList[0].productId } },
                     }
                 );
             }
