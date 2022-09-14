@@ -29,7 +29,7 @@ const getHotShoot = async (req, res) => {
                     const findItem = hotShoot.blocked.filter((blockedProduct) => {
                         return blockedProduct.productId.includes(productForHotShoot._id);
                     });
-
+                    //if blocked do not contain chosen item
                     if (findItem.length === 0) {
                         console.log(productForHotShoot._id);
                         const _id = productForHotShoot._id;
@@ -72,31 +72,35 @@ const getHotShoot = async (req, res) => {
             // later write there "else" so if there is something in queue then use this item for promotion
 
             //remove promotion after 12 hours left
-            const removeDiscount = noLongerBlockedProducts(hotShoot.blocked, 12);
+            const removeDiscount = noLongerBlockedProducts(hotShoot.blocked, 11);
             if (removeDiscount.length !== 0) {
-                //update product data
-                await Products.findOneAndUpdate(
+                const response = await Products.updateOne(
                     { _id: removeDiscount[0].productId },
                     {
-                        special_offer: {
-                            mode: false,
-                            price: 0,
+                        $set: {
+                            special_offer: {
+                                mode: false,
+                                price: 0,
+                            },
                         },
                     },
                     { new: true }
                 ).exec();
+
+                console.log(response);
             }
 
             //remove item from blocked list
-            const removeItemFromBlockedList = noLongerBlockedProducts(hotShoot.blocked, 48);
+            const removeItemFromBlockedList = noLongerBlockedProducts(hotShoot.blocked, 47);
             if (removeItemFromBlockedList.length !== 0) {
                 //update blocked list
-                await HotShoot.updateOne(
+                response = await HotShoot.updateOne(
                     { _id: '631b62207137bd1bfd2c60aa' },
                     {
                         $pull: { blocked: { productId: removeItemFromBlockedList[0].productId } },
                     }
                 );
+                console.log(response);
             }
         }
         return res.status(200).json(productForHotShoot);

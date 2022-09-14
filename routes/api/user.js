@@ -3,8 +3,10 @@ const router = express.Router();
 const userController = require('../../controllers/userController');
 const ROLES_LIST = require('../../config/roles_list');
 const verifyRoles = require('../../middleware/verifyRoles');
+const ordersController = require('../../controllers/ordersController');
 
 // logic----------
+// account settings data
 router
     .route('/accountInfo')
     .post(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor, ROLES_LIST.User), userController.getUserData);
@@ -16,5 +18,13 @@ router
     .put(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor, ROLES_LIST.User), userController.updateEnlistments);
 
 router.route('/delete').post(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.User), userController.deleteUser);
+
+//account order data
+router
+    .route('/orderhistory/:orderId')
+    .get(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor, ROLES_LIST.User), ordersController.getUserHistoryItem);
+router
+    .route('/orderhistory')
+    .post(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor, ROLES_LIST.User), ordersController.getUserHistory);
 
 module.exports = router;
