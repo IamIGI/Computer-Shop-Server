@@ -25,10 +25,11 @@ const makeOrder = async (req, res) => {
         },
     });
 
-    newOrder.save(async (err, result) => {
-        if (!err) {
+    try {
+        const result = await newOrder.save();
+        //check if user data send?
+        if (Boolean(doc.user)) {
             console.log('UserOrder: Checking if user exists');
-            console.log(doc);
             const user = await Users.findOne({ _id: doc.user }).exec();
             if (!user) return res.status(406).json({ message: 'No user found' });
             console.log('UserOrder: Updating user data');
@@ -38,14 +39,21 @@ const makeOrder = async (req, res) => {
                     $push: { userOrders: result._id },
                 }
             );
-
-            res.status(201).json({ message: 'Successfully save new order', OrderId: `${result._id}` });
-            console.log({ message: 'Successfully save new order', OrderId: `${result._id}` });
-            return result._id;
+            console.log({ message: 'Successfully save new order to userAccount', OrderId: `${result._id}` });
+            return res.status(201).json({
+                message: 'Successfully save new order to userAccount',
+                OrderId: `${result._id}`,
+            });
         } else {
-            apiErrorHandler(req, res, err);
+            console.log({ message: 'Successfully save new order ', OrderId: `${result._id}` });
+            return res.status(201).json({
+                message: 'Successfully save new order ',
+                OrderId: `${result._id}`,
+            });
         }
-    });
+    } catch (err) {
+        apiErrorHandler(req, res, err);
+    }
 };
 
 const getUserHistory = async (req, res) => {

@@ -44,10 +44,10 @@ app.use('/logout', require('./routes/logout'));
 app.use('/comments', require('./routes/api/comments'));
 app.use('/hotShoot', require('./routes/api/hotShoot'));
 app.use('/content', require('./routes/api/content'));
+app.use('/order', require('./routes/api/order'));
 
 //protected Routes
 app.use(verifyJWT);
-app.use('/order', require('./routes/api/order'));
 app.use('/user', require('./routes/api/user'));
 app.use('/admin', require('./routes/api/admin'));
 
