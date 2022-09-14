@@ -1,6 +1,5 @@
 const verifyRoles = (...allowedRoles) => {
     return (req, res, next) => {
-        console.log(req.roles);
         if (!req?.roles) return res.status(401).json({ message: 'VerifyRoles: no roles are specified in the request' });
         const rolesArray = [...allowedRoles];
         console.log('Allowed Roles: ' + rolesArray + '\t Account role:' + req.roles);

@@ -27,7 +27,6 @@ const makeOrder = async (req, res) => {
 
     try {
         const result = await newOrder.save();
-        console.log(result._id);
         //check if user data send?
         if (Boolean(doc.user)) {
             console.log('UserOrder: Checking if user exists');
