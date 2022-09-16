@@ -20,6 +20,20 @@ const getHotShoot = async (req, res) => {
         console.log(`ChangePromotion: ${changePromotionItem}, isMorning: ${isMorning}`);
 
         if (changePromotionItem) {
+            //remove old promotion
+            const response = await Products.updateOne(
+                { _id: productForHotShoot.productData._id },
+                {
+                    $set: {
+                        special_offer: {
+                            mode: false,
+                            price: 0,
+                        },
+                    },
+                },
+                { new: true }
+            ).exec();
+
             //if there is no queued promotion
             if (hotShoot.queue.length === 0) {
                 // check if given product was already in promotion
@@ -70,25 +84,6 @@ const getHotShoot = async (req, res) => {
                 }
             }
             // later write there "else" so if there is something in queue then use this item for promotion
-
-            //remove promotion after 12 hours left
-            const removeDiscount = noLongerBlockedProducts(hotShoot.blocked, 11);
-            if (removeDiscount.length !== 0) {
-                const response = await Products.updateOne(
-                    { _id: removeDiscount[0].productId },
-                    {
-                        $set: {
-                            special_offer: {
-                                mode: false,
-                                price: 0,
-                            },
-                        },
-                    },
-                    { new: true }
-                ).exec();
-
-                console.log(response);
-            }
 
             //remove item from blocked list
             const removeItemFromBlockedList = noLongerBlockedProducts(hotShoot.blocked, 47);

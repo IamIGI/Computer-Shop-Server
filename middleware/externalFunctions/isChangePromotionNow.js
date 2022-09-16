@@ -20,14 +20,14 @@ function isChangePromotionNow(productForHotShoot) {
         if (currentDate !== promotionDate && hourDiff === 12) {
             changePromotionItem = true;
             isMorning = false;
-            console.log('Change promotion to 10am promotion');
+            console.log('10am promotion');
             return { changePromotionItem, isMorning };
         }
     } else {
         if (currentDate === promotionDate && hourDiff === -12) {
             changePromotionItem = true;
             isMorning = true;
-            console.log('Change promotion to 10pm promotion');
+            console.log('10pm promotion');
             return { changePromotionItem, isMorning };
         }
     }
