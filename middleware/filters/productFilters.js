@@ -1,5 +1,14 @@
 const commentsFilters = require('../../middleware/filters/commentsFilters');
 
+function filterDiscounts(arr, discounts) {
+    if (!discounts) return arr;
+    let filtered = arr.filter((product) => {
+        return product.special_offer.mode;
+    });
+
+    return filtered;
+}
+
 function filterProducers(arr, producers) {
     if (producers.length === 0) return arr;
 
@@ -157,6 +166,7 @@ async function sortProductsByRating(arrProducts, arrComments) {
 }
 
 module.exports = {
+    filterDiscounts,
     filterProducers,
     filterProcessors,
     filterRAM,

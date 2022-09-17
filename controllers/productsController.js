@@ -8,7 +8,7 @@ const getAllProducts = async (req, res) => {
     console.log(`${req.originalUrl}`);
     const {
         searchTerm,
-        filters: { producers, processors, ram, disk },
+        filters: { producers, processors, ram, disk, discounts },
         sortBy,
     } = req.body;
 
@@ -23,6 +23,7 @@ const getAllProducts = async (req, res) => {
         }
 
         let filteredProducts = productFilters.filterRAM(products, ram);
+        filteredProducts = productFilters.filterDiscounts(filteredProducts, discounts);
         filteredProducts = productFilters.filterDisk(filteredProducts, disk);
         filteredProducts = productFilters.filterProducers(filteredProducts, producers);
         filteredProducts = productFilters.filterProcessors(filteredProducts, processors);
