@@ -13,7 +13,14 @@ const getAllProducts = async (req, res) => {
     } = req.body;
 
     try {
-        const products = await Products.find({}).lean();
+        let products = await Products.find({}).lean();
+        //check if there is discount product
+        for (let i = 0; i < products.length; i++) {
+            let product = products[i];
+            if (product.special_offer.mode) {
+                product.price = product.price - product.special_offer.price;
+            }
+        }
 
         let filteredProducts = productFilters.filterRAM(products, ram);
         filteredProducts = productFilters.filterDisk(filteredProducts, disk);
@@ -65,7 +72,10 @@ const getProduct = async (req, res) => {
 
     const productCode = req.params.code;
     try {
-        const product = await Products.findOne({ _id: productCode }).lean();
+        let product = await Products.findOne({ _id: productCode }).lean();
+        if (product.special_offer.mode) {
+            product.price = product.price - product.special_offer.price;
+        }
         const comments = await Comments.findOne({ productId: productCode }).exec();
         product.numberOfOpinions = comments.comments.length;
         console.log({ message: 'return product data', productId: productCode });
