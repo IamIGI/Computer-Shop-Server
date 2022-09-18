@@ -26,6 +26,7 @@ const orderSchema = new Schema({
             place: String,
             email: String,
             phone: Number,
+            comment: String,
         },
     },
 });

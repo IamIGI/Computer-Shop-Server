@@ -21,6 +21,7 @@ const makeOrder = async (req, res) => {
                 place: doc.transactionInfo.recipientDetails.place,
                 email: doc.transactionInfo.recipientDetails.email,
                 phone: doc.transactionInfo.recipientDetails.phone,
+                comment: doc.transactionInfo.recipientDetails.comment,
             },
         },
     });
