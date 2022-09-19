@@ -45,6 +45,7 @@ const getHotShoot = async (req, res) => {
                     });
                     //if blocked do not contain chosen item
                     if (findItem.length === 0) {
+                        isBlocked = false;
                         console.log(productForHotShoot._id);
                         const _id = productForHotShoot._id;
                         //update product data
@@ -79,7 +80,6 @@ const getHotShoot = async (req, res) => {
                                 upsert: true,
                             }
                         );
-                        isBlocked = false;
                     }
                 }
             }
