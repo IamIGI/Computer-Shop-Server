@@ -45,6 +45,7 @@ app.use('/comments', require('./routes/api/comments'));
 app.use('/hotShoot', require('./routes/api/hotShoot'));
 app.use('/content', require('./routes/api/content'));
 app.use('/order', require('./routes/api/order'));
+app.use('/webUpdates', require('./routes/api/webUpdates'));
 
 //protected Routes
 app.use(verifyJWT);
