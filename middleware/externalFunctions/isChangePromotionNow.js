@@ -15,24 +15,24 @@ function isChangePromotionNow(productForHotShoot) {
     const promotionTime = productForHotShoot.date.split('-')[1];
     const promotionHour = parseInt(promotionTime.split(':')[0]);
     const hourDiff = promotionHour - currentHour;
+    //if 10 - 22 = -12
 
     if (productForHotShoot.isMorning) {
         if (currentDate !== promotionDate && hourDiff === 12) {
             changePromotionItem = true;
             isMorning = false;
-            console.log('10am promotion');
+            console.log('set 10am promotion');
             return { changePromotionItem, isMorning };
         }
     } else {
         if (currentDate === promotionDate && hourDiff === -12) {
             changePromotionItem = true;
             isMorning = true;
-            console.log('10pm promotion');
+            console.log('set 10pm promotion');
             return { changePromotionItem, isMorning };
         }
     }
-    changePromotionItem = false;
-    isMorning = false;
+
     return { changePromotionItem, isMorning };
 }
 

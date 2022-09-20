@@ -8,7 +8,7 @@ const { format } = require('date-fns');
 
 const getHotShoot = async (req, res) => {
     console.log(`${req.originalUrl}`);
-    let discountValue = 500;
+    let discountValue = 600;
     let productForHotShoot = '';
 
     try {
@@ -20,8 +20,9 @@ const getHotShoot = async (req, res) => {
         console.log(`ChangePromotion: ${changePromotionItem}, isMorning: ${isMorning}`);
 
         if (changePromotionItem) {
-            //remove old promotion
-            const response = await Products.updateOne(
+            // if (true) {
+            //remove old promotion from Product collection
+            await Products.updateOne(
                 { _id: productForHotShoot.productData._id },
                 {
                     $set: {
@@ -36,6 +37,7 @@ const getHotShoot = async (req, res) => {
 
             //if there is no queued promotion
             if (hotShoot.queue.length === 0) {
+                // if (true) {
                 // check if given product was already in promotion
                 let isBlocked = true;
                 while (isBlocked) {
@@ -43,8 +45,10 @@ const getHotShoot = async (req, res) => {
                     const findItem = hotShoot.blocked.filter((blockedProduct) => {
                         return blockedProduct.productId.includes(productForHotShoot._id);
                     });
+                    console.log(findItem.length);
                     //if blocked do not contain chosen item
                     if (findItem.length === 0) {
+                        // if (false) {
                         isBlocked = false;
                         console.log(productForHotShoot._id);
                         const _id = productForHotShoot._id;
@@ -60,7 +64,7 @@ const getHotShoot = async (req, res) => {
                             { new: true }
                         ).exec();
 
-                        //add item to blocked list
+                        //set new promotion and add item to blocked list
                         await HotShoot.updateOne(
                             { _id: '631b62207137bd1bfd2c60aa' },
                             {
@@ -85,17 +89,20 @@ const getHotShoot = async (req, res) => {
             }
             // later write there "else" so if there is something in queue then use this item for promotion
 
-            //remove item from blocked list
+            //remove item from blocked list if 47 hours time block pass
             const removeItemFromBlockedList = noLongerBlockedProducts(hotShoot.blocked, 47);
+            console.log('Item to be removed from blocked list');
+            console.log(removeItemFromBlockedList);
             if (removeItemFromBlockedList.length !== 0) {
+                // if (false) {
                 //update blocked list
-                response = await HotShoot.updateOne(
+                const blockedListUpdate = await HotShoot.updateOne(
                     { _id: '631b62207137bd1bfd2c60aa' },
                     {
                         $pull: { blocked: { productId: removeItemFromBlockedList[0].productId } },
                     }
                 );
-                console.log(response);
+                console.log(blockedListUpdate);
             }
         }
         return res.status(200).json(productForHotShoot);
