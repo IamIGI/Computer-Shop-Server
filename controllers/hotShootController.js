@@ -8,6 +8,20 @@ const { format } = require('date-fns');
 
 const getHotShoot = async (req, res) => {
     console.log(`${req.originalUrl}`);
+
+    try {
+        const hotShoot = (await HotShoot.find({}).lean())[0];
+        productForHotShoot = hotShoot.promotion;
+        return res.status(200).json(productForHotShoot);
+    } catch (err) {
+        console.log(err);
+        apiErrorHandler(req, res, err);
+    }
+};
+
+const changeHotShootTimer = async (req, res) => {
+    console.log(`${req.originalUrl}`);
+    //Dev logs for testing in production zone.
     let discountValue = 600;
     let productForHotShoot = '';
 
@@ -73,11 +87,13 @@ const getHotShoot = async (req, res) => {
                                         productData: productForHotShoot,
                                         discount: discountValue,
                                         date: `${format(new Date(), 'yyyy.MM.dd-H')}:00`,
+                                        // date: '2022.09.22-22:00',
                                         isMorning,
                                     },
                                 },
                                 $push: {
                                     blocked: { productId: _id, date: `${format(new Date(), 'yyyy.MM.dd-H')}:00` },
+                                    // blocked: { productId: _id, date: '2022.09.22-22:00' },
                                 },
                             },
                             {
@@ -104,8 +120,16 @@ const getHotShoot = async (req, res) => {
                 );
                 console.log(blockedListUpdate);
             }
+            return res.status(200).json({
+                message: 'Timer Hot Shoot promotion change successfully',
+                product: { id: productForHotShoot._id },
+            });
         }
-        return res.status(200).json(productForHotShoot);
+
+        return res.status(200).json({
+            message: 'Timer Hot Shoot promotion change failure',
+            reason: 'It is not 10 am or 10 pm.',
+        });
     } catch (err) {
         console.log(err);
         apiErrorHandler(req, res, err);
@@ -114,10 +138,11 @@ const getHotShoot = async (req, res) => {
 
 const setHotShoot = async (req, res) => {
     console.log(`${req.originalUrl}`);
-    res.status(200).json({ message: 'Hot Shoot promotion', send: req.body });
+    res.status(200).json({ message: 'Hot Shoot promotion set', send: req.body });
 };
 
 module.exports = {
     getHotShoot,
     setHotShoot,
+    changeHotShootTimer,
 };
