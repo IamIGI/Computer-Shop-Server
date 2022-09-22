@@ -42,7 +42,7 @@ app.use('/auth', require('./routes/auth'));
 app.use('/refresh', require('./routes/refresh'));
 app.use('/logout', require('./routes/logout'));
 app.use('/comments', require('./routes/api/comments'));
-app.use('/hotshoot', require('./routes/api/hotshoot'));
+app.use('/hotshoot', require('./routes/api/hotshootpromotion'));
 app.use('/content', require('./routes/api/content'));
 app.use('/order', require('./routes/api/order'));
 app.use('/webUpdates', require('./routes/api/webupdates'));
