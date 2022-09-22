@@ -59,7 +59,8 @@ const changeHotShootTimer = async (req, res) => {
                     const findItem = hotShoot.blocked.filter((blockedProduct) => {
                         return blockedProduct.productId.includes(productForHotShoot._id);
                     });
-                    console.log(findItem.length);
+                    console.log(`Item is blocked?:  ${findItem.length} 0 - no`);
+
                     //if blocked do not contain chosen item
                     if (findItem.length === 0) {
                         // if (false) {
@@ -77,6 +78,9 @@ const changeHotShootTimer = async (req, res) => {
                             },
                             { new: true }
                         ).exec();
+                        console.log('FindAndUpdate return:');
+                        console.log(productForHotShoot._id);
+                        console.log('-----------------');
 
                         //set new promotion and add item to blocked list
                         await HotShoot.updateOne(
