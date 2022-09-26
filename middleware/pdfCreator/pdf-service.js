@@ -18,8 +18,6 @@ function endPosition(data) {
         const numberOfFixes = lists.fixes.length;
 
         if (i === 0) {
-            console.log(data[i].date);
-
             if (lists.added.length + countBreakLines(lists.added) > lists.fixes.length + countBreakLines(lists.fixes)) {
                 listPositions.push(125 + numberOfAdded * 10 + 30 + countBreakLines(lists.added) * 10);
             } else {
@@ -28,7 +26,6 @@ function endPosition(data) {
         } else {
             if (lists.added.length + countBreakLines(lists.added) > lists.fixes.length + countBreakLines(lists.fixes)) {
                 let position = 50 + listPositions[i] + numberOfAdded * 10 + 30 + countBreakLines(lists.added) * 10;
-                console.log(`Pozycja nastepnego elementu by added: ${position}`);
                 if (position >= maximalPositionBeforeNextPage) {
                     listPositions[listPositions.length - 1] = 80;
                     listPositions.push(
@@ -39,7 +36,6 @@ function endPosition(data) {
                 }
             } else {
                 let position = 50 + listPositions[i] + numberOfFixes * 10 + 30 + countBreakLines(lists.fixes) * 10;
-                console.log(`Pozycja nastepnego elementu by fixed: ${position}`);
                 if (position >= maximalPositionBeforeNextPage) {
                     listPositions[listPositions.length - 1] = 80;
                     listPositions.push(
@@ -67,12 +63,10 @@ function buildPDF(dataCallback, endCallback, data) {
 
     for (let i = 0; i < data.length; i++) {
         if (listPositions[i] === 80 && i !== 0) {
-            console.log('Dodano nową stronę');
             doc.addPage({ size: 'A4' });
             doc.fontSize(15).text('List of updates', 50, 50);
             doc.moveTo(40, 70).lineTo(555, 70).stroke();
         }
-        console.log(` Pozycja elementu: ${listPositions[i]}`);
 
         // doc.fontSize(10).text(`Pozycja: ${listPositions[i]}`, 50, listPositions[i] - 10);
         doc.font('Helvetica-Bold').fontSize(10).text(`Date: ${data[i].date}`, 50, listPositions[i]);

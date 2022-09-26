@@ -51,6 +51,7 @@ const getPDF = async (req, res, next) => {
             () => stream.end(),
             response
         );
+        console.log('Printed updatedlistPDF successfully');
     } catch (err) {
         console.log(err);
         apiErrorHandler(req, res, err); //send products as a response
