@@ -27,6 +27,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.4.6",
     "nodemon": "^2.0.19",
+    "pdfkit": "^0.13.0",
     "uuid": "^8.3.2"
   }
 }
