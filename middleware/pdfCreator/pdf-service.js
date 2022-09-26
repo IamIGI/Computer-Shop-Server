@@ -31,9 +31,8 @@ function endPosition(data) {
                 console.log(`Pozycja nastepnego elementu by added: ${position}`);
                 if (position >= maximalPositionBeforeNextPage) {
                     listPositions[listPositions.length - 1] = 80;
-                    // console.log(`Po podmianie: ${listPositions[i]}`);
                     listPositions.push(
-                        50 + listPositions[i] + numberOfAdded * 10 + 30 + countBreakLines(lists.added) * 10
+                        45 + listPositions[i] + numberOfAdded * 10 + 30 + countBreakLines(lists.added) * 10
                     );
                 } else {
                     listPositions.push(position);
@@ -43,9 +42,8 @@ function endPosition(data) {
                 console.log(`Pozycja nastepnego elementu by fixed: ${position}`);
                 if (position >= maximalPositionBeforeNextPage) {
                     listPositions[listPositions.length - 1] = 80;
-                    // console.log(`Po podmianie: ${listPositions[i]}`);
                     listPositions.push(
-                        50 + 50 + listPositions[i] + numberOfFixes * 10 + 30 + countBreakLines(lists.fixes) * 10
+                        45 + listPositions[i] + numberOfFixes * 10 + 30 + countBreakLines(lists.fixes) * 10
                     );
                 } else {
                     listPositions.push(position);
@@ -71,13 +69,17 @@ function buildPDF(dataCallback, endCallback, data) {
         if (listPositions[i] === 80 && i !== 0) {
             console.log('Dodano nową stronę');
             doc.addPage({ size: 'A4' });
+            doc.fontSize(15).text('List of updates', 50, 50);
+            doc.moveTo(40, 70).lineTo(555, 70).stroke();
         }
         console.log(` Pozycja elementu: ${listPositions[i]}`);
 
-        doc.fontSize(10).text(`Pozycja: ${listPositions[i]}`, 50, listPositions[i] - 10);
-        doc.fontSize(10).text(`Date: ${data[i].date}`, 50, listPositions[i]);
+        // doc.fontSize(10).text(`Pozycja: ${listPositions[i]}`, 50, listPositions[i] - 10);
+        doc.font('Helvetica-Bold').fontSize(10).text(`Date: ${data[i].date}`, 50, listPositions[i]);
         doc.fontSize(10).text(`Version: ${data[i].version}`, 50, listPositions[i] + 10);
-        doc.fontSize(10).text('Added:', 50, listPositions[i] + 30);
+        doc.font('Helvetica')
+            .fontSize(10)
+            .text('Added:', 50, listPositions[i] + 30);
         doc.list(data[i].changes.added, 70, listPositions[i] + 45, {
             width: 200,
             align: 'left',
