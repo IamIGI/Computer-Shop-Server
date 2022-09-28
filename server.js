@@ -30,7 +30,7 @@ app.use(cors(corsOptions));
 //server config
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-// app.use(express.static(path.join(__dirname, '/public')));
+app.use(express.static(path.join(__dirname, '/public'))); //for images,css from server side
 
 // Cookies handler
 app.use(cookieParser());

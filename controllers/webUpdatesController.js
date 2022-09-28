@@ -1,7 +1,7 @@
 const WebUpdates = require('../model/WebUpdates');
 const { format } = require('date-fns');
 const { apiErrorHandler } = require('../middleware/errorHandlers');
-const pdfService = require('../middleware/pdfCreator/pdf-service');
+const webUpdatedPDF = require('../middleware/pdfCreator/webUpdates');
 
 const addNewUpdate = async (req, res) => {
     console.log(`${req.originalUrl}`);
@@ -46,14 +46,13 @@ const getPDF = async (req, res, next) => {
             'Content-Type': 'application/pdf',
             'Content-Disposition': `attachment;filename=UpdatesLogs.pdf`,
         });
-        pdfService.buildPDF(
+        webUpdatedPDF.buildPDF(
             (chunk) => stream.write(chunk),
             () => stream.end(),
             response
         );
-        console.log('Printed updatedlistPDF successfully');
+        console.log('Send update list (PDF) successfully');
     } catch (err) {
-        console.log(err);
         apiErrorHandler(req, res, err); //send products as a response
     }
 };

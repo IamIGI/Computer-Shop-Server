@@ -2,6 +2,7 @@ const Users = require('../model/Users');
 const Orders = require('../model/Orders');
 const { apiErrorHandler } = require('../middleware/errorHandlers');
 const { format } = require('date-fns');
+const orderPDF = require('../middleware/pdfCreator/orderInvoice');
 
 const makeOrder = async (req, res) => {
     console.log(`${req.originalUrl}`);
@@ -103,8 +104,34 @@ const getUserHistoryItem = async (req, res) => {
     });
 };
 
+const getOrderPDF = async (req, res) => {
+    console.log(`${req.originalUrl}`);
+    console.log(`Params: ${JSON.stringify(req.params.orderId)}`);
+    const orderId = req.params.orderId;
+    console.log(`UserOrderItem: ${orderId},`);
+
+    try {
+        const response = (await Orders.find({ _id: orderId }).lean())[0];
+
+        const stream = res.writeHead(200, {
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': `attachment;filename=Faktura_${response._id}.pdf`,
+        });
+        orderPDF.buildPDF(
+            (chunk) => stream.write(chunk),
+            () => stream.end(),
+            response
+        );
+
+        console.log({ msg: 'Send order invoice (PDF) successfully', orderId: response._id });
+    } catch (err) {
+        apiErrorHandler(req, res, err);
+    }
+};
+
 module.exports = {
     makeOrder,
     getUserHistory,
     getUserHistoryItem,
+    getOrderPDF,
 };
