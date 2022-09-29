@@ -5,13 +5,13 @@ const schedule = require('node-schedule');
 
 //-------Schedule HotShootPromotion automatic change
 //morning Promotion
-schedule.scheduleJob('02 00 10 * * *', async function () {
+schedule.scheduleJob('58 59 09 * * *', async function () {
     const response = await changeHotShootPromotion(700);
     console.log(response);
 });
 
 //evening Promotion
-schedule.scheduleJob('02 00 22 * * *', async function () {
+schedule.scheduleJob('58 59 21 * * *', async function () {
     const response = await changeHotShootPromotion(500);
     console.log(response);
 });
