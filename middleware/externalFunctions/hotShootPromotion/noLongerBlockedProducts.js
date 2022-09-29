@@ -1,4 +1,4 @@
-const getDateDiffInHours = require('./getDateDiffInHours');
+const getDateDiffInHours = require('../getDateDiffInHours');
 const { format } = require('date-fns');
 
 function noLongerBlockedProducts(blockedList, hoursBlocked) {

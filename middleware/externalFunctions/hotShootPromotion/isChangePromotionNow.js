@@ -6,7 +6,6 @@ function isChangePromotionNow(productForHotShoot) {
     //check 12 hours interval
     //currentTime
     const currentFormatDate = format(new Date(), 'yyyy.MM.dd-H:m');
-    console.log(`Date: ${currentFormatDate}`);
     const currentDate = currentFormatDate.split('-')[0];
     const currentTime = currentFormatDate.split('-')[1];
     const currentHour = parseInt(currentTime.split(':')[0]);
@@ -16,7 +15,6 @@ function isChangePromotionNow(productForHotShoot) {
     const promotionTime = productForHotShoot.date.split('-')[1];
     const promotionHour = parseInt(promotionTime.split(':')[0]);
     const hourDiff = promotionHour - currentHour;
-    console.log(`Hours diff: ${hourDiff}`);
     //if 10 - 22 = -12
 
     if (productForHotShoot.isMorning) {
