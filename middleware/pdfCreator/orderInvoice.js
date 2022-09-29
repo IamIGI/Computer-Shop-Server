@@ -380,7 +380,10 @@ function buildPDF(dataCallback, endCallback, data) {
                 .text(`${vatValue}`, 473, 333 + lineHeight, { width: 48, align: 'right' });
             doc.font(robotoRegular)
                 .fontSize(9)
-                .text(`${products[i].price}.00`, 525, 333 + lineHeight, { width: 43, align: 'right' });
+                .text(`${products[i].price * products[i].quantity}.00`, 525, 333 + lineHeight, {
+                    width: 43,
+                    align: 'right',
+                });
         };
 
         createProductRows();
