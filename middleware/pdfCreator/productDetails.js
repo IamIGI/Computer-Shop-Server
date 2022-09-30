@@ -57,7 +57,6 @@ function getPolishNames(name) {
     }
 }
 
-//pass object and starting position
 function tableRender(obj, lineHeight, fontType, doc) {
     const indentLineHeight = 15;
     const textPropertiesDesc = { width: 150, align: 'left' };

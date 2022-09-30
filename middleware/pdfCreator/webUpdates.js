@@ -1,15 +1,15 @@
 PDFDocument = require('pdfkit');
 
-function countBreakLines(list) {
-    const limitOfCharactersPerLine = 41;
+function countBreakLines(list, doc) {
     let lineBreaksCount = 0;
     for (let i = 0; i < list.length; i++) {
-        if (list[i].length > limitOfCharactersPerLine) lineBreaksCount += 1;
+        console.log(doc.widthOfString(list[i]));
+        if (doc.widthOfString(list[i]) > 200) lineBreaksCount += 1;
     }
     return lineBreaksCount;
 }
 
-function endPosition(data) {
+function endPosition(data, doc) {
     let listPositions = [80];
     const maximalPositionBeforeNextPage = 640;
     for (let i = 0; i < data.length; i++) {
@@ -18,28 +18,34 @@ function endPosition(data) {
         const numberOfFixes = lists.fixes.length;
 
         if (i === 0) {
-            if (lists.added.length + countBreakLines(lists.added) > lists.fixes.length + countBreakLines(lists.fixes)) {
-                listPositions.push(125 + numberOfAdded * 10 + 30 + countBreakLines(lists.added) * 10);
+            if (
+                lists.added.length + countBreakLines(lists.added, doc) >
+                lists.fixes.length + countBreakLines(lists.fixes, doc)
+            ) {
+                listPositions.push(125 + numberOfAdded * 10 + 30 + countBreakLines(lists.added, doc) * 10);
             } else {
-                listPositions.push(125 + numberOfFixes * 10 + 30 + countBreakLines(lists.fixes) * 10);
+                listPositions.push(125 + numberOfFixes * 10 + 30 + countBreakLines(lists.fixes, doc) * 10);
             }
         } else {
-            if (lists.added.length + countBreakLines(lists.added) > lists.fixes.length + countBreakLines(lists.fixes)) {
-                let position = 50 + listPositions[i] + numberOfAdded * 10 + 30 + countBreakLines(lists.added) * 10;
+            if (
+                lists.added.length + countBreakLines(lists.added, doc) >
+                lists.fixes.length + countBreakLines(lists.fixes, doc)
+            ) {
+                let position = 50 + listPositions[i] + numberOfAdded * 10 + 30 + countBreakLines(lists.added, doc) * 10;
                 if (position >= maximalPositionBeforeNextPage) {
                     listPositions[listPositions.length - 1] = 80;
                     listPositions.push(
-                        45 + listPositions[i] + numberOfAdded * 10 + 30 + countBreakLines(lists.added) * 10
+                        45 + listPositions[i] + numberOfAdded * 10 + 30 + countBreakLines(lists.added, doc) * 10
                     );
                 } else {
                     listPositions.push(position);
                 }
             } else {
-                let position = 50 + listPositions[i] + numberOfFixes * 10 + 30 + countBreakLines(lists.fixes) * 10;
+                let position = 50 + listPositions[i] + numberOfFixes * 10 + 30 + countBreakLines(lists.fixes, doc) * 10;
                 if (position >= maximalPositionBeforeNextPage) {
                     listPositions[listPositions.length - 1] = 80;
                     listPositions.push(
-                        45 + listPositions[i] + numberOfFixes * 10 + 30 + countBreakLines(lists.fixes) * 10
+                        45 + listPositions[i] + numberOfFixes * 10 + 30 + countBreakLines(lists.fixes, doc) * 10
                     );
                 } else {
                     listPositions.push(position);
@@ -59,7 +65,7 @@ function buildPDF(dataCallback, endCallback, data) {
     doc.fontSize(15).text('List of updates', 50, 50);
     doc.moveTo(40, 70).lineTo(555, 70).stroke();
 
-    const listPositions = endPosition(data);
+    const listPositions = endPosition(data, doc);
 
     for (let i = 0; i < data.length; i++) {
         if (listPositions[i] === 80 && i !== 0) {
@@ -88,8 +94,6 @@ function buildPDF(dataCallback, endCallback, data) {
             bulletRadius: 1.5,
         });
     }
-
-    doc.fontSize(9).text('https://hotshoot.tk/product/629cf8decb7ba7cfa51f856d', 30, 820);
     doc.end();
 }
 
