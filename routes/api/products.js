@@ -6,5 +6,6 @@ const productsController = require('../../controllers/productsController');
 router.route('/').post(productsController.getAllProducts);
 router.route('/all').post(productsController.getAllProducts);
 router.route('/:code').get(productsController.getProduct);
+router.route('/pdf/:code').get(productsController.getProductPDF);
 
 module.exports = router;
