@@ -3,7 +3,6 @@ PDFDocument = require('pdfkit');
 function countBreakLines(list, doc) {
     let lineBreaksCount = 0;
     for (let i = 0; i < list.length; i++) {
-        console.log(doc.widthOfString(list[i]));
         if (doc.widthOfString(list[i]) > 200) lineBreaksCount += 1;
     }
     return lineBreaksCount;
