@@ -3,6 +3,7 @@ const Comments = require('../model/Comments');
 const { apiErrorHandler } = require('../middleware/errorHandlers');
 const productFilters = require('../middleware/filters/productFilters');
 const commentsFilters = require('../middleware/filters/commentsFilters');
+const productPDF = require('../middleware/pdfCreator/productDetails');
 
 const getAllProducts = async (req, res) => {
     console.log(`${req.originalUrl}`);
@@ -86,7 +87,34 @@ const getProduct = async (req, res) => {
     }
 };
 
+const getProductPDF = async (req, res) => {
+    console.log(`${req.originalUrl}`);
+
+    const productCode = req.params.code;
+    try {
+        let product = await Products.findOne({ _id: productCode }).lean();
+        if (product.special_offer.mode) {
+            product.price = product.price - product.special_offer.price;
+        }
+
+        const stream = res.writeHead(200, {
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': `attachment;filename=${product.name}.pdf`,
+        });
+        productPDF.buildPDF(
+            (chunk) => stream.write(chunk),
+            () => stream.end(),
+            product
+        );
+
+        console.log({ msg: 'Send product (PDF) successfully', productId: product._id });
+    } catch (err) {
+        apiErrorHandler(req, res, err);
+    }
+};
+
 module.exports = {
     getAllProducts,
     getProduct,
+    getProductPDF,
 };

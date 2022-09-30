@@ -89,6 +89,7 @@ function buildPDF(dataCallback, endCallback, data) {
         });
     }
 
+    doc.fontSize(9).text('https://hotshoot.tk/product/629cf8decb7ba7cfa51f856d', 30, 820);
     doc.end();
 }
 
