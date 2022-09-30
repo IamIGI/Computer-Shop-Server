@@ -15,8 +15,9 @@ function isChangePromotionNow(productForHotShoot) {
     const promotionTime = productForHotShoot.date.split('-')[1];
     const promotionHour = parseInt(promotionTime.split(':')[0]);
     const hourDiff = promotionHour - currentHour;
-    //if 10 - 21 = -11
-    //if 22 - 9 = 13
+    //if 10 - 22 = -12
+    //if 22 - 10 =
+    console.log(hourDiff);
 
     if (productForHotShoot.isMorning) {
         if (currentDate !== promotionDate && hourDiff === 13) {

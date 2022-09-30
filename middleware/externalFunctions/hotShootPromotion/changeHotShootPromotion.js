@@ -64,6 +64,10 @@ async function changeHotShootPromotion(discountValue) {
                     console.log(productForHotShoot._id);
 
                     //set new promotion and add item to blocked list
+                    const restOfDate = format(new Date(), 'yyyy.MM.dd-H').split('-')[0];
+                    const hour = parseInt(format(new Date(), 'yyyy.MM.dd-H').split('-')[1] + 1); //change is made on 9:59:58 || 21:59:58
+                    const changeDate = `${restOfDate}-${hour.toString()}:00`;
+
                     await HotShoot.updateOne(
                         { _id: '631b62207137bd1bfd2c60aa' },
                         {
@@ -71,13 +75,13 @@ async function changeHotShootPromotion(discountValue) {
                                 promotion: {
                                     productData: productForHotShoot,
                                     discount: discountValue,
-                                    date: `${format(new Date(), 'yyyy.MM.dd-H')}:00`,
+                                    date: changeDate,
                                     // date: '2022.09.22-22:00',
                                     isMorning,
                                 },
                             },
                             $push: {
-                                blocked: { productId: _id, date: `${format(new Date(), 'yyyy.MM.dd-H')}:00` },
+                                blocked: { productId: _id, date: changeDate },
                                 // blocked: { productId: _id, date: '2022.09.22-22:00' },
                             },
                         },
@@ -113,7 +117,7 @@ async function changeHotShootPromotion(discountValue) {
 
     return {
         message: 'Timer Hot Shoot promotion change failure',
-        reason: 'It is not 10 am or 10 pm.',
+        reason: 'It is not 10 am or 10 pm or already change was.',
     };
 }
 
