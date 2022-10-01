@@ -122,13 +122,9 @@ function getPaymentMethod(method) {
 
 function buildPDF(dataCallback, endCallback, data) {
     // console.log(data);
-    const logoImage =
-        'C:/Users/i.kłusek/Desktop/agh/Zaawansowane techniki internetowe/Web Development/Computer-Shop/StudyProject-Backend/public/img/logo.PNG';
-    const robotoMedium =
-        'C:/Users/i.kłusek/Desktop/agh/Zaawansowane techniki internetowe/Web Development/Computer-Shop/StudyProject-Backend/public/fonts/Roboto-Medium.ttf';
-    const robotoRegular =
-        'C:/Users/i.kłusek/Desktop/agh/Zaawansowane techniki internetowe/Web Development/Computer-Shop/StudyProject-Backend/public/fonts/Roboto-Regular.ttf';
-
+    const logoImage = './public/img/logo.PNG';
+    const robotoMedium = './public/fonts/Roboto-Medium.ttf';
+    const robotoRegular = './public/fonts/Roboto-Regular.ttf';
     const doc = new PDFDocument({ size: 'A4', margin: 0 }); //A4 (595.28 x 841.89)
     doc.on('data', dataCallback);
     doc.on('end', endCallback);
