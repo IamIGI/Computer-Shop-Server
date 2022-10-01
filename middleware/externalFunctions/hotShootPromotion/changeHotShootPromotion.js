@@ -65,7 +65,7 @@ async function changeHotShootPromotion(discountValue) {
 
                     //set new promotion and add item to blocked list
                     const restOfDate = format(new Date(), 'yyyy.MM.dd-H').split('-')[0];
-                    const hour = parseInt(format(new Date(), 'yyyy.MM.dd-H').split('-')[1] + 1); //change is made on 9:59:58 || 21:59:58
+                    const hour = parseInt(format(new Date(), 'yyyy.MM.dd-H').split('-')[1]) + 1; //change is made on 9:59:58 || 21:59:58
                     const changeDate = `${restOfDate}-${hour.toString()}:00`;
 
                     await HotShoot.updateOne(
