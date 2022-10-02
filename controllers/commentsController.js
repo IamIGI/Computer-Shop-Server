@@ -24,13 +24,11 @@ const getComments = async (req, res) => {
 
         filteredComments.comments = commentsFilters.sortComments(filteredComments.comments, sortBy); //date, -date, content.rating, likes.up
 
-        return res
-            .status(200)
-            .json({
-                comments: filteredComments.comments,
-                length: filteredComments.length,
-                length_AllComments: productComments.comments.length,
-            });
+        return res.status(200).json({
+            comments: filteredComments.comments,
+            length: filteredComments.length,
+            length_AllComments: productComments.comments.length,
+        });
     } catch (err) {
         console.log(err);
         apiErrorHandler(req, res, err);
@@ -50,8 +48,13 @@ const addComment = async (req, res) => {
     const forbiddenWords = (await ForbiddenWords.find({}).exec())[0].forbiddenWords;
     let userComment = doc.content.description.toLowerCase();
     for (let i = 0; i < forbiddenWords.length; i++) {
+        if (doc.userName.toLowerCase().includes(forbiddenWords[i])) {
+            return res.status(200).json({ message: 'Given name contains vulgar and offensive content', code: 005 });
+        }
+    }
+    for (let i = 0; i < forbiddenWords.length; i++) {
         if (userComment.includes(forbiddenWords[i])) {
-            return res.status(403).json({ message: 'Given content contains vulgar and offensive content', code: 001 });
+            return res.status(200).json({ message: 'Given content contains vulgar and offensive content', code: 001 });
         }
     }
 
