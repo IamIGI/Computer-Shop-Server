@@ -364,7 +364,7 @@ function buildPDF(dataCallback, endCallback, data) {
                 .text(`${products[i].quantity}`, 317, 333 + lineHeight, { width: 28, align: 'center' });
             doc.font(robotoRegular)
                 .fontSize(9)
-                .text(`${products[i].price}.00`, 345, 333 + lineHeight, { width: 48, align: 'right' });
+                .text(`${products[i].price}`, 345, 333 + lineHeight, { width: 48, align: 'right' });
             doc.font(robotoRegular)
                 .fontSize(9)
                 .text(`${nettoCost}`, 392, 333 + lineHeight, { width: 48, align: 'right' });
@@ -376,7 +376,7 @@ function buildPDF(dataCallback, endCallback, data) {
                 .text(`${vatValue}`, 473, 333 + lineHeight, { width: 48, align: 'right' });
             doc.font(robotoRegular)
                 .fontSize(9)
-                .text(`${products[i].price * products[i].quantity}.00`, 525, 333 + lineHeight, {
+                .text(`${products[i].price * products[i].quantity}`, 525, 333 + lineHeight, {
                     width: 43,
                     align: 'right',
                 });
