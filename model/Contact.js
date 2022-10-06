@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { boolean } = require('yup');
 const Schema = mongoose.Schema;
 
 const contactSchema = new Schema({
@@ -7,6 +8,14 @@ const contactSchema = new Schema({
     date: String,
     message: String,
     category: Number,
+    image: {
+        added: Boolean,
+        images: [
+            {
+                type: String,
+            },
+        ],
+    },
 });
 
 module.exports = mongoose.model('contacts', contactSchema);
