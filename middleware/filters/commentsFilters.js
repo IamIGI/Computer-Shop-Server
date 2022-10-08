@@ -2,6 +2,15 @@
 //For an input size of 1 million numbers, Array. map() takes about 2,000ms, whereas a for loop takes about 250ms
 const Comments = require('../..//model/Comments');
 
+const eachScoreInit = [
+    { number: 0, percentage: 0 },
+    { number: 0, percentage: 0 },
+    { number: 0, percentage: 0 },
+    { number: 0, percentage: 0 },
+    { number: 0, percentage: 0 },
+    { number: 0, percentage: 0 },
+];
+
 function filterRating(filteredComments, rating) {
     rating = parseInt(rating);
     if (rating === 0) return filteredComments;
@@ -69,7 +78,9 @@ async function getAverageScore(productId) {
     ];
 
     const productComments = await Comments.findOne({ productId }).exec();
-    if (!productComments) return res.status(204).send({});
+    // if (!productComments) return res.status(204).send({});
+    if (!productComments)
+        return { numberOfComments: 0, averageScore_View: 0, averageScore_Stars: 0, eachScore: eachScoreInit };
     const numberOfComments = productComments.comments.length;
     //get average score
     for (let i = 0; i < numberOfComments; i++) {
@@ -97,7 +108,7 @@ async function getAverageScore(productId) {
 
             default:
                 console.log('Bad score value given');
-                return res.send('Bad score value given');
+                return { message: 'Bad score value given' };
         }
 
         averageScore += productComments.comments[i].content.rating;

@@ -56,9 +56,15 @@ const getAllProducts = async (req, res) => {
             productId = filteredProducts[i]._id;
             averageScore = await commentsFilters.getAverageScore(productId);
             productComments = await Comments.findOne({ productId }).exec();
-            filteredProducts[i].averageScore = averageScore.averageScore_View;
-            filteredProducts[i].averageStars = averageScore.averageScore_Stars;
-            filteredProducts[i].numberOfOpinions = productComments.comments.length;
+            if (productComments) {
+                filteredProducts[i].averageScore = averageScore.averageScore_View;
+                filteredProducts[i].averageStars = averageScore.averageScore_Stars;
+                filteredProducts[i].numberOfOpinions = productComments.comments.length;
+            } else {
+                filteredProducts[i].averageScore = 0;
+                filteredProducts[i].averageStars = 0;
+                filteredProducts[i].numberOfOpinions = 0;
+            }
         }
 
         console.log('Status: 200');
@@ -79,7 +85,13 @@ const getProduct = async (req, res) => {
             product.price = product.price - product.special_offer.price;
         }
         const comments = await Comments.findOne({ productId: productCode }).exec();
-        product.numberOfOpinions = comments.comments.length;
+        console.log(!comments);
+        if (!comments) {
+            product.numberOfOpinions = 0;
+        } else {
+            product.numberOfOpinions = comments.comments.length;
+        }
+
         console.log({ message: 'return product data', productId: productCode });
         res.status(200).send(product);
     } catch (err) {

@@ -165,6 +165,7 @@ const getProductAverageScore = async (req, res) => {
 
     try {
         const response = await commentsFilters.getAverageScore(productId);
+        console.log(response);
         return res.status(200).json(response);
     } catch (err) {
         console.log(err);
