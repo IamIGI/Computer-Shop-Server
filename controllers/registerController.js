@@ -21,7 +21,10 @@ const handleNewUser = async (req, res) => {
     if (!firstName || !hashedPassword || !email)
         return res.status(400).json({ message: 'Username, password, email are required.' });
     const duplicateEmail = await Users.findOne({ email }).exec();
-    if (duplicateEmail) return res.sendStatus(409);
+    if (duplicateEmail) {
+        console.log('Email already in use');
+        return res.sendStatus(409);
+    }
     try {
         const hashedPwd = await bcrypt.hash(hashedPassword, 10);
         const result = await Users.create({
