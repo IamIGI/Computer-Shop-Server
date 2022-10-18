@@ -12,7 +12,6 @@ const getAllProducts = async (req, res) => {
         filters: { producers, processors, ram, disk, discounts },
         sortBy,
     } = req.body;
-
     try {
         let products = await Products.find({}).lean();
         //check if there is discount product

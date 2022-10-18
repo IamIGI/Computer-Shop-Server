@@ -27,7 +27,6 @@ function filterProducers(arr, producers) {
 
 function filterProcessors(arr, processors) {
     if (processors.length === 0) return arr;
-    console.log(processors);
     let processor = '';
     let brand = '';
     let series = '';
