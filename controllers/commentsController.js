@@ -128,7 +128,7 @@ const addComment = async (req, res) => {
                 comments: {
                     userId,
                     userName,
-                    date: format(new Date(), 'yyyy.MM.dd'),
+                    date: format(new Date(), 'yyyy.MM.dd.HH.mm.ss'),
                     confirmed,
                     content: {
                         rating: doc.content.rating,
