@@ -23,6 +23,14 @@ const commentSchema = new Schema({
                 rating: Number,
                 description: String,
             },
+            image: {
+                added: Boolean,
+                images: [
+                    {
+                        type: String,
+                    },
+                ],
+            },
             usersWhoLiked: [{ userId: String, likeUp: Boolean }],
         },
     ],
