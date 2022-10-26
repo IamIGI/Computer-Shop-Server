@@ -5,6 +5,7 @@ const Comments = require('../model/Comments');
 const { apiErrorHandler } = require('../middleware/errorHandlers');
 const { format } = require('date-fns');
 const commentsFilters = require('../middleware/filters/commentsFilters');
+const path = require('path');
 
 const getComments = async (req, res) => {
     console.log(`${req.originalUrl}`);
@@ -37,16 +38,17 @@ const getComments = async (req, res) => {
 
 const addComment = async (req, res) => {
     console.log(`${req.originalUrl}`);
+    const files = req.files;
     const doc = req.body;
     let userCommentedThisProduct = false;
     let confirmed = false;
     let userName = '';
     let userId = req.body.userId;
     let createProductDocument = true;
-    console.log(doc);
     //Check for vulgar and offensive content
     const forbiddenWords = (await ForbiddenWords.find({}).exec())[0].forbiddenWords;
-    let userComment = doc.content.description.toLowerCase();
+    let userComment = doc?.description?.toLowerCase();
+    // let userComment = doc.content.description.toLowerCase();
     for (let i = 0; i < forbiddenWords.length; i++) {
         if (doc.userName.toLowerCase().includes(forbiddenWords[i])) {
             return res.status(200).json({ message: 'Given name contains vulgar and offensive content', code: 005 });
@@ -120,6 +122,17 @@ const addComment = async (req, res) => {
         userId = '';
     }
 
+    //Check if file is attached to the message
+    let added = false;
+    let images = [];
+
+    if (Boolean(files)) {
+        added = true;
+        Object.keys(files).forEach((key) => {
+            images.push(files[key].name);
+        });
+    }
+
     //update product Comment collection
     const createComment = await Comments.updateOne(
         { productId: doc.productId },
@@ -131,24 +144,59 @@ const addComment = async (req, res) => {
                     date: format(new Date(), 'yyyy.MM.dd.HH.mm.ss'),
                     confirmed,
                     content: {
-                        rating: doc.content.rating,
-                        description: doc.content.description,
+                        rating: doc.rating,
+                        description: doc.description,
+                        // rating: doc.content.rating,
+                        // description: doc.content.description,
+                    },
+                    image: {
+                        added,
+                        images,
                     },
                 },
             },
         }
     );
 
+    //get the last comment
+    const productComments = (await Comments.findOne({ productId: doc.productId }).exec()).comments;
+    const commentId = productComments[productComments.length - 1]._id;
+
     // Save comments to user Data
     if (!userCommentedThisProduct && doc.userId !== '') {
-        const productComments = (await Comments.findOne({ productId: doc.productId }).exec()).comments;
-        const commentId = productComments[productComments.length - 1]._id;
         await Users.updateOne(
             { _id: doc.userId },
             {
                 $push: { userComments: commentId, commentedProducts: doc.productId },
             }
         );
+    }
+
+    //Save image to files:
+    if (Boolean(files) && !userCommentedThisProduct && doc.userId !== '') {
+        Object.keys(files).forEach((key) => {
+            const filepath = path.join(
+                __dirname,
+                `../files/comments/${doc.productId}/authenticatedUser/${doc.userId}/${commentId}`,
+                files[key].name
+            );
+            files[key].mv(filepath, (err) => {
+                if (err) return console.log({ status: 'error', message: err });
+                if (err) return res.status(400).json({ status: 'error', message: err });
+            });
+        });
+    } else if (Boolean(files)) {
+        Object.keys(files).forEach((key) => {
+            const filepath = path.join(
+                __dirname,
+                `../files/comments/${doc.productId}/unauthenticatedUser/${commentId}`,
+                files[key].name
+            );
+            files[key].mv(filepath, (err) => {
+                if (err) return console.log({ status: 'error', message: err });
+                if (err) return res.status(400).json({ status: 'error', message: err });
+            });
+        });
     }
 
     if (!createComment) {
@@ -165,7 +213,6 @@ const getProductAverageScore = async (req, res) => {
 
     try {
         const response = await commentsFilters.getAverageScore(productId);
-        console.log(response);
         return res.status(200).json(response);
     } catch (err) {
         console.log(err);
@@ -262,9 +309,6 @@ const likeComment = async (req, res) => {
     }
 
     try {
-        console.log(`Increment: \n`);
-        console.log(increment);
-        console.log(`--------------`);
         const response = await Comments.updateOne(
             {
                 productId,

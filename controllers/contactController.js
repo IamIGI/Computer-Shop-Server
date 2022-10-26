@@ -10,7 +10,7 @@ const sendMessage = async (req, res) => {
     const files = req.files;
     const { name, email, message, category } = req.body;
     const date = format(new Date(), 'yyyy.MM.dd-HH:mm:ss');
-
+    console.log(req.body);
     //validate message
     //Check for vulgar and offensive content
     const forbiddenWords = (await ForbiddenWords.find({}).exec())[0].forbiddenWords;
