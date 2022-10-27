@@ -30,7 +30,7 @@ const getComments = async (req, res) => {
 
         return res.status(200).json({
             comments: filteredComments.comments,
-            image: usersImages,
+            images: usersImages,
             length: filteredComments.length,
             length_AllComments: productComments.comments.length,
         });
