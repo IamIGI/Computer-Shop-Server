@@ -6,6 +6,7 @@ const { apiErrorHandler } = require('../middleware/errorHandlers');
 const { format } = require('date-fns');
 const commentsFilters = require('../middleware/filters/commentsFilters');
 const path = require('path');
+const getUsersProductImages = require('../middleware/comments/getUsersProductImages');
 
 const getComments = async (req, res) => {
     console.log(`${req.originalUrl}`);
@@ -14,6 +15,9 @@ const getComments = async (req, res) => {
         filters: { rating, confirmed },
         sortBy,
     } = req.body;
+
+    const usersImages = getUsersProductImages('629cf8decb7ba7cfa51f856d');
+    console.log(usersImages);
     try {
         const productComments = await Comments.findOne({ productId }).exec();
         if (!productComments) return res.status(204).send([]);
@@ -27,6 +31,7 @@ const getComments = async (req, res) => {
 
         return res.status(200).json({
             comments: filteredComments.comments,
+            image: usersImages,
             length: filteredComments.length,
             length_AllComments: productComments.comments.length,
         });
@@ -172,26 +177,9 @@ const addComment = async (req, res) => {
         );
     }
 
-    //Save image to files:
-    if (Boolean(files) && !userCommentedThisProduct && doc.userId !== '') {
+    if (Boolean(files)) {
         Object.keys(files).forEach((key) => {
-            const filepath = path.join(
-                __dirname,
-                `../files/comments/${doc.productId}/authenticatedUser/${doc.userId}/${commentId}`,
-                files[key].name
-            );
-            files[key].mv(filepath, (err) => {
-                if (err) return console.log({ status: 'error', message: err });
-                if (err) return res.status(400).json({ status: 'error', message: err });
-            });
-        });
-    } else if (Boolean(files)) {
-        Object.keys(files).forEach((key) => {
-            const filepath = path.join(
-                __dirname,
-                `../files/comments/${doc.productId}/unauthenticatedUser/${commentId}`,
-                files[key].name
-            );
+            const filepath = path.join(__dirname, `../files/comments/${doc.productId}/${commentId}`, files[key].name);
             files[key].mv(filepath, (err) => {
                 if (err) return console.log({ status: 'error', message: err });
                 if (err) return res.status(400).json({ status: 'error', message: err });
