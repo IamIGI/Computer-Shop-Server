@@ -51,12 +51,12 @@ const addComment = async (req, res) => {
     // let userComment = doc.content.description.toLowerCase();
     for (let i = 0; i < forbiddenWords.length; i++) {
         if (doc.userName.toLowerCase().includes(forbiddenWords[i])) {
-            return res.status(200).json({ message: 'Given name contains vulgar and offensive content', code: 005 });
+            return res.status(200).json({ message: 'Given name contains vulgar and offensive content', code: 105 });
         }
     }
     for (let i = 0; i < forbiddenWords.length; i++) {
         if (userComment.includes(forbiddenWords[i])) {
-            return res.status(200).json({ message: 'Given content contains vulgar and offensive content', code: 001 });
+            return res.status(200).json({ message: 'Given content contains vulgar and offensive content', code: 101 });
         }
     }
 
@@ -95,7 +95,7 @@ const addComment = async (req, res) => {
                     userCommentedThisProduct = true;
                     return res
                         .status(403)
-                        .json({ message: 'User commented this product already', code: 002, userId: `${doc.userId}` });
+                        .json({ message: 'User commented this product already', code: 102, userId: `${doc.userId}` });
                 }
             }
 
@@ -114,7 +114,7 @@ const addComment = async (req, res) => {
                 if (confirmed) break;
             }
         } else {
-            return res.status(403).json({ message: 'Given userId is incorrect', code: 003, userId: `${doc.userId}` });
+            return res.status(403).json({ message: 'Given userId is incorrect', code: 103, userId: `${doc.userId}` });
         }
     } else {
         console.log('Anonymous user');
@@ -202,8 +202,8 @@ const addComment = async (req, res) => {
     if (!createComment) {
         apiErrorHandler(req, res, err);
     } else {
-        console.log({ message: 'Successfully save a new comment', code: 004 });
-        return res.status(201).json({ message: 'Successfully save a new comment', code: 004 });
+        console.log({ message: 'Successfully save a new comment', code: 104 });
+        return res.status(201).json({ message: 'Successfully save a new comment', code: 104 });
     }
 };
 
