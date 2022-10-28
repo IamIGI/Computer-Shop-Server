@@ -33,7 +33,6 @@ async function changeHotShootPromotion(discountValue) {
 
         //if there is no queued promotion
         if (hotShoot.queue.length === 0) {
-            // if (true) {
             // check if given product was already in promotion
             let isBlocked = true;
             while (isBlocked) {
@@ -41,11 +40,9 @@ async function changeHotShootPromotion(discountValue) {
                 const findItem = hotShoot.blocked.filter((blockedProduct) => {
                     return blockedProduct.productId.includes(productForHotShoot._id);
                 });
-                console.log(`Item is blocked?:  ${findItem.length} 0 - no`);
 
                 //if blocked do not contain chosen item
                 if (findItem.length === 0) {
-                    // if (false) {
                     isBlocked = false;
                     console.log(productForHotShoot._id);
                     const _id = productForHotShoot._id;
@@ -76,13 +73,12 @@ async function changeHotShootPromotion(discountValue) {
                                     productData: productForHotShoot,
                                     discount: discountValue,
                                     date: changeDate,
-                                    // date: '2022.09.22-22:00',
+
                                     isMorning,
                                 },
                             },
                             $push: {
                                 blocked: { productId: _id, date: changeDate },
-                                // blocked: { productId: _id, date: '2022.09.22-22:00' },
                             },
                         },
                         {
@@ -99,7 +95,6 @@ async function changeHotShootPromotion(discountValue) {
         console.log('Item to be removed from blocked list');
         console.log(removeItemFromBlockedList);
         if (removeItemFromBlockedList.length !== 0) {
-            // if (false) {
             //update blocked list
             const blockedListUpdate = await HotShoot.updateOne(
                 { _id: '631b62207137bd1bfd2c60aa' },

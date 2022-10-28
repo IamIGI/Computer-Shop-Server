@@ -16,7 +16,9 @@ const getComments = async (req, res) => {
         sortBy,
     } = req.body;
 
-    const usersImages = getUsersProductImages('629cf8decb7ba7cfa51f856d');
+    // get images
+    const usersImages = getUsersProductImages(productId);
+
     try {
         const productComments = await Comments.findOne({ productId }).exec();
         if (!productComments) return res.status(204).send([]);
