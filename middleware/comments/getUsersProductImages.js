@@ -15,8 +15,8 @@ const getUsersProductImages = (productId) => {
         imagePath = `comments/${productId}/${dirInProduct[i]}/${fileName[0]}`;
         urlArray.push(imagePath);
     }
-    const lastTenUrls = urlArray.slice(-10);
-    return lastTenUrls;
+
+    return urlArray;
 };
 
 module.exports = getUsersProductImages;
