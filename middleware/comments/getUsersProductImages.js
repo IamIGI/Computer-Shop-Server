@@ -15,6 +15,7 @@ const getUsersProductImages = (productId) => {
         imagePath = `comments/${productId}/${dirInProduct[i]}/${fileName[0]}`;
         urlArray.push(imagePath);
     }
+
     return urlArray;
 };
 

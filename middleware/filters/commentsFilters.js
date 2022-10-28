@@ -24,7 +24,7 @@ function filterRating(filteredComments, rating) {
 
 function filterConfirmed(filteredComments, confirmed) {
     //0 - true, 1- false, 2 - mean "No filter"
-    if (confirmed === false) return filteredComments;
+    if (!confirmed) return filteredComments;
 
     const filtered = [];
     for (let i = 0; i < filteredComments.length; i++) {
