@@ -240,7 +240,6 @@ const likeComment = async (req, res) => {
     let increment = {};
     let likeType = '';
     let likedComment = {};
-    console.log(commentId);
 
     if (!Boolean(userId))
         return res.status(403).json({ message: 'Only logged user can give like', userId: `${userId}` });
