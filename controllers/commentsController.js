@@ -152,8 +152,6 @@ const addComment = async (req, res) => {
                     content: {
                         rating: doc.rating,
                         description: doc.description,
-                        // rating: doc.content.rating,
-                        // description: doc.content.description,
                     },
                     image: {
                         added,
@@ -166,7 +164,32 @@ const addComment = async (req, res) => {
 
     //get the last comment
     const productComments = (await Comments.findOne({ productId: doc.productId }).exec()).comments;
-    const commentId = productComments[productComments.length - 1]._id;
+    let commentId = productComments[productComments.length - 1]._id;
+    commentId = commentId.toString();
+    images = [];
+    if (Boolean(files)) {
+        added = true;
+        Object.keys(files).forEach((key) => {
+            images.push(`comments/${doc.productId}/${commentId}/${files[key].name}`);
+        });
+
+        //update image with url:
+        await Comments.findOneAndUpdate(
+            {
+                productId: doc.productId,
+            },
+            {
+                $set: { 'comments.$[comment].image': { added: true, images: images } },
+            },
+            {
+                arrayFilters: [
+                    {
+                        'comment._id': commentId,
+                    },
+                ],
+            }
+        );
+    }
 
     // Save comments to user Data
     if (!userCommentedThisProduct && doc.userId !== '') {
