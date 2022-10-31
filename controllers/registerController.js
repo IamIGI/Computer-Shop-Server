@@ -1,4 +1,5 @@
 const Users = require('../model/Users');
+const ForbiddenWords = require('../model/ForbiddenWords');
 const { apiErrorHandler } = require('../middleware/errorHandlers');
 const bcrypt = require('bcrypt');
 const { logEvents } = require('../middleware/logEvents');
@@ -24,6 +25,13 @@ const handleNewUser = async (req, res) => {
     if (duplicateEmail) {
         console.log('Email already in use');
         return res.sendStatus(409);
+    }
+
+    const forbiddenWords = (await ForbiddenWords.find({}).exec())[0].forbiddenWords;
+    for (let i = 0; i < forbiddenWords.length; i++) {
+        if (firstName.toLowerCase().includes(forbiddenWords[i])) {
+            return res.sendStatus(418); // Given name contains vulgar and offensive content
+        }
     }
     try {
         const hashedPwd = await bcrypt.hash(hashedPassword, 10);

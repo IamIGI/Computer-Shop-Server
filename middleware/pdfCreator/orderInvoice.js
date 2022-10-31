@@ -196,7 +196,7 @@ function buildPDF(dataCallback, endCallback, data) {
     //generate table rows for products
     let tableEndPosition = 0;
     let numberOfUniqueOrderedProducts = data.products.length;
-    const totalCost = data.transactionInfo.price;
+    const totalCost = data.transactionInfo.price.toFixed(2);
     const products = data.products;
     for (var i = 0; i < numberOfUniqueOrderedProducts; i++) {
         const lineHeight = i * 13;
