@@ -5,7 +5,6 @@ const stripe = require('stripe')(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY);
 const checkout = async (req, res) => {
     console.log(req.originalUrl);
     const { products, delivery } = req.body;
-    console.log(products);
 
     async function getOrderedProduct(item) {
         const product = await Products.findOne({ _id: item.id }).lean();
@@ -36,13 +35,11 @@ const checkout = async (req, res) => {
         }
     }
 
-    let orderedProducts = [];
+    const orderedProducts = [];
     for (let i = 0; i < products.length; i++) {
         console.log(products[i].id);
         orderedProducts.push(await getOrderedProduct(products[i]));
     }
-
-    console.log(orderedProducts);
 
     try {
         const session = await stripe.checkout.sessions.create({
@@ -55,7 +52,6 @@ const checkout = async (req, res) => {
         });
         res.json({ url: session.url });
     } catch (err) {
-        console.log(err);
         apiErrorHandler(req, res, err);
     }
 };
