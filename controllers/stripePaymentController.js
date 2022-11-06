@@ -16,7 +16,9 @@ const checkout = async (req, res) => {
                     name: product.name,
                     images: [product.prevImg],
                 },
-                unit_amount: product.price * 100,
+                unit_amount: product.special_offer.mode
+                    ? (product.price - product.special_offer.price) * 100
+                    : product.price * 100,
             },
             quantity: item.quantity,
         };
@@ -43,6 +45,7 @@ const checkout = async (req, res) => {
 
     try {
         const session = await stripe.checkout.sessions.create({
+            locale: 'pl',
             payment_method_types: ['card'],
             mode: 'payment',
             shipping_options: [{ shipping_rate: getOrderDelivery(delivery) }],
