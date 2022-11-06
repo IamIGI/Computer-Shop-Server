@@ -5,9 +5,7 @@ const CLIENT_URL = require('../config/clientURL');
 
 const checkout = async (req, res) => {
     console.log(req.originalUrl);
-    const {
-        stripeObj: { products, delivery },
-    } = req.body;
+    const { products, delivery } = req.body;
 
     async function getOrderedProduct(item) {
         const product = await Products.findOne({ _id: item.id }).lean();
