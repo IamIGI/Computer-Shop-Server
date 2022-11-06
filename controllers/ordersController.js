@@ -11,7 +11,7 @@ const makeOrder = async (req, res) => {
         status: 1,
         products: doc.products,
         transactionInfo: {
-            date: format(new Date(), 'yyyy.MM.dd'),
+            date: format(new Date(), 'yyyy.MM.dd:HH.mm.ss'),
             deliveryMethod: doc.transactionInfo.deliveryMethod,
             paymentMethod: doc.transactionInfo.paymentMethod,
             price: doc.transactionInfo.price,
@@ -106,9 +106,7 @@ const getUserHistoryItem = async (req, res) => {
 
 const getOrderPDF = async (req, res) => {
     console.log(`${req.originalUrl}`);
-    console.log(`Params: ${JSON.stringify(req.params.orderId)}`);
     const orderId = req.params.orderId;
-    console.log(`UserOrderItem: ${orderId},`);
 
     try {
         const response = (await Orders.find({ _id: orderId }).lean())[0];

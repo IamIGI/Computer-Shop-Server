@@ -1,10 +1,13 @@
 const { apiErrorHandler } = require('../middleware/errorHandlers');
 const Products = require('../model/Products');
 const stripe = require('stripe')(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY);
+const CLIENT_URL = require('../config/clientURL');
 
 const checkout = async (req, res) => {
     console.log(req.originalUrl);
-    const { products, delivery } = req.body;
+    const {
+        stripeObj: { products, delivery },
+    } = req.body;
 
     async function getOrderedProduct(item) {
         const product = await Products.findOne({ _id: item.id }).lean();
@@ -37,7 +40,6 @@ const checkout = async (req, res) => {
 
     const orderedProducts = [];
     for (let i = 0; i < products.length; i++) {
-        console.log(products[i].id);
         orderedProducts.push(await getOrderedProduct(products[i]));
     }
 
@@ -47,8 +49,8 @@ const checkout = async (req, res) => {
             mode: 'payment',
             shipping_options: [{ shipping_rate: getOrderDelivery(delivery) }],
             line_items: orderedProducts,
-            success_url: `${process.env.CLIENT_URL}/success.html`,
-            cancel_url: `${process.env.CLIENT_URL}/cancel.html`,
+            success_url: `${CLIENT_URL}/basket?success=true`,
+            cancel_url: `${CLIENT_URL}/basket`,
         });
         res.json({ url: session.url });
     } catch (err) {
