@@ -1,16 +1,16 @@
-const path = require('path');
+import * as path from 'path';
 require('dotenv').config({ path: path.join(__dirname, '.env') });
-const express = require('express');
+import * as express from 'express';
 const app = express();
-const cors = require('cors');
+import * as cors from 'cors';
 const corsOptions = require('./config/corsOptions');
 const { logger } = require('./middleware/logEvents');
 const { errorHandler } = require('./middleware/errorHandlers');
 const connectDB = require('./config/dbConn');
 const verifyJWT = require('./middleware/verifyJWT');
-const cookieParser = require('cookie-parser');
+import * as cookieParser from 'cookie-parser';
 const credentials = require('./middleware/credentials');
-const { default: mongoose } = require('mongoose');
+import * as mongoose from 'mongoose';
 
 const PORT = process.env.PORT || 5000;
 

@@ -1,0 +1,39 @@
+import * as mongoose from 'mongoose';
+const Schema = mongoose.Schema;
+
+const commentSchema = new Schema({
+    productId: String,
+    comments: [
+        {
+            userId: String,
+            userName: String,
+            date: String,
+            confirmed: Boolean,
+            likes: {
+                up: {
+                    type: Number,
+                    default: 0,
+                },
+                down: {
+                    type: Number,
+                    default: 0,
+                },
+            },
+            content: {
+                rating: Number,
+                description: String,
+            },
+            image: {
+                added: Boolean,
+                images: [
+                    {
+                        type: String,
+                    },
+                ],
+            },
+            usersWhoLiked: [{ userId: String, likeUp: Boolean }],
+        },
+    ],
+});
+
+module.exports = mongoose.model('comments', commentSchema);
