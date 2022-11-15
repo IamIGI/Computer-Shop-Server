@@ -20,7 +20,7 @@ const addNewUpdate = async (req: Request, res: Response) => {
         console.log('Added new update register');
         return res.status(200).json({ message: 'Added new update register', date: format(new Date(), 'yyyy.MM.dd') });
     } catch (err: any) {
-        apiErrorHandler(req, res, err);
+        apiErrorHandler(req, res, err as Error);
     }
 };
 
@@ -33,7 +33,7 @@ const getAllUpdates = async (req: Request, res: Response) => {
         return res.status(200).json(response);
     } catch (err: any) {
         console.log(err);
-        apiErrorHandler(req, res, err);
+        apiErrorHandler(req, res, err as Error);
     }
 };
 
@@ -55,7 +55,7 @@ const getPDF = async (req: Request, res: Response, next: NextFunction) => {
         );
         console.log('Send update list (PDF) successfully');
     } catch (err: any) {
-        apiErrorHandler(req, res, err); //send products as a response
+        apiErrorHandler(req, res, err as Error); //send products as a response
     }
 };
 

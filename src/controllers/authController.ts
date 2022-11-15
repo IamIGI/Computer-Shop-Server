@@ -57,8 +57,8 @@ const handleLogin: RequestHandler = async (req, res) => {
                 roles: roles,
                 accessToken: accessToken,
             });
-        } catch (err: any) {
-            apiErrorHandler(req, res, err);
+        } catch (err) {
+            apiErrorHandler(req, res, err as Error);
         }
     } else {
         res.status(406).json({ message: `Wrong password for: ${email}` });

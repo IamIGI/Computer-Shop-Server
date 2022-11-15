@@ -208,7 +208,7 @@ const addComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     }
     if (!createComment) {
         console.log(`Error: could not create a comment`, req, res);
-        // apiErrorHandler(req, res, err);
+        // apiErrorHandler(req, res, err as Error);
     }
     else {
         console.log({ message: 'Successfully save a new comment', code: 104 });
