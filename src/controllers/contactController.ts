@@ -7,7 +7,7 @@ import { Request, Response } from 'express';
 import fileUpload from 'express-fileupload';
 
 interface fileRequest extends fileUpload.UploadedFile {
-    name: any;
+    name: string;
     files: any;
 }
 

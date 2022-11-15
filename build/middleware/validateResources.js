@@ -10,8 +10,8 @@ const validate = (schema) => (req, res, next) => {
         });
         next();
     }
-    catch (e) {
-        return res.status(400).send(e.errors);
+    catch (err) {
+        return res.status(400).send(err.errors);
     }
 };
 exports.default = validate;
