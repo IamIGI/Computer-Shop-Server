@@ -24,9 +24,9 @@ const getHotShoot = async (req: Request, res: Response) => {
         const hotShoot = (await HotShoot.find({}).lean())[0];
         const productForHotShoot = hotShoot.promotion;
         return res.status(200).json(productForHotShoot);
-    } catch (err: any) {
+    } catch (err) {
         console.log(err);
-        apiErrorHandler(req, res, err);
+        apiErrorHandler(req, res, err as Error);
     }
 };
 
@@ -38,7 +38,7 @@ const changeHotShootTimer = async (req: Request, res: Response) => {
         return res.status(200).json(response);
     } catch (err: any) {
         console.log(err);
-        apiErrorHandler(req, res, err);
+        apiErrorHandler(req, res, err as Error);
     }
 };
 

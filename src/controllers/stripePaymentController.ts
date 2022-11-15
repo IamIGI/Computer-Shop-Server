@@ -62,7 +62,7 @@ const checkout = async (req: Request, res: Response) => {
         });
         res.json({ url: session.url });
     } catch (err: any) {
-        apiErrorHandler(req, res, err);
+        apiErrorHandler(req, res, err as Error);
     }
 };
 

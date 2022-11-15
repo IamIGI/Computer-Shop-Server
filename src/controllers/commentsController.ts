@@ -40,7 +40,7 @@ export const getComments = async (req: Request, res: Response) => {
         });
     } catch (err: any) {
         console.log(err);
-        apiErrorHandler(req, res, err);
+        apiErrorHandler(req, res, err as Error);
     }
 };
 
@@ -85,7 +85,7 @@ export const addComment = async (req: Request, res: Response) => {
             });
             console.log({ message: 'New document for given product created', productId: `${result.productId}` });
         } catch (err: any) {
-            apiErrorHandler(req, res, err);
+            apiErrorHandler(req, res, err as Error);
         }
     }
 
@@ -228,7 +228,7 @@ export const addComment = async (req: Request, res: Response) => {
 
     if (!createComment) {
         console.log(`Error: could not create a comment`, req, res);
-        // apiErrorHandler(req, res, err);
+        // apiErrorHandler(req, res, err as Error);
     } else {
         console.log({ message: 'Successfully save a new comment', code: 104 });
         return res.status(201).json({ message: 'Successfully save a new comment', code: 104 });
@@ -244,7 +244,7 @@ export const getProductAverageScore = async (req: Request, res: Response) => {
         return res.status(200).json(response);
     } catch (err: any) {
         console.log(err);
-        apiErrorHandler(req, res, err);
+        apiErrorHandler(req, res, err as Error);
     }
 };
 

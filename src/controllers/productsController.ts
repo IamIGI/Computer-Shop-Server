@@ -67,7 +67,7 @@ const getAllProducts = async (req: Request, res: Response) => {
         res.status(200).send(filteredProducts);
     } catch (err: any) {
         console.log(err);
-        apiErrorHandler(req, res, err); //send products as a response
+        apiErrorHandler(req, res, err as Error); //send products as a response
     }
 };
 
@@ -94,7 +94,7 @@ const getProduct = async (req: Request, res: Response) => {
         console.log({ message: 'return product data', productId: productCode });
         res.status(200).send(product);
     } catch (err: any) {
-        apiErrorHandler(req, res, err);
+        apiErrorHandler(req, res, err as Error);
     }
 };
 
@@ -124,7 +124,7 @@ const getProductPDF = async (req: Request, res: Response) => {
 
         console.log({ msg: 'Send product (PDF) successfully', productId: product._id });
     } catch (err: any) {
-        apiErrorHandler(req, res, err);
+        apiErrorHandler(req, res, err as Error);
     }
 };
 

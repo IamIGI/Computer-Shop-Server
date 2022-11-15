@@ -9,7 +9,7 @@ const getAboutPageData = async (req: Request, res: Response) => {
         return res.status(200).json(response);
     } catch (err: any) {
         console.log(err);
-        apiErrorHandler(req, res, err);
+        apiErrorHandler(req, res, err as Error);
     }
 };
 

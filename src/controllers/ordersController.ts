@@ -55,7 +55,7 @@ const makeOrder = async (req: Request, res: Response) => {
             });
         }
     } catch (err: any) {
-        apiErrorHandler(req, res, err);
+        apiErrorHandler(req, res, err as Error);
     }
 };
 const getUserHistory = async (req: Request, res: Response) => {
@@ -82,7 +82,7 @@ const getUserHistory = async (req: Request, res: Response) => {
                 console.log(`Status: 200, msg: User ${userId} order history sent.`);
                 res.status(200).json({ orderData: msg, orderCount: countOrders });
             } else {
-                apiErrorHandler(req, res, err);
+                apiErrorHandler(req, res, err as Error);
             }
         }
     );
@@ -97,7 +97,7 @@ const getUserHistoryItem = async (req: Request, res: Response) => {
             console.log(msg[0]);
             res.status(200).send(msg[0]);
         } else {
-            apiErrorHandler(req, res, err);
+            apiErrorHandler(req, res, err as unknown as Error);
         }
     });
 };
@@ -121,7 +121,7 @@ const getOrderPDF = async (req: Request, res: Response) => {
 
         console.log({ msg: 'Send order invoice (PDF) successfully', orderId: orderData._id });
     } catch (err: any) {
-        apiErrorHandler(req, res, err);
+        apiErrorHandler(req, res, err as Error);
     }
 };
 
