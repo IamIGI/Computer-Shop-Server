@@ -79,7 +79,6 @@ const getAllProducts = (req, res) => __awaiter(void 0, void 0, void 0, function*
 const getProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`${req.originalUrl}`);
     const productCode = req.params.code;
-    // let product: Record<string, any> = {};
     try {
         let product = yield Products_1.default.findOne({ _id: productCode }).lean();
         if (product === null)

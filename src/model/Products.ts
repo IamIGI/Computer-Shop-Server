@@ -70,7 +70,7 @@ export interface ProductInput {
     specification: ProductSpecification;
 }
 
-export interface ProductDocument extends ProductInput, mongoose.Document, Record<string, any> {}
+export interface ProductDocument extends ProductInput, mongoose.Document {}
 
 const Schema = mongoose.Schema;
 

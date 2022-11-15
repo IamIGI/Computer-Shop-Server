@@ -1,6 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
 import { AnyZodObject } from 'zod'; //library for validating requests
 
+interface CustomErrorOutput {
+    errors: any;
+}
+
+interface CustomError extends CustomErrorOutput, Error {}
+
 // validate request object against that schema
 const validate = (schema: AnyZodObject) => (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -10,8 +16,8 @@ const validate = (schema: AnyZodObject) => (req: Request, res: Response, next: N
             params: req.params,
         });
         next();
-    } catch (e: any) {
-        return res.status(400).send(e.errors);
+    } catch (err) {
+        return res.status(400).send((err as CustomError).errors);
     }
 };
 

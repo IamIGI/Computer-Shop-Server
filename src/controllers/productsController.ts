@@ -75,7 +75,6 @@ const getProduct = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
 
     const productCode = req.params.code;
-    // let product: Record<string, any> = {};
     try {
         let product = await ProductModel.findOne({ _id: productCode }).lean();
         if (product === null) return res.status(404).send('No product match given code');
