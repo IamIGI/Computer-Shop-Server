@@ -77,7 +77,7 @@ const sendMessage = async (req: Request, res: Response) => {
 
         console.log({ status: 'success', message: 'new message to author', date, code: '000' });
         res.status(200).json({ status: 'success', message: 'new message to author', date, code: '000' });
-    } catch (err: any) {
+    } catch (err) {
         apiErrorHandler(req, res, err as Error);
     }
 };

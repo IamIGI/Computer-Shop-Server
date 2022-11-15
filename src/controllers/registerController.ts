@@ -55,7 +55,7 @@ const handleNewUser = async (req: Request, res: Response) => {
         console.log(`Status: 201 success: New user ${result._id} created!`);
         logEvents(`Status: 201\t User_Id: ${result._id}\t New user created! \t`, 'reqLog.Log');
         res.status(201).json({ success: `New user ${result._id} created!` });
-    } catch (err: any) {
+    } catch (err) {
         apiErrorHandler(req, res, err as Error);
     }
 };

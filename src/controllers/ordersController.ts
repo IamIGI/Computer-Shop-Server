@@ -54,7 +54,7 @@ const makeOrder = async (req: Request, res: Response) => {
                 OrderId: `${result._id}`,
             });
         }
-    } catch (err: any) {
+    } catch (err) {
         apiErrorHandler(req, res, err as Error);
     }
 };
@@ -120,7 +120,7 @@ const getOrderPDF = async (req: Request, res: Response) => {
         );
 
         console.log({ msg: 'Send order invoice (PDF) successfully', orderId: orderData._id });
-    } catch (err: any) {
+    } catch (err) {
         apiErrorHandler(req, res, err as Error);
     }
 };

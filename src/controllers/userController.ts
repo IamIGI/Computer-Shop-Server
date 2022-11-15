@@ -31,7 +31,7 @@ const updateAccountData = async (req: Request, res: Response) => {
         await UserModel.updateOne({ _id }, { [`${fieldName}`]: edited });
         logEvents(`Status: 202\t UserID: ${_id}.\t Account field updated: ${fieldName}`, `reqLog.Log`);
         res.status(202).json({ success: ` UserID: ${_id}. Account field updated: ${fieldName}` });
-    } catch (err: any) {
+    } catch (err) {
         apiErrorHandler(req, res, err as Error);
     }
 };
@@ -61,7 +61,7 @@ const updateEnlistments = async (req: Request, res: Response) => {
         );
         logEvents(`Status: 202\t UserID: ${_id}.\t Account enlistments updated.`, `reqLog.Log`);
         res.status(202).json({ success: `UserID: ${_id}.  Account enlistments updated.` });
-    } catch (err: any) {
+    } catch (err) {
         apiErrorHandler(req, res, err as Error);
     }
 };
@@ -81,7 +81,7 @@ const deleteUser = async (req: Request, res: Response) => {
         await user.deleteOne({ _id });
         logEvents(`Status: 202\t UserID: ${_id}.\t Account was deleted.`, `reqLog.Log`);
         res.status(202).json({ message: `UserID: ${_id}. Account was successfully deleted` });
-    } catch (err: any) {
+    } catch (err) {
         apiErrorHandler(req, res, err as Error);
     }
 };
