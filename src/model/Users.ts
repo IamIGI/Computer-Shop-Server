@@ -1,4 +1,33 @@
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
+
+export interface UserInput {
+    firstName: string;
+    lastName: string;
+    email: string;
+    hashedPassword: string;
+    Enlistments: {
+        shopRules: boolean;
+        email: boolean;
+        sms: boolean;
+        phone: boolean;
+        adjustedOffers: boolean;
+    };
+    refreshToken: string;
+    roles: {
+        User: {
+            type: number;
+            default: 2001;
+        };
+        Editor: number;
+        Admin: number;
+    };
+    userOrders: string[];
+    userComments: string[]; // maybe mongoose.Schema.Types.ObjectId[]
+    commentedProducts: string[];
+}
+
+export interface UserDocument extends UserInput, mongoose.Document {}
+
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
@@ -27,4 +56,5 @@ const userSchema = new Schema({
     commentedProducts: Array,
 });
 
-module.exports = mongoose.model('users', userSchema);
+const UserModel = mongoose.model<UserDocument>('users', userSchema);
+export default UserModel;

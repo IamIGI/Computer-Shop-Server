@@ -1,6 +1,8 @@
-const commentsFilters = require('../../middleware/filters/commentsFilters');
+import commentsFilters from '../../middleware/filters/commentsFilters';
+import { CommentInput } from '../../model/Comments';
+import { ProductDocument } from '../../model/Products';
 
-function filterDiscounts(arr, discounts) {
+export function filterDiscounts(arr: ProductDocument[], discounts: boolean) {
     if (!discounts) return arr;
     let filtered = arr.filter((product) => {
         return product.special_offer.mode;
@@ -9,35 +11,31 @@ function filterDiscounts(arr, discounts) {
     return filtered;
 }
 
-function filterProducers(arr, producers) {
+export function filterProducers(arr: ProductDocument[], producers: string[]) {
     if (producers.length === 0) return arr;
 
     let filtered = [];
-    let producer = '';
-    let product = {};
     for (let i = 0; i < arr.length; i++) {
-        product = arr[i];
+        let product = arr[i];
         for (let j = 0; j < producers.length; j++) {
-            producer = producers[j];
+            let producer = producers[j];
             if (product.brand.toLowerCase() === producer.toLowerCase()) filtered.push(product);
         }
     }
     return filtered;
 }
 
-function filterProcessors(arr, processors) {
+export function filterProcessors(arr: ProductDocument[], processors: string[]) {
     if (processors.length === 0) return arr;
-    let processor = '';
-    let brand = '';
-    let series = '';
+
     let filtered = [];
-    let product = {};
+
     for (let i = 0; i < arr.length; i++) {
-        product = arr[i];
+        let product = arr[i];
         for (let j = 0; j < processors.length; j++) {
-            processor = processors[j];
-            brand = processor.split('-')[0];
-            series = parseInt(processor.split('-')[1]);
+            let processor = processors[j];
+            let brand = processor.split('-')[0];
+            let series = parseInt(processor.split('-')[1]);
 
             if (product.specification.processor.brand.toLowerCase() === brand.toLowerCase()) {
                 if (product.specification.processor.series === series) filtered.push(product);
@@ -47,53 +45,49 @@ function filterProcessors(arr, processors) {
     return filtered;
 }
 
-function filterRAM(arr, ram) {
+export function filterRAM(arr: ProductDocument[], ram: { min: number | string; max: number | string }) {
     ram.min === '' && (ram.min = 0);
     ram.max === '' && (ram.max = 500);
 
-    let product = '';
-    let productRAM = 0;
     let filtered = [];
 
     for (let i = 0; i < arr.length; i++) {
-        product = arr[i];
-        productRAM = product.specification.ram.size;
-        if (productRAM >= parseInt(ram.min) && productRAM <= parseInt(ram.max)) filtered.push(product);
+        let product = arr[i];
+        let productRAM = product.specification.ram.size;
+        if (productRAM >= ram.min! && productRAM <= ram.max!) filtered.push(product);
     }
     return filtered;
 }
 
-function filterDisk(arr, disk) {
+export function filterDisk(arr: ProductDocument[], disk: { min: number | string; max: number | string }) {
     disk.min === '' && (disk.min = 0);
     disk.max === '' && (disk.max = 4000);
 
-    let product = '';
-    let productDisk = 0;
     let filtered = [];
 
     for (let i = 0; i < arr.length; i++) {
-        product = arr[i];
-        productDisk = product.specification.disk.size;
-        if (productDisk >= parseInt(disk.min) && productDisk <= parseInt(disk.max)) filtered.push(product);
+        let product = arr[i];
+        let productDisk = product.specification.disk.size;
+        if (productDisk >= disk.min && productDisk <= disk.max) filtered.push(product);
     }
     return filtered;
 }
 
-function sortProductsByPrice(arr, prop) {
+export function sortProductsByPrice(arr: any, prop: string) {
     let reverse = false;
     if (prop[0] === '-') {
         reverse = true;
         prop = prop.substr(1);
     }
 
-    prop = prop.split('.');
-    var len = prop.length;
+    let ArrProp = prop.split('.');
+    var len = ArrProp.length;
 
-    arr.sort(function (a, b) {
+    arr.sort(function (a: any, b: any) {
         var i = 0;
         while (i < len) {
-            a = a[prop[i]];
-            b = b[prop[i]];
+            a = a[ArrProp[i]];
+            b = b[ArrProp[i]];
             i++;
         }
         if (a < b) {
@@ -108,7 +102,7 @@ function sortProductsByPrice(arr, prop) {
     return arr;
 }
 
-function sortProductsByPopularity(arrProducts, arrComments) {
+export function sortProductsByPopularity(arrProducts: ProductDocument[], arrComments: CommentInput[]) {
     let productComments = [];
     //get number of comments of each product
     for (let i = 0; i < arrComments.length; i++) {
@@ -120,7 +114,7 @@ function sortProductsByPopularity(arrProducts, arrComments) {
 
     //get just id of product
     let order = [];
-    for (i = 0; i < sortedByPopularity.length; i++) {
+    for (let i = 0; i < sortedByPopularity.length; i++) {
         order.push(sortedByPopularity[i].productId);
     }
 
@@ -134,7 +128,7 @@ function sortProductsByPopularity(arrProducts, arrComments) {
     return arrProducts.sort((a, b) => sortByObject[a._id] - sortByObject[b._id]);
 }
 
-async function sortProductsByRating(arrProducts, arrComments) {
+export async function sortProductsByRating(arrProducts: ProductDocument[], arrComments: CommentInput[]) {
     let productsAverageScore = [];
     let productId = '';
     //get averageScore of each product
@@ -149,7 +143,7 @@ async function sortProductsByRating(arrProducts, arrComments) {
 
     //get just id of product
     let order = [];
-    for (i = 0; i < sortedByRating.length; i++) {
+    for (let i = 0; i < sortedByRating.length; i++) {
         order.push(sortedByRating[i].productId);
     }
 
@@ -164,7 +158,7 @@ async function sortProductsByRating(arrProducts, arrComments) {
     return date;
 }
 
-module.exports = {
+export default {
     filterDiscounts,
     filterProducers,
     filterProcessors,

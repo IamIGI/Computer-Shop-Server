@@ -1,10 +1,10 @@
-import * as express from 'express';
+import express from 'express';
 const router = express.Router();
-const ordersController = require('../../controllers/ordersController');
+import ordersController from '../../controllers/ordersController';
 
 // logic----------
 
 router.route('/make').post(ordersController.makeOrder);
 router.route('/pdf/:orderId').get(ordersController.getOrderPDF);
 
-module.exports = router;
+export = router;

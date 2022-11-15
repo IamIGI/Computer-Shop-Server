@@ -1,8 +1,8 @@
-import * as express from 'express';
+import express from 'express';
 const router = express.Router();
-const contentController = require('../../controllers/contentController');
+import contentController from '../../controllers/contentController';
 
 // logic----------
 router.route('/about').get(contentController.getAboutPageData);
 
-module.exports = router;
+export = router;

@@ -1,15 +1,19 @@
+import { Request, Response, NextFunction } from 'express';
+import fileUpload from 'express-fileupload';
+
 const MB = 1; // in MB
 const FILE_SIZE_LIMIT = MB * 1024 * 1024;
 
-const fileSizeLimiter = (req, res, next) => {
-    const files = req.files;
-    if (Boolean(files)) {
-        const filesOverLimit = [];
+const fileSizeLimiter = (req: Request, res: Response, next: NextFunction) => {
+    const files = req.files as fileUpload.FileArray;
+    //  if (Boolean(files)) {
+    if (files) {
+        const filesOverLimit: string[] = [];
         //Which files are over the limit?
-
         Object.keys(files).forEach((key) => {
-            if (files[key].size > FILE_SIZE_LIMIT) {
-                filesOverLimit.push(files[key].name);
+            if ((files[key as keyof typeof files] as fileUpload.UploadedFile).size > FILE_SIZE_LIMIT) {
+                //dopytac
+                filesOverLimit.push((files[key as keyof typeof files] as fileUpload.UploadedFile).name);
             }
         });
 
@@ -25,11 +29,11 @@ const fileSizeLimiter = (req, res, next) => {
             const message =
                 filesOverLimit.length < 3 ? sentence.replace(',', ' and') : sentence.replace(/,(?=[^,]*$)/, ' and');
 
-            return res.status(200).json({ status: 'error', message, code: 004 });
+            return res.status(200).json({ status: 'error', message, code: '004' });
         }
     }
 
     next();
 };
 
-module.exports = fileSizeLimiter;
+export default fileSizeLimiter;

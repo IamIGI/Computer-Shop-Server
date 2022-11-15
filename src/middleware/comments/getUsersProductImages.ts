@@ -1,5 +1,5 @@
-import * as path from 'path';
-import * as fs from 'fs';
+import path from 'path';
+import fs from 'fs';
 
 const getUsersProductImages = (productId: string): string[] => {
     let urlArray: string[] = [];
@@ -19,4 +19,4 @@ const getUsersProductImages = (productId: string): string[] => {
     return urlArray;
 };
 
-module.exports = getUsersProductImages;
+export default getUsersProductImages;

@@ -1,15 +1,17 @@
-const Users = require('../model/Users');
-const Orders = require('../model/Orders');
-const ForbiddenWords = require('../model/ForbiddenWords');
-const Comments = require('../model/Comments');
-const { apiErrorHandler } = require('../middleware/errorHandlers');
-import * as dataFns from 'date-fns';
+import Users from '../model/Users';
+import Orders from '../model/Orders';
+import ForbiddenWords from '../model/ForbiddenWords';
+import CommentModel from '../model/Comments';
+import { apiErrorHandler } from '../middleware/errorHandlers';
+import dataFns from 'date-fns';
 const { format } = dataFns;
-const commentsFilters = require('../middleware/filters/commentsFilters');
-import * as path from 'path';
-const getUsersProductImages = require('../middleware/comments/getUsersProductImages');
+import commentsFilters from '../middleware/filters/commentsFilters';
+import path from 'path';
+import getUsersProductImages from '../middleware/comments/getUsersProductImages';
+import { Request, Response } from 'express';
+import fileUpload from 'express-fileupload';
 
-const getComments = async (req, res) => {
+export const getComments = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
     const {
         productId,
@@ -21,7 +23,7 @@ const getComments = async (req, res) => {
     const usersImages = getUsersProductImages(productId);
 
     try {
-        const productComments = await Comments.findOne({ productId }).exec();
+        const productComments = await CommentModel.findOne({ productId }).exec();
         if (!productComments) return res.status(204).send([]);
         //Init values for comments (before filtering)
         let filteredComments = { comments: productComments.comments, length: productComments.comments.length };
@@ -37,15 +39,15 @@ const getComments = async (req, res) => {
             length: filteredComments.length,
             length_AllComments: productComments.comments.length,
         });
-    } catch (err) {
+    } catch (err: any) {
         console.log(err);
         apiErrorHandler(req, res, err);
     }
 };
 
-const addComment = async (req, res) => {
+export const addComment = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
-    const files = req.files;
+    const files = req.files as unknown as fileUpload.UploadedFile[]; // https://github.com/richardgirges/express-fileupload/issues/156
     const doc = req.body;
     let userCommentedThisProduct = false;
     let confirmed = false;
@@ -70,7 +72,7 @@ const addComment = async (req, res) => {
     //create document for products comment.
 
     //check if product document already exists in comments collection
-    const commentDocuments = await Comments.find({}).exec();
+    const commentDocuments = await CommentModel.find({}).exec();
     for (let i = 0; i < commentDocuments.length; i++) {
         if (commentDocuments[i].productId == doc.productId) {
             createProductDocument = false;
@@ -79,11 +81,11 @@ const addComment = async (req, res) => {
     }
     if (createProductDocument) {
         try {
-            const result = await Comments.create({
+            const result = await CommentModel.create({
                 productId: doc.productId,
             });
             console.log({ message: 'New document for given product created', productId: `${result.productId}` });
-        } catch (err) {
+        } catch (err: any) {
             apiErrorHandler(req, res, err);
         }
     }
@@ -91,7 +93,7 @@ const addComment = async (req, res) => {
     //Check if it is a logged user comment
     if (Boolean(doc.userId)) {
         //Check if someone trying to sneak up with fake userId
-        foundUser = await Users.findOne({ _id: doc.userId }).exec();
+        let foundUser = await Users.findOne({ _id: doc.userId }).exec();
         if (foundUser) {
             console.log('Comment by logged user');
             userName = foundUser.firstName;
@@ -131,17 +133,18 @@ const addComment = async (req, res) => {
 
     //Check if file is attached to the message
     let added = false;
-    let images = [];
+    let images: string[];
 
-    if (Boolean(files)) {
+    // if (Boolean(files)) { changes for ts
+    if (files) {
         added = true;
         Object.keys(files).forEach((key) => {
-            images.push(files[key].name);
+            images.push((files[key as keyof typeof files] as fileUpload.UploadedFile).name);
         });
     }
 
     //update product Comment collection
-    const createComment = await Comments.updateOne(
+    const createComment = await CommentModel.updateOne(
         { productId: doc.productId },
         {
             $push: {
@@ -156,6 +159,7 @@ const addComment = async (req, res) => {
                     },
                     image: {
                         added,
+                        //@ts-ignore
                         images,
                     },
                 },
@@ -164,18 +168,22 @@ const addComment = async (req, res) => {
     );
 
     //get the last comment
-    const productComments = (await Comments.findOne({ productId: doc.productId }).exec()).comments;
+    const response = await CommentModel.findOne({ productId: doc.productId }).exec();
+    const productComments = response!.comments;
     let commentId = productComments[productComments.length - 1]._id;
-    commentId = commentId.toString();
+    commentId = commentId!.toString();
     images = [];
-    if (Boolean(files)) {
+    // if (Boolean(files)) {
+    if (files) {
         added = true;
         Object.keys(files).forEach((key) => {
-            images.push(`comments/${doc.productId}/${commentId}/${files[key].name}`);
+            images.push(
+                `comments/${doc.productId}/${commentId}/${files[key as keyof typeof files] as fileUpload.UploadedFile}`
+            );
         });
 
         //update image with url:
-        await Comments.findOneAndUpdate(
+        await CommentModel.findOneAndUpdate(
             {
                 productId: doc.productId,
             },
@@ -202,10 +210,16 @@ const addComment = async (req, res) => {
         );
     }
 
-    if (Boolean(files)) {
+    // if (Boolean(files)) {
+    if (files) {
         Object.keys(files).forEach((key) => {
-            const filepath = path.join(__dirname, `../files/comments/${doc.productId}/${commentId}`, files[key].name);
-            files[key].mv(filepath, (err) => {
+            const filepath = path.join(
+                __dirname,
+                `../files/comments/${doc.productId}/${commentId}`,
+                (files[key as keyof typeof files] as fileUpload.UploadedFile).name
+            );
+
+            (files[key as keyof typeof files] as fileUpload.UploadedFile).mv(filepath, (err: object) => {
                 if (err) return console.log({ status: 'error', message: err });
                 if (err) return res.status(400).json({ status: 'error', message: err });
             });
@@ -213,54 +227,53 @@ const addComment = async (req, res) => {
     }
 
     if (!createComment) {
-        apiErrorHandler(req, res, err);
+        console.log(`Error: could not create a comment`, req, res);
+        // apiErrorHandler(req, res, err);
     } else {
         console.log({ message: 'Successfully save a new comment', code: 104 });
         return res.status(201).json({ message: 'Successfully save a new comment', code: 104 });
     }
 };
 
-const getProductAverageScore = async (req, res) => {
+export const getProductAverageScore = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
     const productId = req.params.productId;
 
     try {
         const response = await commentsFilters.getAverageScore(productId);
         return res.status(200).json(response);
-    } catch (err) {
+    } catch (err: any) {
         console.log(err);
         apiErrorHandler(req, res, err);
     }
 };
 
-const likeComment = async (req, res) => {
+export const likeComment = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
     const { productId, commentId, userId, likes } = req.body;
     let firstLikeForComment = false;
     let userLikedAlready = false;
     let increment = {};
     let likeType = '';
-    let likedComment = {};
+    let likedComment: { userId: string; likeUp: boolean } | undefined;
 
     if (!Boolean(userId))
         return res.status(403).json({ message: 'Only logged user can give like', userId: `${userId}` });
 
     //Check if user liked already given product
-    const givenProductComments = (
-        await Comments.findOne({
-            productId,
-        }).exec()
-    ).comments;
+    const givenProductComments = (await CommentModel.findOne({
+        productId,
+    }).exec())!.comments; //!->  non-null assertion operator
 
     for (var i = 0; i < givenProductComments.length; i++) {
         if (givenProductComments[i]._id == commentId) {
-            if (givenProductComments[i].usersWhoLiked.length === 0) {
+            if (givenProductComments[i].usersWhoLiked!.length < 1) {
                 firstLikeForComment = true;
                 break;
             }
-            for (var j = 0; j < givenProductComments[i].usersWhoLiked.length; j++) {
-                if (givenProductComments[i].usersWhoLiked[j].userId == userId) {
-                    likedComment = givenProductComments[i].usersWhoLiked[j];
+            for (var j = 0; j < givenProductComments[i].usersWhoLiked!.length; j++) {
+                if (givenProductComments[i].usersWhoLiked![j].userId == userId) {
+                    likedComment = givenProductComments[i].usersWhoLiked![j];
                     userLikedAlready = true;
                     break;
                 }
@@ -279,7 +292,7 @@ const likeComment = async (req, res) => {
         }
 
         try {
-            await Comments.findOneAndUpdate(
+            await CommentModel.findOneAndUpdate(
                 {
                     productId,
                 },
@@ -297,14 +310,14 @@ const likeComment = async (req, res) => {
             );
             console.log({ message: 'Added new user', userId });
             return res.status(201).json({ message: 'Added new like from user', userId: `${userId}` });
-        } catch (err) {
+        } catch (err: any) {
             console.log(err);
             return res.send(err);
         }
     } else {
         if (userLikedAlready) {
             //Check if user want to use the same like action again
-            if (likedComment.likeUp == likes.up) {
+            if (likedComment!.likeUp == likes.up) {
                 console.log({ message: 'Like action: The user can only change his choice', userId: `${userId}` });
                 return res
                     .status(405) //405 for frontend statement
@@ -322,7 +335,7 @@ const likeComment = async (req, res) => {
     }
 
     try {
-        const response = await Comments.updateOne(
+        const response = await CommentModel.updateOne(
             {
                 productId,
             },
@@ -345,15 +358,10 @@ const likeComment = async (req, res) => {
         ).exec();
         console.log(response);
         return res.status(201).json({ message: `Updated likes`, like: `${likeType}`, commentId: `${commentId}` });
-    } catch (err) {
+    } catch (err: any) {
         console.log(err);
         return res.send(err);
     }
 };
 
-module.exports = {
-    getComments,
-    addComment,
-    getProductAverageScore,
-    likeComment,
-};
+export default { getComments, addComment, getProductAverageScore, likeComment };

@@ -1,12 +1,16 @@
-import * as path from 'path';
+import { NextFunction, Response, Request } from 'express';
+import fileUpload from 'express-fileupload';
+import path from 'path';
 
-const fileExtLimiter = (allowedExtArray) => {
-    return (req, res, next) => {
-        const files = req.files;
+const fileExtLimiter = (allowedExtArray: string[]) => {
+    return (req: Request, res: Response, next: NextFunction) => {
+        let files = req.files as fileUpload.FileArray;
         if (Boolean(files)) {
-            const fileExtensions = [];
-            Object.keys(files).forEach((key) => {
-                fileExtensions.push(path.extname(files[key].name.toLowerCase()));
+            const fileExtensions: string[] = [];
+            Object.keys(files!).forEach((key) => {
+                fileExtensions.push(
+                    path.extname((files[key as keyof typeof files] as fileUpload.UploadedFile).name.toLowerCase())
+                );
             });
 
             //Are the file extensions allowed?
@@ -18,7 +22,7 @@ const fileExtLimiter = (allowedExtArray) => {
                     ', '
                 );
 
-                return res.status(200).json({ status: 'error', message, code: 003 });
+                return res.status(200).json({ status: 'error', message, code: '003' });
             }
         }
 
@@ -26,4 +30,4 @@ const fileExtLimiter = (allowedExtArray) => {
     };
 };
 
-module.exports = fileExtLimiter;
+export default fileExtLimiter;

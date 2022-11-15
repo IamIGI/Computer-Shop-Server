@@ -1,4 +1,13 @@
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
+
+export interface ContentInput {
+    pageName: string;
+    description: object[];
+    lastUpdate: string;
+}
+
+export interface ContentDocument extends ContentInput, mongoose.Document {}
+
 const Schema = mongoose.Schema;
 
 // Schema
@@ -7,4 +16,4 @@ const contents = new Schema({
     description: Array,
     lastUpdate: String,
 });
-module.exports = mongoose.model('Contents', contents);
+export default mongoose.model<ContentDocument>('Contents', contents);

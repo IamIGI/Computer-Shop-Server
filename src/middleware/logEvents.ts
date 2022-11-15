@@ -1,12 +1,12 @@
-import * as dataFns from 'date-fns';
+import dataFns from 'date-fns';
 const { format } = dataFns;
-import * as uuid from 'uuid';
-
-const fs = require('fs');
+import { v4 as uuid } from 'uuid';
+import fs from 'fs';
 const fsPromises = require('fs').promises;
-const path = require('path');
+import path from 'path';
+import { Request, Response, NextFunction } from 'express';
 
-const logEvents = async (message, logName) => {
+export const logEvents = async (message: string, logName: string) => {
     const dateTime = `${format(new Date(), 'yyyyMMdd\tHH:mm:ss')}`;
     const logItem = `${dateTime}\t${uuid()}\t${message}\n`;
 
@@ -15,14 +15,14 @@ const logEvents = async (message, logName) => {
             await fsPromises.mkdir(path.join(__dirname, '..', 'logs'));
         }
         await fsPromises.appendFile(path.join(__dirname, '..', 'logs', logName), logItem);
-    } catch (err) {
+    } catch (err: any) {
         console.error(err);
     }
 };
 
-const logger = (req, res, next) => {
+export const logger = (req: Request, res: Response, next: NextFunction) => {
     logEvents(`${req.method}\t${req.headers.origin}\t${req.url}`, 'reqLog.Log');
     next();
 };
 
-module.exports = { logger, logEvents };
+export default { logger, logEvents };

@@ -1,17 +1,20 @@
-const { apiErrorHandler } = require('../middleware/errorHandlers');
-const Products = require('../model/Products');
+import { apiErrorHandler } from '../middleware/errorHandlers';
 // const stripe = require('stripe')(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY);
-import * as Stripe from 'stripe';
-const CLIENT_URL = require('../config/clientURL');
+import Stripe from 'stripe';
+import CLIENT_URL from '../config/clientURL';
+import { Request, Response } from 'express';
+import { ProductDocument } from '../model/Products';
+import ProductModel from '../model/Products';
 
 const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY!);
 
-const checkout = async (req, res) => {
+const checkout = async (req: Request, res: Response) => {
     console.log(req.originalUrl);
     const { products, delivery } = req.body;
 
-    async function getOrderedProduct(item) {
-        const product = await Products.findOne({ _id: item.id }).lean();
+    async function getOrderedProduct(item: ProductDocument) {
+        const product = await ProductModel.findOne({ _id: item.id }).lean();
+        if (product === null) return res.status(404).send('No product match given code');
         const obj = {
             price_data: {
                 currency: 'pln',
@@ -28,7 +31,7 @@ const checkout = async (req, res) => {
         return obj;
     }
 
-    function getOrderDelivery(name) {
+    function getOrderDelivery(name: string) {
         switch (name) {
             case 'deliveryMan':
                 return 'shr_1M0mW8AgydS1xEfNY2LJgTeD';
@@ -47,6 +50,7 @@ const checkout = async (req, res) => {
     }
 
     try {
+        // @ts-ignore
         const session = await stripe.checkout.sessions.create({
             locale: 'pl',
             payment_method_types: ['card'],
@@ -57,11 +61,9 @@ const checkout = async (req, res) => {
             cancel_url: `${CLIENT_URL}/basket`,
         });
         res.json({ url: session.url });
-    } catch (err) {
+    } catch (err: any) {
         apiErrorHandler(req, res, err);
     }
 };
 
-module.exports = {
-    checkout,
-};
+export default { checkout };

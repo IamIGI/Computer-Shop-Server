@@ -1,15 +1,16 @@
-PDFDocument = require('pdfkit');
-const { format } = require('date-fns');
-const axios = require('axios');
+import PDFDocument from 'pdfkit';
+import { format } from 'date-fns';
+import axios from 'axios';
+import { ProductDocument, ProductSpecification } from '../../model/Products';
 
-async function fetchImage(src) {
+async function fetchImage(src: string) {
     const image = await axios.get(src, {
         responseType: 'arraybuffer',
     });
     return image.data;
 }
 
-function getPolishNames(name) {
+function getPolishNames(name: string) {
     switch (name) {
         case 'processor':
             return 'Procesor';
@@ -57,7 +58,7 @@ function getPolishNames(name) {
     }
 }
 
-function tableRender(obj, lineHeight, fontType, doc) {
+function tableRender(obj: ProductSpecification, lineHeight: number, fontType: string, doc: any) {
     const indentLineHeight = 15;
     const textPropertiesDesc = { width: 150, align: 'left' };
     const textPropertiesValue = {
@@ -93,19 +94,24 @@ function tableRender(obj, lineHeight, fontType, doc) {
             lineHeight = 10;
         }
         //render arrays
+        // @ts-ignore
         if (obj[Object.keys(obj)[i]].length !== undefined) {
+            // @ts-ignore
             for (let k = 0; k < obj[Object.keys(obj)[i]].length; k++) {
                 if (Object.keys(obj)[i] === 'communication') {
                     doc.font(fontType)
                         .fontSize(11)
+                        // @ts-ignore
                         .text(obj[Object.keys(obj)[i]][k]['com'], 180, lineHeight, textPropertiesValue);
                 } else if (Object.keys(obj)[i] === 'ports') {
                     doc.font(fontType)
                         .fontSize(11)
+                        // @ts-ignore
                         .text(obj[Object.keys(obj)[i]][k]['port'], 180, lineHeight, textPropertiesValue);
                 } else if (Object.keys(obj)[i] === 'additional_information') {
                     doc.font(fontType)
                         .fontSize(11)
+                        // @ts-ignore
                         .text(obj[Object.keys(obj)[i]][k]['info'], 180, lineHeight, textPropertiesValue);
                 }
                 lineHeight += indentLineHeight;
@@ -117,7 +123,11 @@ function tableRender(obj, lineHeight, fontType, doc) {
     }
 }
 
-async function buildPDF(dataCallback, endCallback, data) {
+async function buildPDF(
+    dataCallback: (...args: any[]) => void,
+    endCallback: (...args: any[]) => void,
+    data: ProductDocument
+): Promise<void> {
     const logoImage = './public/img/logo.PNG';
     const robotoMedium = './public/fonts/Roboto-Medium.ttf';
     const robotoRegular = './public/fonts/Roboto-Regular.ttf';
@@ -156,4 +166,4 @@ async function buildPDF(dataCallback, endCallback, data) {
     doc.end();
 }
 
-module.exports = { buildPDF };
+export default buildPDF;

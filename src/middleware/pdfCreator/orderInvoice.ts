@@ -1,30 +1,31 @@
-PDFDocument = require('pdfkit');
-const { format } = require('date-fns');
+import PDFDocument from 'pdfkit';
+import { format } from 'date-fns';
+import { OrderDocument } from '../../model/Orders';
 
-function getDeliveryCost(method) {
-    const Prices = {
+function getDeliveryCost(method: string) {
+    const Prices: { deliveryMan: number; atTheSalon: number; locker: number } = {
         deliveryMan: 14.99,
         atTheSalon: 0.0,
         locker: 8.99,
     };
-
-    let nettoCost = 0;
-    let vatValue = 0;
-    let bruttoCost = 0;
+    let cost: number;
+    let nettoCost: number;
+    let vatValue: number;
+    let bruttoCost: number;
 
     switch (method) {
         case 'deliveryMan':
             cost = Prices.deliveryMan;
-            nettoCost = (Prices.deliveryMan * 0.77).toFixed(2);
-            vatValue = (Prices.deliveryMan - nettoCost).toFixed(2);
+            nettoCost = Number((Prices.deliveryMan * 0.77).toFixed(2));
+            vatValue = Number((Prices.deliveryMan - nettoCost).toFixed(2));
             bruttoCost = Prices.deliveryMan - vatValue;
             return { cost, nettoCost, vatValue, bruttoCost };
         case 'atTheSalon':
             return { cost: 0, nettoCost: 0, vatValue: 0, bruttoCost: 0 };
         case 'locker':
             cost = Prices.locker;
-            nettoCost = (Prices.locker * 0.77).toFixed(2);
-            vatValue = (Prices.locker - nettoCost).toFixed(2);
+            nettoCost = Number((Prices.locker * 0.77).toFixed(2));
+            vatValue = Number((Prices.locker - nettoCost).toFixed(2)); //dopytac - toFixed return string!!
             bruttoCost = Prices.locker - vatValue;
             return { cost, nettoCost, vatValue, bruttoCost };
 
@@ -34,7 +35,7 @@ function getDeliveryCost(method) {
     }
 }
 
-function getDeliveryDescription(method) {
+function getDeliveryDescription(method: string): string | undefined {
     switch (method) {
         case 'deliveryMan':
             return 'Usługa: wysyłka';
@@ -49,7 +50,7 @@ function getDeliveryDescription(method) {
     }
 }
 
-function getDate(monthNumber) {
+function getDate(monthNumber: string): string {
     let year = monthNumber.split('.')[0];
     let month = monthNumber.split('.')[1];
     let day = monthNumber.split('.')[2];
@@ -101,7 +102,7 @@ function getDate(monthNumber) {
     return `${year}.${monthName}.${day}`;
 }
 
-function getPaymentMethod(method) {
+function getPaymentMethod(method: string): string | undefined {
     switch (method) {
         case 'online':
             return 'Płatność online';
@@ -120,7 +121,7 @@ function getPaymentMethod(method) {
     }
 }
 
-function buildPDF(dataCallback, endCallback, data) {
+function buildPDF(dataCallback: (...args: any[]) => void, endCallback: (...args: any[]) => void, data: OrderDocument) {
     // console.log(data);
     const logoImage = './public/img/logo.PNG';
     const robotoMedium = './public/fonts/Roboto-Medium.ttf';
@@ -196,7 +197,7 @@ function buildPDF(dataCallback, endCallback, data) {
     //generate table rows for products
     let tableEndPosition = 0;
     let numberOfUniqueOrderedProducts = data.products.length;
-    const totalCost = data.transactionInfo.price.toFixed(2);
+    const totalCost: number = Number(data.transactionInfo.price.toFixed(2));
     const products = data.products;
     for (var i = 0; i < numberOfUniqueOrderedProducts; i++) {
         const lineHeight = i * 13;
@@ -304,14 +305,19 @@ function buildPDF(dataCallback, endCallback, data) {
                     .text(`1`, 317, 333 + lineHeight + 13, { width: 28, align: 'center' });
                 doc.font(robotoRegular)
                     .fontSize(9)
-                    .text(`${getDeliveryCost(data.transactionInfo.deliveryMethod).cost}`, 345, 333 + lineHeight + 13, {
-                        width: 48,
-                        align: 'right',
-                    });
+                    .text(
+                        `${getDeliveryCost(data.transactionInfo.deliveryMethod!)!.cost}`,
+                        345,
+                        333 + lineHeight + 13,
+                        {
+                            width: 48,
+                            align: 'right',
+                        }
+                    );
                 doc.font(robotoRegular)
                     .fontSize(9)
                     .text(
-                        `${getDeliveryCost(data.transactionInfo.deliveryMethod).nettoCost}`,
+                        `${getDeliveryCost(data.transactionInfo.deliveryMethod)!.nettoCost}`,
                         392,
                         333 + lineHeight + 13,
                         { width: 48, align: 'right' }
@@ -322,14 +328,14 @@ function buildPDF(dataCallback, endCallback, data) {
                 doc.font(robotoRegular)
                     .fontSize(9)
                     .text(
-                        `${getDeliveryCost(data.transactionInfo.deliveryMethod).vatValue}`,
+                        `${getDeliveryCost(data.transactionInfo.deliveryMethod)!.vatValue}`,
                         473,
                         333 + lineHeight + 13,
                         { width: 48, align: 'right' }
                     );
                 doc.font(robotoRegular)
                     .fontSize(9)
-                    .text(`${getDeliveryCost(data.transactionInfo.deliveryMethod).cost}`, 525, 333 + lineHeight + 13, {
+                    .text(`${getDeliveryCost(data.transactionInfo.deliveryMethod)!.cost}`, 525, 333 + lineHeight + 13, {
                         width: 43,
                         align: 'right',
                     });
@@ -347,8 +353,8 @@ function buildPDF(dataCallback, endCallback, data) {
         };
 
         const productData = () => {
-            const nettoCost = (products[i].price * 0.77).toFixed(2);
-            const vatValue = (products[i].price - nettoCost).toFixed(2);
+            const nettoCost = Number((products[i].price * 0.77).toFixed(2));
+            const vatValue = Number((products[i].price - nettoCost).toFixed(2));
 
             doc.font(robotoRegular)
                 .fontSize(9)
@@ -479,4 +485,4 @@ function buildPDF(dataCallback, endCallback, data) {
     doc.end();
 }
 
-module.exports = { buildPDF };
+export default buildPDF;

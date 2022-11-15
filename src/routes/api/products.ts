@@ -1,11 +1,14 @@
-import * as express from 'express';
+import express from 'express';
+import productsController from '../../controllers/productsController';
+import validateResources from '../../middleware/validateResources';
+import { getProductPDFSchema, getProductSchema } from '../../schema/product.schema';
+
 const router = express.Router();
-const productsController = require('../../controllers/productsController');
 
 // logic----------
 router.route('/').post(productsController.getAllProducts);
 router.route('/all').post(productsController.getAllProducts);
-router.route('/:code').get(productsController.getProduct);
-router.route('/pdf/:code').get(productsController.getProductPDF);
+router.route('/:code').get(validateResources(getProductSchema), productsController.getProduct);
+router.route('/pdf/:code').get(validateResources(getProductPDFSchema), productsController.getProductPDF);
 
-module.exports = router;
+export = router;

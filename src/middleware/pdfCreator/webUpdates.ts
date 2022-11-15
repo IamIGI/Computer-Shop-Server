@@ -1,6 +1,7 @@
-PDFDocument = require('pdfkit');
+import PDFDocument from 'pdfkit';
+import { WebUpdatesDocument } from '../../model/WebUpdates';
 
-function countBreakLines(list, doc) {
+function countBreakLines(list: string[], doc: { widthOfString: (arg0: string) => number }) {
     let lineBreaksCount = 0;
     for (let i = 0; i < list.length; i++) {
         if (doc.widthOfString(list[i]) > 200) lineBreaksCount += 1;
@@ -8,7 +9,7 @@ function countBreakLines(list, doc) {
     return lineBreaksCount;
 }
 
-function endPosition(data, doc) {
+function endPosition(data: WebUpdatesDocument[], doc: PDFKit.PDFDocument) {
     let listPositions = [80];
     const maximalPositionBeforeNextPage = 640;
     for (let i = 0; i < data.length; i++) {
@@ -55,7 +56,11 @@ function endPosition(data, doc) {
     return listPositions;
 }
 
-function buildPDF(dataCallback, endCallback, data) {
+function buildPDF(
+    dataCallback: (...args: any[]) => void,
+    endCallback: (...args: any[]) => void,
+    data: WebUpdatesDocument[]
+) {
     data = data.reverse();
     const doc = new PDFDocument({ size: 'A4' }); //A4 (595.28 x 841.89)
     doc.on('data', dataCallback);
@@ -75,7 +80,11 @@ function buildPDF(dataCallback, endCallback, data) {
 
         // doc.fontSize(10).text(`Pozycja: ${listPositions[i]}`, 50, listPositions[i] - 10);
         doc.font('Helvetica-Bold').fontSize(10).text(`Date: ${data[i].date}`, 50, listPositions[i]);
-        doc.fontSize(10).text(`Version: ${data[i].version}`, 50, listPositions[i] + 10);
+        doc.fontSize(10).text(
+            `Version: ${(data[i as unknown as keyof typeof data]! as WebUpdatesDocument).version}`,
+            50,
+            listPositions[i] + 10
+        );
         doc.font('Helvetica')
             .fontSize(10)
             .text('Added:', 50, listPositions[i] + 30);
@@ -96,4 +105,4 @@ function buildPDF(dataCallback, endCallback, data) {
     doc.end();
 }
 
-module.exports = { buildPDF };
+export default buildPDF;

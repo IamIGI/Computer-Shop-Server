@@ -1,21 +1,22 @@
-import * as path from 'path';
+import path from 'path';
 require('dotenv').config({ path: path.join(__dirname, '.env') });
-import * as express from 'express';
-const app = express();
-import * as cors from 'cors';
-const corsOptions = require('./config/corsOptions');
-const { logger } = require('./middleware/logEvents');
-const { errorHandler } = require('./middleware/errorHandlers');
-const connectDB = require('./config/dbConn');
-const verifyJWT = require('./middleware/verifyJWT');
-import * as cookieParser from 'cookie-parser';
-const credentials = require('./middleware/credentials');
-import * as mongoose from 'mongoose';
+import express, { Request, Response } from 'express';
+
+import cors from 'cors';
+import corsOptions from './config/corsOptions';
+import { logger } from './middleware/logEvents';
+import { errorHandler } from './middleware/errorHandlers';
+import connectDB from './config/dbConn';
+import verifyJWT from './middleware/verifyJWT';
+import cookieParser from 'cookie-parser';
+import credentials from './middleware/credentials';
+import mongoose from 'mongoose';
 
 const PORT = process.env.PORT || 5000;
 
 //Connect to MongoDB
 connectDB();
+const app = express();
 
 //LOG TRAFFIC - on top to log all traffic
 app.use(logger);
@@ -29,8 +30,11 @@ app.use(cors(corsOptions));
 
 //server config
 app.use(express.urlencoded({ extended: false }));
+
 app.use(express.json());
+
 app.use('/public', express.static(path.join(__dirname, '/public'))); //for images,css from server side
+
 app.use('/comments', express.static(path.join(__dirname, '/files/comments')));
 
 // Cookies handler
@@ -57,7 +61,7 @@ app.use('/user', require('./routes/api/user'));
 app.use('/admin', require('./routes/api/admin'));
 
 // handle UNKNOWN URL REQUESTS
-app.all('*', (req, res) => {
+app.all('*', (req: Request, res: Response) => {
     res.status(404);
     if (req.accepts('json')) {
         res.json({ error: '404: not found' });

@@ -1,4 +1,39 @@
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
+
+export interface CommentSchema {
+    _id?: string;
+    userId: string;
+    userName: string;
+    date: string;
+    confirmed: boolean;
+    likes?: {
+        up: {
+            type: number;
+            default: 0;
+        };
+        down: {
+            type: number;
+            default: 0;
+        };
+    };
+    content: {
+        rating: number;
+        description: string;
+    };
+    image: {
+        added: boolean;
+        images: string[];
+    };
+    usersWhoLiked?: [{ userId: string; likeUp: boolean }];
+}
+
+export interface CommentInput {
+    productId: string;
+    comments: CommentSchema[];
+}
+
+export interface CommentDocument extends CommentInput, mongoose.Document {}
+
 const Schema = mongoose.Schema;
 
 const commentSchema = new Schema({
@@ -36,4 +71,6 @@ const commentSchema = new Schema({
     ],
 });
 
-module.exports = mongoose.model('comments', commentSchema);
+const CommentModel = mongoose.model<CommentDocument>('comments', commentSchema);
+
+export default CommentModel;

@@ -1,17 +1,16 @@
-const Contents = require('../model/Contents');
-const { apiErrorHandler } = require('../middleware/errorHandlers');
+import Contents from '../model/Contents';
+import { apiErrorHandler } from '../middleware/errorHandlers';
+import { Request, Response } from 'express';
 
-const getAboutPageData = async (req, res) => {
+const getAboutPageData = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
     try {
         const response = await Contents.findOne({ pageName: 'About' }).lean();
         return res.status(200).json(response);
-    } catch (err) {
+    } catch (err: any) {
         console.log(err);
         apiErrorHandler(req, res, err);
     }
 };
 
-module.exports = {
-    getAboutPageData,
-};
+export default { getAboutPageData };

@@ -1,6 +1,7 @@
-const { format } = require('date-fns');
+import { format } from 'date-fns';
+import { hotShootPromotion } from '../../../model/HotShoot';
 
-function isChangePromotionNow(productForHotShoot) {
+function isChangePromotionNow(productForHotShoot: hotShootPromotion) {
     let changePromotionItem = false;
     let isMorning = false;
     //check 12 hours interval
@@ -38,4 +39,4 @@ function isChangePromotionNow(productForHotShoot) {
     return { changePromotionItem, isMorning };
 }
 
-module.exports = isChangePromotionNow;
+export default isChangePromotionNow;

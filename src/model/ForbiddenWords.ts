@@ -1,8 +1,15 @@
-import * as mongoose from 'mongoose';
-const Schema = mongoose.Schema;
+import mongoose from 'mongoose';
+
+export interface ForbiddenWordsInput {
+    forbiddenWords: string[];
+}
+
+export interface ForbiddenWordsDocument extends ForbiddenWordsInput, mongoose.Document {}
 
 // Schema
+const Schema = mongoose.Schema;
+
 const forbiddenWordsSchema = new Schema({
     forbiddenWords: Array,
 });
-module.exports = mongoose.model('forbiddenwords', forbiddenWordsSchema);
+export default mongoose.model<ForbiddenWordsDocument>('forbiddenwords', forbiddenWordsSchema);

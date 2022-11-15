@@ -1,4 +1,23 @@
-import * as mongoose from 'mongoose';
+import mongoose from 'mongoose';
+
+export interface ContactInput {
+    name: string;
+    email: string;
+    date: string;
+    message: string;
+    category: number;
+    image: {
+        added: boolean;
+        images: [
+            {
+                type: string;
+            }
+        ];
+    };
+}
+
+export interface ContactDocument extends ContactInput, mongoose.Document {}
+
 const Schema = mongoose.Schema;
 
 const contactSchema = new Schema({
@@ -17,4 +36,4 @@ const contactSchema = new Schema({
     },
 });
 
-module.exports = mongoose.model('contacts', contactSchema);
+export default mongoose.model<ContactDocument>('contacts', contactSchema);

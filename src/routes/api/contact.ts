@@ -1,9 +1,9 @@
-import * as express from 'express';
+import express from 'express';
 const router = express.Router();
-const contactController = require('../../controllers/contactController');
-import * as fileUpload from 'express-fileupload';
-const fileExtLimiter = require('../../middleware/fileUpload/fileExtLimiter');
-const fileSizeLimiter = require('../../middleware/fileUpload/fileSizeLimiter');
+import contactController from '../../controllers/contactController';
+import fileUpload from 'express-fileupload';
+import fileExtLimiter from '../../middleware/fileUpload/fileExtLimiter';
+import fileSizeLimiter from '../../middleware/fileUpload/fileSizeLimiter';
 
 router
     .route('/sendmessage')
@@ -14,4 +14,4 @@ router
         contactController.sendMessage
     );
 
-module.exports = router;
+export = router;

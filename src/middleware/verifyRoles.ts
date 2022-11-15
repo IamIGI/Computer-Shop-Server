@@ -1,9 +1,15 @@
-const verifyRoles = (...allowedRoles) => {
-    return (req, res, next) => {
-        if (!req?.roles) return res.status(401).json({ message: 'VerifyRoles: no roles are specified in the request' });
+import { Request, Response, NextFunction } from 'express';
+import { CustomRequestJWT } from './verifyJWT';
+
+const verifyRoles = (...allowedRoles: number[]) => {
+    return (req: Request, res: Response, next: NextFunction) => {
+        if (!(req as CustomRequestJWT).roles)
+            return res.status(401).json({ message: 'VerifyRoles: no roles are specified in the request' });
         const rolesArray = [...allowedRoles];
-        console.log('Allowed Roles: ' + rolesArray + '\t Account role:' + req.roles);
-        const result = req.roles.map((role) => rolesArray.includes(role)).find((val) => val === true);
+        console.log('Allowed Roles: ' + rolesArray + '\t Account role:' + (req as CustomRequestJWT).roles);
+        const result = ((req as CustomRequestJWT).roles as number[])
+            .map((role: number) => rolesArray.includes(role))
+            .find((val: boolean) => val === true);
         if (!result) {
             return res.status(401).json({
                 message: `VerifyRoles: Account roles do not have enough credentials for that request`,
@@ -16,4 +22,4 @@ const verifyRoles = (...allowedRoles) => {
     };
 };
 
-module.exports = verifyRoles;
+export default verifyRoles;

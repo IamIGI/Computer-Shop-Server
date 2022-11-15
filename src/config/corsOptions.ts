@@ -1,6 +1,7 @@
-const allowedOrigins = require('../config/allowedOrigins');
+import allowedOrigins from '../config/allowedOrigins';
 
 const corsOptions = {
+    // @ts-ignore - to ignore typescrip warrnings
     origin: (origin, callback) => {
         if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
             //remove '!origin' after development
@@ -12,4 +13,4 @@ const corsOptions = {
     optionsSuccessStatus: 200,
 };
 
-module.exports = corsOptions;
+export default corsOptions;

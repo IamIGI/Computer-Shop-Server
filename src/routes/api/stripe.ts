@@ -1,7 +1,7 @@
-import * as express from 'express';
+import express from 'express';
 const router = express.Router();
-const stripePaymentController = require('../../controllers/stripePaymentController');
+import stripePaymentController from '../../controllers/stripePaymentController';
 
 router.route('/checkout').post(stripePaymentController.checkout);
 
-module.exports = router;
+export = router;

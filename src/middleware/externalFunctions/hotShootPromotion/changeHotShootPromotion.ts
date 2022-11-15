@@ -1,25 +1,22 @@
-const Products = require('../../../model/Products');
-const getRandomInt = require('../getRandomInt');
-const isChangePromotionNow = require('./isChangePromotionNow');
-const noLongerBlockedProducts = require('./noLongerBlockedProducts');
-const { format } = require('date-fns');
-const HotShoot = require('../../../model/HotShoot');
+import ProductModel, { ProductDocument } from '../../../model/Products';
+import getRandomInt from '../getRandomInt';
+import isChangePromotionNow from './isChangePromotionNow';
+import noLongerBlockedProducts from './noLongerBlockedProducts';
+import { format } from 'date-fns';
+import HotShootModel from '../../../model/HotShoot';
 
-async function changeHotShootPromotion(discountValue) {
-    let productForHotShoot = '';
+async function changeHotShootPromotion(discountValue: number) {
+    const hotShoot = (await HotShootModel.find({}).lean())[0];
+    const products = await ProductModel.find({}).lean();
+    let currentProductForHotShoot = hotShoot.promotion;
 
-    const hotShoot = (await HotShoot.find({}).lean())[0];
-    const products = await Products.find({}).lean();
-    productForHotShoot = hotShoot.promotion;
-
-    const { changePromotionItem, isMorning } = isChangePromotionNow(productForHotShoot);
+    const { changePromotionItem, isMorning } = isChangePromotionNow(currentProductForHotShoot);
     console.log(`ChangePromotion: ${changePromotionItem}, isMorning: ${isMorning}`);
 
     if (changePromotionItem) {
-        // if (true) {
         //remove old promotion from Product collection
-        await Products.updateOne(
-            { _id: productForHotShoot.productData._id },
+        await ProductModel.updateOne(
+            { _id: currentProductForHotShoot.productData._id },
             {
                 $set: {
                     special_offer: {
@@ -32,9 +29,11 @@ async function changeHotShootPromotion(discountValue) {
         ).exec();
 
         //if there is no queued promotion
+        let productForHotShoot: ProductDocument;
         if (hotShoot.queue.length === 0) {
             // check if given product was already in promotion
             let isBlocked = true;
+
             while (isBlocked) {
                 productForHotShoot = products[getRandomInt(products.length)];
                 const findItem = hotShoot.blocked.filter((blockedProduct) => {
@@ -47,7 +46,7 @@ async function changeHotShootPromotion(discountValue) {
                     console.log(productForHotShoot._id);
                     const _id = productForHotShoot._id;
                     //update product data
-                    productForHotShoot = await Products.findOneAndUpdate(
+                    await ProductModel.findOneAndUpdate(
                         { _id },
                         {
                             special_offer: {
@@ -65,7 +64,7 @@ async function changeHotShootPromotion(discountValue) {
                     const hour = parseInt(format(new Date(), 'yyyy.MM.dd-H').split('-')[1]) + 1; //change is made on 9:59:58 || 21:59:58
                     const changeDate = `${restOfDate}-${hour.toString()}:00`;
 
-                    await HotShoot.updateOne(
+                    await HotShootModel.updateOne(
                         { _id: '631b62207137bd1bfd2c60aa' },
                         {
                             $set: {
@@ -92,11 +91,10 @@ async function changeHotShootPromotion(discountValue) {
 
         //remove item from blocked list if 47 hours time block pass
         const removeItemFromBlockedList = noLongerBlockedProducts(hotShoot.blocked, 47);
-        console.log('Item to be removed from blocked list');
-        console.log(removeItemFromBlockedList);
+        console.log({ message: 'Item removed from blocked list', item: removeItemFromBlockedList });
         if (removeItemFromBlockedList.length !== 0) {
             //update blocked list
-            const blockedListUpdate = await HotShoot.updateOne(
+            const blockedListUpdate = await HotShootModel.updateOne(
                 { _id: '631b62207137bd1bfd2c60aa' },
                 {
                     $pull: { blocked: { productId: removeItemFromBlockedList[0].productId } },
@@ -106,14 +104,14 @@ async function changeHotShootPromotion(discountValue) {
         }
         return {
             message: 'Timer Hot Shoot promotion change successfully',
-            product: { id: productForHotShoot._id },
+            product: { id: productForHotShoot!._id }, //for now use ! ts param, cuz I we do not implement admin functionality to que up the hotShoot promotion
         };
     }
 
     return {
         message: 'Timer Hot Shoot promotion change failure',
-        reason: 'It is not 10 am or 10 pm or already change was.',
+        reason: 'It is not 10 am or 10 pm ',
     };
 }
 
-module.exports = changeHotShootPromotion;
+export default changeHotShootPromotion;

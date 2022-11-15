@@ -1,6 +1,6 @@
 //---------------------------
 //For an input size of 1 million numbers, Array. map() takes about 2,000ms, whereas a for loop takes about 250ms
-const Comments = require('../..//model/Comments');
+import CommentModel, { CommentSchema } from '../../model/Comments';
 
 const eachScoreInit = [
     { number: 0, percentage: 0 },
@@ -11,18 +11,18 @@ const eachScoreInit = [
     { number: 0, percentage: 0 },
 ];
 
-function filterRating(filteredComments, rating) {
-    rating = parseInt(rating);
+function filterRating(filteredComments: { comments: CommentSchema[]; length: number }, rating: number) {
     if (rating === 0) return filteredComments;
+
     const filtered = [];
     for (let i = 0; i < filteredComments.length; i++) {
-        const comment = filteredComments.comments[i];
+        let comment = filteredComments.comments[i];
         if (comment.content.rating === rating) filtered.push(comment);
     }
     return { comments: filtered, length: filtered.length };
 }
 
-function filterConfirmed(filteredComments, confirmed) {
+function filterConfirmed(filteredComments: { comments: CommentSchema[]; length: number }, confirmed: boolean) {
     //0 - true, 1- false, 2 - mean "No filter"
     if (!confirmed) return filteredComments;
 
@@ -34,18 +34,17 @@ function filterConfirmed(filteredComments, confirmed) {
     return { comments: filtered, length: filtered.length };
 }
 
-function sortComments(arr, prop) {
+function sortComments(arr: any, prop: string) {
     if (prop === 'none') return arr;
     let reverse = false;
     if (prop[0] === '-') {
         reverse = true;
         prop = prop.substr(1);
     }
+    let ArrProp = prop.split('.');
+    var len = ArrProp.length;
 
-    prop = prop.split('.');
-    var len = prop.length;
-
-    arr.sort(function (a, b) {
+    arr.sort(function (a: any, b: any) {
         var i = 0;
         while (i < len) {
             a = a[prop[i]];
@@ -64,7 +63,7 @@ function sortComments(arr, prop) {
     return arr;
 }
 
-async function getAverageScore(productId) {
+async function getAverageScore(productId: string) {
     let averageScore = 0;
     let averageScore_Stars = 0;
     let averageScore_View = 0;
@@ -77,7 +76,7 @@ async function getAverageScore(productId) {
         { number: 0, percentage: 0 },
     ];
 
-    const productComments = await Comments.findOne({ productId }).exec();
+    const productComments = await CommentModel.findOne({ productId }).exec();
     // if (!productComments) return res.status(204).send({});
     if (!productComments)
         return { numberOfComments: 0, averageScore_View: 0, averageScore_Stars: 0, eachScore: eachScoreInit };
@@ -118,7 +117,7 @@ async function getAverageScore(productId) {
     averageScore_Stars = Math.round(averageScore);
     averageScore_View = Math.round(averageScore * 10) / 10;
 
-    function getPercentage(score, number) {
+    function getPercentage(score: number, number: number) {
         return (score / number) * 100;
     }
     for (var i = 0; i < eachScore.length; i++) {
@@ -130,9 +129,4 @@ async function getAverageScore(productId) {
     return data;
 }
 
-module.exports = {
-    filterRating,
-    filterConfirmed,
-    sortComments,
-    getAverageScore,
-};
+export default { filterRating, filterConfirmed, sortComments, getAverageScore };

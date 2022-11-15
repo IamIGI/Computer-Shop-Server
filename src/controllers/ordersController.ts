@@ -1,11 +1,12 @@
-const Users = require('../model/Users');
-const Orders = require('../model/Orders');
-const { apiErrorHandler } = require('../middleware/errorHandlers');
-import * as dataFns from 'date-fns';
+import Users from '../model/Users';
+import Orders from '../model/Orders';
+import { apiErrorHandler } from '../middleware/errorHandlers';
+import dataFns from 'date-fns';
 const { format } = dataFns;
-const orderPDF = require('../middleware/pdfCreator/orderInvoice');
+import orderPDF from '../middleware/pdfCreator/orderInvoice';
 
-const makeOrder = async (req, res) => {
+import { Request, Response } from 'express';
+const makeOrder = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
     const doc = req.body;
     const newOrder = new Orders({
@@ -54,12 +55,11 @@ const makeOrder = async (req, res) => {
                 OrderId: `${result._id}`,
             });
         }
-    } catch (err) {
+    } catch (err: any) {
         apiErrorHandler(req, res, err);
     }
 };
-
-const getUserHistory = async (req, res) => {
+const getUserHistory = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
     const { userId, pageNr } = req.body;
 
@@ -78,7 +78,7 @@ const getUserHistory = async (req, res) => {
     const countOrders = user.userOrders.length;
     Orders.find(
         { _id: { $in: [userOrders[0], userOrders[1], userOrders[2], userOrders[3], userOrders[4]] } },
-        function (err, msg) {
+        function (err: object, msg: object) {
             if (!err) {
                 console.log(`Status: 200, msg: User ${userId} order history sent.`);
                 res.status(200).json({ orderData: msg, orderCount: countOrders });
@@ -88,13 +88,11 @@ const getUserHistory = async (req, res) => {
         }
     );
 };
-
-const getUserHistoryItem = async (req, res) => {
+const getUserHistoryItem = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
-    console.log(`Params: ${JSON.stringify(req.params.orderId)}`);
     const orderId = req.params.orderId;
-    console.log(`UserOrderItem: ${orderId},`);
-    Orders.find({ _id: orderId }, function (err, msg) {
+    Orders.find({ _id: orderId }, function (err: object[], msg: object[]) {
+        //dopytac
         if (!err) {
             console.log(`Status: 200, msg: User order item send`);
             console.log(msg[0]);
@@ -104,8 +102,7 @@ const getUserHistoryItem = async (req, res) => {
         }
     });
 };
-
-const getOrderPDF = async (req, res) => {
+const getOrderPDF = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
     const orderId = req.params.orderId;
 
@@ -116,21 +113,17 @@ const getOrderPDF = async (req, res) => {
             'Content-Type': 'application/pdf',
             'Content-Disposition': `attachment;filename=Faktura_${response._id}.pdf`,
         });
+        //@ts-ignore
         orderPDF.buildPDF(
-            (chunk) => stream.write(chunk),
+            (chunk: any) => stream.write(chunk),
             () => stream.end(),
             response
         );
 
         console.log({ msg: 'Send order invoice (PDF) successfully', orderId: response._id });
-    } catch (err) {
+    } catch (err: any) {
         apiErrorHandler(req, res, err);
     }
 };
 
-module.exports = {
-    makeOrder,
-    getUserHistory,
-    getUserHistoryItem,
-    getOrderPDF,
-};
+export default { makeOrder, getUserHistory, getUserHistoryItem, getOrderPDF };

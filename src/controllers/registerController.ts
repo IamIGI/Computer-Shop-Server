@@ -1,10 +1,11 @@
-const Users = require('../model/Users');
-const ForbiddenWords = require('../model/ForbiddenWords');
-const { apiErrorHandler } = require('../middleware/errorHandlers');
-import * as bcrypt from 'bcrypt';
-const { logEvents } = require('../middleware/logEvents');
+import Users from '../model/Users';
+import ForbiddenWords from '../model/ForbiddenWords';
+import { apiErrorHandler } from '../middleware/errorHandlers';
+import bcrypt from 'bcrypt';
+import { logEvents } from '../middleware/logEvents';
+import { Request, Response } from 'express';
 
-const handleNewUser = async (req, res) => {
+const handleNewUser = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
 
     const {
@@ -54,11 +55,9 @@ const handleNewUser = async (req, res) => {
         console.log(`Status: 201 success: New user ${result._id} created!`);
         logEvents(`Status: 201\t User_Id: ${result._id}\t New user created! \t`, 'reqLog.Log');
         res.status(201).json({ success: `New user ${result._id} created!` });
-    } catch (err) {
+    } catch (err: any) {
         apiErrorHandler(req, res, err);
     }
 };
 
-module.exports = {
-    handleNewUser,
-};
+export default { handleNewUser };

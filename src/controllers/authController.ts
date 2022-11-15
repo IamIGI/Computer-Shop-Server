@@ -1,12 +1,13 @@
-const User = require('../model/Users');
-import * as bcrypt from 'bcrypt';
-import * as jwt from 'jsonwebtoken';
-import * as path from 'path';
+import { RequestHandler } from 'express';
+import User from '../model/Users';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import path from 'path';
 require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
-const { apiErrorHandler } = require('../middleware/errorHandlers');
-const { logEvents } = require('../middleware/logEvents');
+import { apiErrorHandler } from '../middleware/errorHandlers';
+import { logEvents } from '../middleware/logEvents';
 
-const handleLogin = async (req, res) => {
+const handleLogin: RequestHandler = async (req, res) => {
     console.log(`${req.originalUrl}`);
     const { email, hashedPassword } = req.body;
 
@@ -21,11 +22,15 @@ const handleLogin = async (req, res) => {
         const roles = Object.values(foundUser.roles);
         try {
             //creating Tokens
-            const accessToken = jwt.sign({ _id: foundUser._id, roles: roles }, process.env.ACCESS_TOKEN_SECRET, {
-                expiresIn: process.env.REFRESH_ACCESS_TOKEN_TIME, //change to 5 min (5m) in production
-            });
+            const accessToken = jwt.sign(
+                { _id: foundUser._id, roles: roles },
+                process.env.ACCESS_TOKEN_SECRET as string,
+                {
+                    expiresIn: process.env.REFRESH_ACCESS_TOKEN_TIME, //change to 5 min (5m) in production
+                }
+            );
 
-            const refreshToken = jwt.sign({ _id: foundUser._id }, process.env.REFRESH_TOKEN_SECRET, {
+            const refreshToken = jwt.sign({ _id: foundUser._id }, process.env.REFRESH_TOKEN_SECRET as string, {
                 expiresIn: process.env.REFRESH_REFRESH_TOKEN_TIME,
             });
 
@@ -34,12 +39,11 @@ const handleLogin = async (req, res) => {
 
             res.cookie('jwt', refreshToken, {
                 httpOnly: true,
-                sameSite: 'None',
+                sameSite: 'none',
                 secure: true, //back when running on chrome.
                 maxAge: 24 * 50 * 60 * 1000,
             });
 
-            // console.log(`$Status: 200\t User_Id: ${foundUser._id}\t Logged successfully\t token : ${accessToken}`);
             console.log(`$Status: 200\t User_Id: ${foundUser._id}\t Logged successfully`);
             logEvents(
                 `$Status: 200\t User_Id: ${foundUser._id}\t Logged successfully\t token : ${accessToken}`,
@@ -53,7 +57,7 @@ const handleLogin = async (req, res) => {
                 roles: roles,
                 accessToken: accessToken,
             });
-        } catch (err) {
+        } catch (err: any) {
             apiErrorHandler(req, res, err);
         }
     } else {
@@ -61,6 +65,4 @@ const handleLogin = async (req, res) => {
     }
 };
 
-module.exports = {
-    handleLogin,
-};
+export default { handleLogin };
