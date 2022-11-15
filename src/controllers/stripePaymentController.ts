@@ -61,7 +61,7 @@ const checkout = async (req: Request, res: Response) => {
             cancel_url: `${CLIENT_URL}/basket`,
         });
         res.json({ url: session.url });
-    } catch (err: any) {
+    } catch (err) {
         apiErrorHandler(req, res, err as Error);
     }
 };

@@ -19,7 +19,7 @@ const addNewUpdate = async (req: Request, res: Response) => {
         await newUpdate.save();
         console.log('Added new update register');
         return res.status(200).json({ message: 'Added new update register', date: format(new Date(), 'yyyy.MM.dd') });
-    } catch (err: any) {
+    } catch (err) {
         apiErrorHandler(req, res, err as Error);
     }
 };
@@ -31,7 +31,7 @@ const getAllUpdates = async (req: Request, res: Response) => {
         const response = await WebUpdates.find({}).lean();
         console.log('List of updates returned successfully');
         return res.status(200).json(response);
-    } catch (err: any) {
+    } catch (err) {
         console.log(err);
         apiErrorHandler(req, res, err as Error);
     }
@@ -54,7 +54,7 @@ const getPDF = async (req: Request, res: Response, next: NextFunction) => {
             response
         );
         console.log('Send update list (PDF) successfully');
-    } catch (err: any) {
+    } catch (err) {
         apiErrorHandler(req, res, err as Error); //send products as a response
     }
 };

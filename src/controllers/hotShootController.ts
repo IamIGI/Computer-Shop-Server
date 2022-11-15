@@ -36,7 +36,7 @@ const changeHotShootTimer = async (req: Request, res: Response) => {
         const response = await changeHotShootPromotion(600);
         console.log(response);
         return res.status(200).json(response);
-    } catch (err: any) {
+    } catch (err) {
         console.log(err);
         apiErrorHandler(req, res, err as Error);
     }

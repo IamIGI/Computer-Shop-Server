@@ -7,7 +7,7 @@ const getAboutPageData = async (req: Request, res: Response) => {
     try {
         const response = await Contents.findOne({ pageName: 'About' }).lean();
         return res.status(200).json(response);
-    } catch (err: any) {
+    } catch (err) {
         console.log(err);
         apiErrorHandler(req, res, err as Error);
     }

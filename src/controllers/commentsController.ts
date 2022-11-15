@@ -38,7 +38,7 @@ export const getComments = async (req: Request, res: Response) => {
             length: filteredComments.length,
             length_AllComments: productComments.comments.length,
         });
-    } catch (err: any) {
+    } catch (err) {
         console.log(err);
         apiErrorHandler(req, res, err as Error);
     }
@@ -84,7 +84,7 @@ export const addComment = async (req: Request, res: Response) => {
                 productId: doc.productId,
             });
             console.log({ message: 'New document for given product created', productId: `${result.productId}` });
-        } catch (err: any) {
+        } catch (err) {
             apiErrorHandler(req, res, err as Error);
         }
     }
@@ -242,7 +242,7 @@ export const getProductAverageScore = async (req: Request, res: Response) => {
     try {
         const response = await commentsFilters.getAverageScore(productId);
         return res.status(200).json(response);
-    } catch (err: any) {
+    } catch (err) {
         console.log(err);
         apiErrorHandler(req, res, err as Error);
     }
@@ -310,7 +310,7 @@ export const likeComment = async (req: Request, res: Response) => {
             );
             console.log({ message: 'Added new user', userId });
             return res.status(201).json({ message: 'Added new like from user', userId: `${userId}` });
-        } catch (err: any) {
+        } catch (err) {
             console.log(err);
             return res.send(err);
         }
@@ -358,7 +358,7 @@ export const likeComment = async (req: Request, res: Response) => {
         ).exec();
         console.log(response);
         return res.status(201).json({ message: `Updated likes`, like: `${likeType}`, commentId: `${commentId}` });
-    } catch (err: any) {
+    } catch (err) {
         console.log(err);
         return res.send(err);
     }
