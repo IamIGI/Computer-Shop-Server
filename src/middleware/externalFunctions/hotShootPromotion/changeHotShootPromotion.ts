@@ -2,7 +2,7 @@ import ProductModel, { ProductDocument } from '../../../model/Products';
 import getRandomInt from '../getRandomInt';
 import isChangePromotionNow from './isChangePromotionNow';
 import noLongerBlockedProducts from './noLongerBlockedProducts';
-import { format } from 'date-fns';
+import format from 'date-fns/format';
 import HotShootModel from '../../../model/HotShoot';
 
 async function changeHotShootPromotion(discountValue: number) {

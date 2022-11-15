@@ -1,4 +1,4 @@
-import ProductModel from '../model/Products';
+import ProductModel, { ProductDocument } from '../model/Products';
 import CommentModel from '../model/Comments';
 import { Request, Response } from 'express';
 import { apiErrorHandler } from '../middleware/errorHandlers';
@@ -64,7 +64,6 @@ const getAllProducts = async (req: Request, res: Response) => {
             }
         }
 
-        console.log('Status: 200');
         res.status(200).send(filteredProducts);
     } catch (err: any) {
         console.log(err);
@@ -76,15 +75,16 @@ const getProduct = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
 
     const productCode = req.params.code;
+    // let product: Record<string, any> = {};
     try {
-        let product = await ProductModel.findOne({ _id: productCode });
+        let product = await ProductModel.findOne({ _id: productCode }).lean();
         if (product === null) return res.status(404).send('No product match given code');
 
         if (product.special_offer.mode) {
             product.price = product.price - product.special_offer.price;
         }
         const comments = await CommentModel.findOne({ productId: productCode }).exec();
-        console.log(!comments);
+
         if (!comments) {
             product.numberOfOpinions = 0;
         } else {
@@ -115,9 +115,9 @@ const getProductPDF = async (req: Request, res: Response) => {
             'Content-Type': 'application/pdf',
             'Content-Disposition': `attachment;filename=${product.name}.pdf`,
         });
-        // @ts-ignore
+
         productPDF.buildPDF(
-            (chunk: any) => stream.write(chunk),
+            (chunk) => stream.write(chunk),
             () => stream.end(),
             product
         );

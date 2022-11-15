@@ -1,5 +1,4 @@
-import dataFns from 'date-fns';
-const { format } = dataFns;
+import format from 'date-fns/format';
 import { v4 as uuid } from 'uuid';
 import fs from 'fs';
 const fsPromises = require('fs').promises;

@@ -4,8 +4,7 @@
     "description": "",
     "main": "server.js",
     "scripts": {
-        "start": "node dist/server.js",
-        "build": "rm -rf build/ && tsc",
+        "start": "node build/server.js",
         "dev": "nodemon server",
         "devts": "ts-node-dev --respawn --transpile-only src/server.ts"
     },

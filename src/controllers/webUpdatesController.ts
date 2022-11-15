@@ -1,6 +1,5 @@
 import WebUpdates from '../model/WebUpdates';
-import dataFns from 'date-fns';
-const { format } = dataFns;
+import format from 'date-fns/format';
 import { apiErrorHandler } from '../middleware/errorHandlers';
 import webUpdatedPDF from '../middleware/pdfCreator/webUpdates';
 import { Request, Response, NextFunction } from 'express';

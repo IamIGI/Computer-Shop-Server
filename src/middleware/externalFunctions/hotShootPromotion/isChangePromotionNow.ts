@@ -1,4 +1,4 @@
-import { format } from 'date-fns';
+import format from 'date-fns/format';
 import { hotShootPromotion } from '../../../model/HotShoot';
 
 function isChangePromotionNow(productForHotShoot: hotShootPromotion) {

@@ -46,9 +46,9 @@ export interface ProductSpecification {
 }
 
 export interface ProductInput {
-    averageScore: number;
-    averageStars: number;
-    numberOfOpinions: number;
+    averageScore?: number;
+    averageStars?: number;
+    numberOfOpinions?: number;
     code: number;
     name: string;
     price: number;
@@ -70,7 +70,7 @@ export interface ProductInput {
     specification: ProductSpecification;
 }
 
-export interface ProductDocument extends ProductInput, mongoose.Document {}
+export interface ProductDocument extends ProductInput, mongoose.Document, Record<string, any> {}
 
 const Schema = mongoose.Schema;
 

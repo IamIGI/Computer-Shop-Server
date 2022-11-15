@@ -1,8 +1,7 @@
 import Users from '../model/Users';
 import Orders from '../model/Orders';
 import { apiErrorHandler } from '../middleware/errorHandlers';
-import dataFns from 'date-fns';
-const { format } = dataFns;
+import format from 'date-fns/format';
 import orderPDF from '../middleware/pdfCreator/orderInvoice';
 
 import { Request, Response } from 'express';
@@ -107,20 +106,20 @@ const getOrderPDF = async (req: Request, res: Response) => {
     const orderId = req.params.orderId;
 
     try {
-        const response = (await Orders.find({ _id: orderId }).lean())[0];
-
+        const response = await Orders.find({ _id: orderId }).exec();
+        const orderData = response[0];
         const stream = res.writeHead(200, {
             'Content-Type': 'application/pdf',
-            'Content-Disposition': `attachment;filename=Faktura_${response._id}.pdf`,
+            'Content-Disposition': `attachment;filename=Faktura_${orderData._id}.pdf`,
         });
-        //@ts-ignore
+
         orderPDF.buildPDF(
             (chunk: any) => stream.write(chunk),
             () => stream.end(),
-            response
+            orderData
         );
 
-        console.log({ msg: 'Send order invoice (PDF) successfully', orderId: response._id });
+        console.log({ msg: 'Send order invoice (PDF) successfully', orderId: orderData._id });
     } catch (err: any) {
         apiErrorHandler(req, res, err);
     }

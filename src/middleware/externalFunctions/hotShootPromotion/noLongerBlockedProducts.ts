@@ -1,5 +1,5 @@
 import getDateDiffInHours from '../getDateDiffInHours';
-import { format } from 'date-fns';
+import format from 'date-fns/format';
 import { hotShootBlocked } from '../../../model/HotShoot';
 
 function noLongerBlockedProducts(blockedList: hotShootBlocked[], hoursBlocked: number) {

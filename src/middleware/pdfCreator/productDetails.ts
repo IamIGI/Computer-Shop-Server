@@ -1,7 +1,8 @@
 import PDFDocument from 'pdfkit';
-import { format } from 'date-fns';
+import format from 'date-fns/format';
 import axios from 'axios';
 import { ProductDocument, ProductSpecification } from '../../model/Products';
+import path from 'path';
 
 async function fetchImage(src: string) {
     const image = await axios.get(src, {
@@ -128,9 +129,11 @@ async function buildPDF(
     endCallback: (...args: any[]) => void,
     data: ProductDocument
 ): Promise<void> {
-    const logoImage = './public/img/logo.PNG';
-    const robotoMedium = './public/fonts/Roboto-Medium.ttf';
-    const robotoRegular = './public/fonts/Roboto-Regular.ttf';
+    // const logoImage = './public/img/logo.PNG';
+    console.log(__dirname);
+    const logoImage = path.join(__dirname, '../../public/img/logo.PNG');
+    const robotoMedium = path.join(__dirname, '../../public/fonts/Roboto-Medium.ttf');
+    const robotoRegular = path.join(__dirname, '../../public/fonts/Roboto-Regular.ttf');
 
     const doc = new PDFDocument({ size: 'A4', margin: 0 }); //A4 (595.28 x 841.89)
     doc.on('data', dataCallback);
@@ -166,4 +169,4 @@ async function buildPDF(
     doc.end();
 }
 
-export default buildPDF;
+export default { buildPDF };

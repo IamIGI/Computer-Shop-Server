@@ -1,8 +1,7 @@
 import Contact from '../model/Contact';
 import ForbiddenWords from '../model/ForbiddenWords';
 import { apiErrorHandler } from '../middleware/errorHandlers';
-import dataFns from 'date-fns';
-const { format } = dataFns;
+import format from 'date-fns/format';
 import path from 'path';
 import { Request, Response } from 'express';
 import fileUpload from 'express-fileupload';
@@ -76,7 +75,7 @@ const sendMessage = async (req: Request, res: Response) => {
             });
         }
 
-        console.log({ status: 'success', message: 'new message to author', date, code: '000 ' });
+        console.log({ status: 'success', message: 'new message to author', date, code: '000' });
         res.status(200).json({ status: 'success', message: 'new message to author', date, code: '000' });
     } catch (err: any) {
         apiErrorHandler(req, res, err);

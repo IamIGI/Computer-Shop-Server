@@ -1,5 +1,6 @@
 import PDFDocument from 'pdfkit';
-import { format } from 'date-fns';
+import path from 'path';
+import format from 'date-fns/format';
 import { OrderDocument } from '../../model/Orders';
 
 function getDeliveryCost(method: string) {
@@ -123,9 +124,9 @@ function getPaymentMethod(method: string): string | undefined {
 
 function buildPDF(dataCallback: (...args: any[]) => void, endCallback: (...args: any[]) => void, data: OrderDocument) {
     // console.log(data);
-    const logoImage = './public/img/logo.PNG';
-    const robotoMedium = './public/fonts/Roboto-Medium.ttf';
-    const robotoRegular = './public/fonts/Roboto-Regular.ttf';
+    const logoImage = path.join(__dirname, '../../public/img/logo.PNG');
+    const robotoMedium = path.join(__dirname, '../../public/fonts/Roboto-Medium.ttf');
+    const robotoRegular = path.join(__dirname, '../../public/fonts/Roboto-Regular.ttf');
     const doc = new PDFDocument({ size: 'A4', margin: 0 }); //A4 (595.28 x 841.89)
     doc.on('data', dataCallback);
     doc.on('end', endCallback);
@@ -485,4 +486,4 @@ function buildPDF(dataCallback: (...args: any[]) => void, endCallback: (...args:
     doc.end();
 }
 
-export default buildPDF;
+export default { buildPDF };

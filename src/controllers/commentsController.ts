@@ -3,8 +3,7 @@ import Orders from '../model/Orders';
 import ForbiddenWords from '../model/ForbiddenWords';
 import CommentModel from '../model/Comments';
 import { apiErrorHandler } from '../middleware/errorHandlers';
-import dataFns from 'date-fns';
-const { format } = dataFns;
+import format from 'date-fns/format';
 import commentsFilters from '../middleware/filters/commentsFilters';
 import path from 'path';
 import getUsersProductImages from '../middleware/comments/getUsersProductImages';
@@ -17,7 +16,7 @@ export const getComments = async (req: Request, res: Response) => {
         productId,
         filters: { rating, confirmed },
         sortBy,
-    } = req.body;
+    } = req.body as { productId: string; filters: { rating: number; confirmed: boolean }; sortBy: string };
 
     // get images
     const usersImages = getUsersProductImages(productId);
@@ -47,7 +46,7 @@ export const getComments = async (req: Request, res: Response) => {
 
 export const addComment = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
-    const files = req.files as unknown as fileUpload.UploadedFile[]; // https://github.com/richardgirges/express-fileupload/issues/156
+    const files = req.files as fileUpload.FileArray; // https://github.com/richardgirges/express-fileupload/issues/156
     const doc = req.body;
     let userCommentedThisProduct = false;
     let confirmed = false;
@@ -133,7 +132,7 @@ export const addComment = async (req: Request, res: Response) => {
 
     //Check if file is attached to the message
     let added = false;
-    let images: string[];
+    let images: string[] = [];
 
     // if (Boolean(files)) { changes for ts
     if (files) {
@@ -159,7 +158,6 @@ export const addComment = async (req: Request, res: Response) => {
                     },
                     image: {
                         added,
-                        //@ts-ignore
                         images,
                     },
                 },
@@ -178,7 +176,9 @@ export const addComment = async (req: Request, res: Response) => {
         added = true;
         Object.keys(files).forEach((key) => {
             images.push(
-                `comments/${doc.productId}/${commentId}/${files[key as keyof typeof files] as fileUpload.UploadedFile}`
+                `comments/${doc.productId}/${commentId}/${
+                    (files[key as keyof typeof files] as fileUpload.UploadedFile).name
+                }`
             );
         });
 

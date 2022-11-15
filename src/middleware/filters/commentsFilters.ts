@@ -45,10 +45,10 @@ function sortComments(arr: any, prop: string) {
     var len = ArrProp.length;
 
     arr.sort(function (a: any, b: any) {
-        var i = 0;
+        let i = 0;
         while (i < len) {
-            a = a[prop[i]];
-            b = b[prop[i]];
+            a = a[ArrProp[i]];
+            b = b[ArrProp[i]];
             i++;
         }
         if (a < b) {
@@ -59,7 +59,9 @@ function sortComments(arr: any, prop: string) {
             return 0;
         }
     });
+
     if (reverse) return arr.reverse();
+
     return arr;
 }
 
@@ -124,7 +126,6 @@ async function getAverageScore(productId: string) {
         eachScore[i].percentage = parseInt(getPercentage(eachScore[i].number, numberOfComments).toFixed(2));
     }
 
-    // console.log(eachScore[1].number);
     const data = { numberOfComments, averageScore_View, averageScore_Stars, eachScore };
     return data;
 }
