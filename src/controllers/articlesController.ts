@@ -12,7 +12,7 @@ async function DBgetArticles(articleType: string) {
 
 const getAllArticles = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
-    const { type } = req.body;
+    const type = req.params.type;
 
     try {
         const articles = await DBgetArticles(type);
