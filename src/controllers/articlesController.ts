@@ -23,4 +23,15 @@ const getAllArticles = async (req: Request, res: Response) => {
     }
 };
 
-export default { getAllArticles };
+const getArticle = async (req: Request, res: Response) => {
+    console.log(`${req.originalUrl}`);
+    const _id = req.params.id;
+    try {
+        const article = await ArticleModel.findOne({ _id }).exec();
+        return res.status(200).json(article);
+    } catch (err) {
+        apiErrorHandler(req, res, err as Error);
+    }
+};
+
+export default { getAllArticles, getArticle };

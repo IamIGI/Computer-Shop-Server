@@ -36,4 +36,15 @@ const getAllArticles = (req, res) => __awaiter(void 0, void 0, void 0, function*
         (0, errorHandlers_1.apiErrorHandler)(req, res, err);
     }
 });
-exports.default = { getAllArticles };
+const getArticle = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(`${req.originalUrl}`);
+    const _id = req.params.id;
+    try {
+        const article = yield Articles_1.default.findOne({ _id }).exec();
+        return res.status(200).json(article);
+    }
+    catch (err) {
+        (0, errorHandlers_1.apiErrorHandler)(req, res, err);
+    }
+});
+exports.default = { getAllArticles, getArticle };
