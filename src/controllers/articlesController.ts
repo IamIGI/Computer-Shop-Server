@@ -4,8 +4,7 @@ import { Request, Response } from 'express';
 
 async function DBgetArticles(articleType: string) {
     if (articleType === 'none') {
-        const response = await ArticleModel.find({}).lean();
-        return response;
+        return await ArticleModel.find({}).lean();
     } else {
         return await ArticleModel.find({ type: articleType }).lean();
     }
