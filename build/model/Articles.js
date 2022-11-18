@@ -8,6 +8,7 @@ const Schema = mongoose_1.default.Schema;
 //Schema
 const articleschema = new Schema({
     type: String,
+    author: String,
     createdAt: String,
     updatedAt: String,
     prevImage: String,

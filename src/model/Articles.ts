@@ -12,6 +12,7 @@ export interface ArticlesDescription {
 
 export interface ArticlesInput {
     type: string;
+    author: string;
     createdAt: string;
     updatedAt: string;
     prevImage: string;
@@ -28,6 +29,7 @@ const Schema = mongoose.Schema;
 
 const articleschema = new Schema({
     type: String,
+    author: String,
     createdAt: String,
     updatedAt: String,
     prevImage: String,
