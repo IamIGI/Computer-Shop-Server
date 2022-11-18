@@ -17,8 +17,7 @@ const errorHandlers_1 = require("../middleware/errorHandlers");
 function DBgetArticles(articleType) {
     return __awaiter(this, void 0, void 0, function* () {
         if (articleType === 'none') {
-            const response = yield Articles_1.default.find({}).lean();
-            return response;
+            return yield Articles_1.default.find({}).lean();
         }
         else {
             return yield Articles_1.default.find({ type: articleType }).lean();
@@ -27,7 +26,7 @@ function DBgetArticles(articleType) {
 }
 const getAllArticles = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`${req.originalUrl}`);
-    const { type } = req.body;
+    const type = req.params.type;
     try {
         const articles = yield DBgetArticles(type);
         return res.status(200).json(articles);
