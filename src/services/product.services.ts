@@ -31,7 +31,6 @@ async function addCommentParamsToProductObject(products: ProductDocument[]): Pro
 /** search product by value user typed in searchbar */
 function searchProduct(products: ProductDocument[], searchTerm: string): ProductDocument[] {
     if (searchTerm === '') return products;
-    console.log(products);
     return products.filter((product) => {
         return product.name.toLowerCase().includes(searchTerm.toLowerCase());
     });

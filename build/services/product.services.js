@@ -46,7 +46,6 @@ function addCommentParamsToProductObject(products) {
 function searchProduct(products, searchTerm) {
     if (searchTerm === '')
         return products;
-    console.log(products);
     return products.filter((product) => {
         return product.name.toLowerCase().includes(searchTerm.toLowerCase());
     });
