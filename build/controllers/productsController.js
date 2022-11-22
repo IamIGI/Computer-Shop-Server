@@ -15,61 +15,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Products_1 = __importDefault(require("../model/Products"));
 const Comments_1 = __importDefault(require("../model/Comments"));
 const errorHandlers_1 = require("../middleware/errorHandlers");
-const productFilters_1 = __importDefault(require("../middleware/filters/productFilters"));
-const commentsFilters_1 = __importDefault(require("../middleware/filters/commentsFilters"));
 const productDetails_1 = __importDefault(require("../middleware/pdfCreator/productDetails"));
+const product_services_1 = __importDefault(require("../services/product.services"));
 const getAllProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`${req.originalUrl}`);
     const { searchTerm, filters: { producers, processors, ram, disk, discounts }, sortBy, } = req.body;
     try {
-        let products = yield Products_1.default.find({}).lean();
-        //check if there is discount product
-        for (let i = 0; i < products.length; i++) {
-            let product = products[i];
-            if (product.special_offer.mode) {
-                product.price = product.price - product.special_offer.price;
-            }
-        }
-        let filteredProducts = productFilters_1.default.filterRAM(products, ram);
-        filteredProducts = productFilters_1.default.filterDiscounts(filteredProducts, discounts);
-        filteredProducts = productFilters_1.default.filterDisk(filteredProducts, disk);
-        filteredProducts = productFilters_1.default.filterProducers(filteredProducts, producers);
-        filteredProducts = productFilters_1.default.filterProcessors(filteredProducts, processors);
-        if (sortBy !== 'none') {
-            if (sortBy === 'popular' || sortBy === 'rating') {
-                const comments = yield Comments_1.default.find({}).exec();
-                if (sortBy === 'popular')
-                    filteredProducts = productFilters_1.default.sortProductsByPopularity(filteredProducts, comments);
-                if (sortBy === 'rating')
-                    filteredProducts = yield productFilters_1.default.sortProductsByRating(filteredProducts, comments);
-            }
-            else {
-                filteredProducts = productFilters_1.default.sortProductsByPrice(filteredProducts, sortBy); //price, -price
-            }
-        }
-        //SearchBar
-        if (searchTerm !== '') {
-            filteredProducts = filteredProducts.filter((product) => {
-                return product.name.toLowerCase().includes(searchTerm.toLowerCase());
-            });
-        }
-        //get averageScore and numberOfOpinions of filtered products
-        for (let i = 0; i < filteredProducts.length; i++) {
-            let productId = filteredProducts[i]._id;
-            let averageScore = yield commentsFilters_1.default.getAverageScore(productId);
-            let productComments = yield Comments_1.default.findOne({ productId }).exec();
-            if (productComments) {
-                filteredProducts[i].averageScore = averageScore.averageScore_View;
-                filteredProducts[i].averageStars = averageScore.averageScore_Stars;
-                filteredProducts[i].numberOfOpinions = productComments.comments.length;
-            }
-            else {
-                filteredProducts[i].averageScore = 0;
-                filteredProducts[i].averageStars = 0;
-                filteredProducts[i].numberOfOpinions = 0;
-            }
-        }
-        res.status(200).send(filteredProducts);
+        let response = yield Products_1.default.find({}).lean();
+        let products = product_services_1.default.productsDiscount(response);
+        products = product_services_1.default.filterProducts(products, ram, discounts, disk, producers, processors);
+        products = yield product_services_1.default.sortProducts(products, sortBy);
+        products = product_services_1.default.searchProduct(products, searchTerm);
+        products = yield product_services_1.default.addCommentParamsToProductObject(products);
+        res.status(200).send(products);
     }
     catch (err) {
         console.log(err);
