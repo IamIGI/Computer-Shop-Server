@@ -1,14 +1,15 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const pdfkit_1 = __importDefault(require("pdfkit"));
+'use strict';
+var __importDefault =
+    (this && this.__importDefault) ||
+    function (mod) {
+        return mod && mod.__esModule ? mod : { default: mod };
+    };
+Object.defineProperty(exports, '__esModule', { value: true });
+const pdfkit_1 = __importDefault(require('pdfkit'));
 function countBreakLines(list, doc) {
     let lineBreaksCount = 0;
     for (let i = 0; i < list.length; i++) {
-        if (doc.widthOfString(list[i]) > 200)
-            lineBreaksCount += 1;
+        if (doc.widthOfString(list[i]) > 200) lineBreaksCount += 1;
     }
     return lineBreaksCount;
 }
@@ -20,33 +21,36 @@ function endPosition(data, doc) {
         const numberOfAdded = lists.added.length;
         const numberOfFixes = lists.fixes.length;
         if (i === 0) {
-            if (lists.added.length + countBreakLines(lists.added, doc) >
-                lists.fixes.length + countBreakLines(lists.fixes, doc)) {
+            if (
+                lists.added.length + countBreakLines(lists.added, doc) >
+                lists.fixes.length + countBreakLines(lists.fixes, doc)
+            ) {
                 listPositions.push(125 + numberOfAdded * 10 + 30 + countBreakLines(lists.added, doc) * 10);
-            }
-            else {
+            } else {
                 listPositions.push(125 + numberOfFixes * 10 + 30 + countBreakLines(lists.fixes, doc) * 10);
             }
-        }
-        else {
-            if (lists.added.length + countBreakLines(lists.added, doc) >
-                lists.fixes.length + countBreakLines(lists.fixes, doc)) {
+        } else {
+            if (
+                lists.added.length + countBreakLines(lists.added, doc) >
+                lists.fixes.length + countBreakLines(lists.fixes, doc)
+            ) {
                 let position = 50 + listPositions[i] + numberOfAdded * 10 + 30 + countBreakLines(lists.added, doc) * 10;
                 if (position >= maximalPositionBeforeNextPage) {
                     listPositions[listPositions.length - 1] = 80;
-                    listPositions.push(45 + listPositions[i] + numberOfAdded * 10 + 30 + countBreakLines(lists.added, doc) * 10);
-                }
-                else {
+                    listPositions.push(
+                        45 + listPositions[i] + numberOfAdded * 10 + 30 + countBreakLines(lists.added, doc) * 10
+                    );
+                } else {
                     listPositions.push(position);
                 }
-            }
-            else {
+            } else {
                 let position = 50 + listPositions[i] + numberOfFixes * 10 + 30 + countBreakLines(lists.fixes, doc) * 10;
                 if (position >= maximalPositionBeforeNextPage) {
                     listPositions[listPositions.length - 1] = 80;
-                    listPositions.push(45 + listPositions[i] + numberOfFixes * 10 + 30 + countBreakLines(lists.fixes, doc) * 10);
-                }
-                else {
+                    listPositions.push(
+                        45 + listPositions[i] + numberOfFixes * 10 + 30 + countBreakLines(lists.fixes, doc) * 10
+                    );
+                } else {
                     listPositions.push(position);
                 }
             }
@@ -90,4 +94,4 @@ function buildPDF(dataCallback, endCallback, data) {
     }
     doc.end();
 }
-exports.default = buildPDF;
+exports.default = { buildPDF };
