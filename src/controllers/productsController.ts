@@ -18,15 +18,15 @@ const getAllProducts = async (req: Request, res: Response) => {
 
         let products = productServices.productsDiscount(response);
 
-        products = productServices.filterProducts(products, ram, discounts, disk, producers, processors);
+        let filteredProducts = productServices.filterProducts(products, ram, discounts, disk, producers, processors);
 
-        products = await productServices.sortProducts(products, sortBy);
+        let sortedProducts = await productServices.sortProducts(filteredProducts, sortBy);
 
-        products = productServices.searchProduct(products, searchTerm);
+        let searchedProducts = productServices.searchProduct(sortedProducts, searchTerm);
 
-        products = await productServices.addCommentParamsToProductObject(products);
+        let productWithAdditionalParams = await productServices.addCommentParamsToProductObject(searchedProducts);
 
-        res.status(200).send(products);
+        res.status(200).send(productWithAdditionalParams);
     } catch (err) {
         console.log(err);
         apiErrorHandler(req, res, err as Error); //send products as a response

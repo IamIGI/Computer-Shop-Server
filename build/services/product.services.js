@@ -44,8 +44,9 @@ function addCommentParamsToProductObject(products) {
 }
 /** search product by value user typed in searchbar */
 function searchProduct(products, searchTerm) {
-    if (searchTerm !== '')
+    if (searchTerm === '')
         return products;
+    console.log(products);
     return products.filter((product) => {
         return product.name.toLowerCase().includes(searchTerm.toLowerCase());
     });
@@ -73,7 +74,7 @@ function filterProducts(products, ram, discounts, disk, producers, processors) {
 function sortProducts(products, sortBy) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            let sortedProducts;
+            let sortedProducts = products;
             if (sortBy !== 'none') {
                 if (sortBy === 'popular' || sortBy === 'rating') {
                     const comments = yield Comments_1.default.find({}).exec();

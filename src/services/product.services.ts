@@ -6,7 +6,7 @@ import commentsFilters from '../middleware/filters/commentsFilters';
 /** add averageScore, averageStore, numberOfOpinions to product object */
 async function addCommentParamsToProductObject(products: ProductDocument[]): Promise<ProductDocument[]> {
     try {
-        for (let i = 0; i < products.length; i++) {
+        for (let i = 0; i < products!.length; i++) {
             let productId = products[i]._id;
             let averageScore = await commentsFilters.getAverageScore(productId);
             let productComments = await CommentModel.findOne({ productId }).exec();
@@ -30,8 +30,8 @@ async function addCommentParamsToProductObject(products: ProductDocument[]): Pro
 
 /** search product by value user typed in searchbar */
 function searchProduct(products: ProductDocument[], searchTerm: string): ProductDocument[] {
-    if (searchTerm !== '') return products;
-
+    if (searchTerm === '') return products;
+    console.log(products);
     return products.filter((product) => {
         return product.name.toLowerCase().includes(searchTerm.toLowerCase());
     });
@@ -69,7 +69,7 @@ function filterProducts(
 /**Sort products by given key words: none, popular, rating, price , -price*/
 async function sortProducts(products: ProductDocument[], sortBy: string): Promise<ProductDocument[]> {
     try {
-        let sortedProducts;
+        let sortedProducts = products;
         if (sortBy !== 'none') {
             if (sortBy === 'popular' || sortBy === 'rating') {
                 const comments = await CommentModel.find({}).exec();
@@ -79,6 +79,7 @@ async function sortProducts(products: ProductDocument[], sortBy: string): Promis
                 sortedProducts = productFilters.sortProductsByPrice(products, sortBy); //price, -price
             }
         }
+
         return sortedProducts;
     } catch (err) {
         console.log(err);
