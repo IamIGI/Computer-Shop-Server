@@ -1,0 +1,28 @@
+{
+    "_id": {
+        "$oid": "6328dc22ff173db503944058"
+    },
+    "version": "0.948",
+    "date": "2022.11.01",
+    "changes": {
+        "added": [
+            "RWD (Mobile view) for Basket page",
+            "RWD (Mobile view) for Product page",
+            "RWD (Mobile view) for Comments section",
+            "Nickname validation. Now inappropriate names are rejected ",
+            "RWD (Mobile view) for PopUp windows",
+            "New products sections 'You May Like', with carousel animation ",
+            "New image carousel",
+            "User can now add image with comment",
+            "Show bigger picture of product and images of users comments",
+            "Notification functionality when user make action (add product, change user account settings, etc)"
+        ],
+        "fixes": [
+            "Loading animation is now in the center of the contener",
+            "After using link to product user is now redirected to the top of the product page",
+            "Sort by date is now sorting correctly",
+            "General problems (prices, form width,PopUp windows)"
+        ]
+    },
+    "__v": 0
+}
