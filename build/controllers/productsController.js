@@ -23,11 +23,11 @@ const getAllProducts = (req, res) => __awaiter(void 0, void 0, void 0, function*
     try {
         let response = yield Products_1.default.find({}).lean();
         let products = product_services_1.default.productsDiscount(response);
-        products = product_services_1.default.filterProducts(products, ram, discounts, disk, producers, processors);
-        products = yield product_services_1.default.sortProducts(products, sortBy);
-        products = product_services_1.default.searchProduct(products, searchTerm);
-        products = yield product_services_1.default.addCommentParamsToProductObject(products);
-        res.status(200).send(products);
+        let filteredProducts = product_services_1.default.filterProducts(products, ram, discounts, disk, producers, processors);
+        let sortedProducts = yield product_services_1.default.sortProducts(filteredProducts, sortBy);
+        let searchedProducts = product_services_1.default.searchProduct(sortedProducts, searchTerm);
+        let productWithAdditionalParams = yield product_services_1.default.addCommentParamsToProductObject(searchedProducts);
+        res.status(200).send(productWithAdditionalParams);
     }
     catch (err) {
         console.log(err);
