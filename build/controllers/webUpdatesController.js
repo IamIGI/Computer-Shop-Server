@@ -45,7 +45,7 @@ const getAllUpdates = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         (0, errorHandlers_1.apiErrorHandler)(req, res, err);
     }
 });
-const getPDF = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const getPDF = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`${req.originalUrl}`);
     try {
         const response = yield WebUpdates_1.default.find({}).lean();
@@ -53,10 +53,7 @@ const getPDF = (req, res, next) => __awaiter(void 0, void 0, void 0, function* (
             'Content-Type': 'application/pdf',
             'Content-Disposition': `attachment;filename=UpdatesLogs.pdf`,
         });
-        //@ts-ignore
-        webUpdates_1.default.buildPDF(
-        //DOPYTAC
-        (chunk) => stream.write(chunk), () => stream.end(), response);
+        webUpdates_1.default.buildPDF((chunk) => stream.write(chunk), () => stream.end(), response);
         console.log('Send update list (PDF) successfully');
     }
     catch (err) {

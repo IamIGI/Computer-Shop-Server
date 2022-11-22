@@ -123,7 +123,6 @@ function getPaymentMethod(method: string): string | undefined {
 }
 
 function buildPDF(dataCallback: (...args: any[]) => void, endCallback: (...args: any[]) => void, data: OrderDocument) {
-    // console.log(data);
     const logoImage = path.join(__dirname, '../../public/img/logo.PNG');
     const robotoMedium = path.join(__dirname, '../../public/fonts/Roboto-Medium.ttf');
     const robotoRegular = path.join(__dirname, '../../public/fonts/Roboto-Regular.ttf');

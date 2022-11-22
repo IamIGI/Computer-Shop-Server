@@ -1,0 +1,28 @@
+{
+    "_id": {
+        "$oid": "6328dc22ff173db503944058"
+    },
+    "version": "0.948",
+    "date": "2022.11.01",
+    "changes": {
+        "added": [
+            "Stripe payment method functionality when user choose paying with card",
+            "New drop-down list design in comments and product section",
+            "Article general page",
+            "Page for given article",
+            "Articles section on home page",
+            "New products sections 'You May Like', with carousel animation ",
+            "New image carousel",
+            "User can now add image with comment",
+            "Show bigger picture of product and images of users comments",
+            "Notification functionality when user make action (add product, change user account settings, etc)"
+        ],
+        "fixes": [
+            "REGEX - validation of Polish characters on forms ",
+            "Nav bar on middle screen is more readable",
+            "Sort by date is now sorting correctly",
+            "General problems (prices, form width,PopUp windows)"
+        ]
+    },
+    "__v": 0
+}

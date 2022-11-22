@@ -115,7 +115,6 @@ function getPaymentMethod(method) {
     }
 }
 function buildPDF(dataCallback, endCallback, data) {
-    // console.log(data);
     const logoImage = path_1.default.join(__dirname, '../../public/img/logo.PNG');
     const robotoMedium = path_1.default.join(__dirname, '../../public/fonts/Roboto-Medium.ttf');
     const robotoRegular = path_1.default.join(__dirname, '../../public/fonts/Roboto-Regular.ttf');

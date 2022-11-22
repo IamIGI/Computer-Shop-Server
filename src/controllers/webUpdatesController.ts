@@ -2,7 +2,7 @@ import WebUpdates from '../model/WebUpdates';
 import format from 'date-fns/format';
 import { apiErrorHandler } from '../middleware/errorHandlers';
 import webUpdatedPDF from '../middleware/pdfCreator/webUpdates';
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response } from 'express';
 
 const addNewUpdate = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
@@ -37,7 +37,7 @@ const getAllUpdates = async (req: Request, res: Response) => {
     }
 };
 
-const getPDF = async (req: Request, res: Response, next: NextFunction) => {
+const getPDF = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
 
     try {
@@ -46,9 +46,8 @@ const getPDF = async (req: Request, res: Response, next: NextFunction) => {
             'Content-Type': 'application/pdf',
             'Content-Disposition': `attachment;filename=UpdatesLogs.pdf`,
         });
-        //@ts-ignore
+
         webUpdatedPDF.buildPDF(
-            //DOPYTAC
             (chunk: any) => stream.write(chunk),
             () => stream.end(),
             response

@@ -105,4 +105,4 @@ function buildPDF(
     doc.end();
 }
 
-export default buildPDF;
+export default { buildPDF };

@@ -90,4 +90,4 @@ function buildPDF(dataCallback, endCallback, data) {
     }
     doc.end();
 }
-exports.default = buildPDF;
+exports.default = { buildPDF };
