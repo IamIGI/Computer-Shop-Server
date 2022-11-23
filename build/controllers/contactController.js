@@ -18,10 +18,8 @@ const format_1 = __importDefault(require("date-fns/format"));
 const contact_services_1 = __importDefault(require("../services/contact.services"));
 const sendMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`${req.originalUrl}`);
-    //category: 0 - error, 1 - cooperation
     const files = req.files;
     const { name, email, message, category } = req.body;
-    console.log(name, email, message, category);
     const date = (0, format_1.default)(new Date(), 'yyyy.MM.dd-HH:mm:ss');
     if (yield contact_services_1.default.validateMessage(name)) {
         return res.status(200).json({ message: 'Given name contains vulgar and offensive content', code: '002' });
