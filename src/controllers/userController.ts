@@ -49,7 +49,6 @@ const updateEnlistments = async (req: Request, res: Response) => {
         await UserModel.updateOne(
             { _id },
             {
-                // email: podsiadlo@gmail.com
                 Enlistments: {
                     shopRules: true,
                     email,
