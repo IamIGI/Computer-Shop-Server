@@ -8,13 +8,11 @@ import { Request, Response } from 'express';
 //morning Promotion
 schedule.scheduleJob('58 59 09 * * *', async function () {
     const response = await changeHotShootPromotion(700);
-    console.log(response);
 });
 
 //evening Promotion
 schedule.scheduleJob('58 59 21 * * *', async function () {
     const response = await changeHotShootPromotion(500);
-    console.log(response);
 });
 
 const getHotShoot = async (req: Request, res: Response) => {

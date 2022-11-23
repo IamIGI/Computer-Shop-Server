@@ -21,14 +21,12 @@ const node_schedule_1 = __importDefault(require("node-schedule"));
 node_schedule_1.default.scheduleJob('58 59 09 * * *', function () {
     return __awaiter(this, void 0, void 0, function* () {
         const response = yield (0, changeHotShootPromotion_1.default)(700);
-        console.log(response);
     });
 });
 //evening Promotion
 node_schedule_1.default.scheduleJob('58 59 21 * * *', function () {
     return __awaiter(this, void 0, void 0, function* () {
         const response = yield (0, changeHotShootPromotion_1.default)(500);
-        console.log(response);
     });
 });
 const getHotShoot = (req, res) => __awaiter(void 0, void 0, void 0, function* () {

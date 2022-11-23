@@ -1,0 +1,51 @@
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const ForbiddenWords_1 = __importDefault(require("../model/ForbiddenWords"));
+const path_1 = __importDefault(require("path"));
+/** check if message contain vulgar language */
+function validateMessage(message) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const forbiddenWords = (yield ForbiddenWords_1.default.find({}).exec())[0].forbiddenWords;
+        for (let i = 0; i < forbiddenWords.length; i++) {
+            if (message.includes(forbiddenWords[i])) {
+                return true;
+            }
+        }
+        return false;
+    });
+}
+/** create images array if images where send by user */
+function checkForImages(files) {
+    let added = false;
+    let images = [];
+    if (Boolean(files)) {
+        added = true;
+        Object.keys(files).forEach((key) => {
+            images.push(files[key].name);
+        });
+    }
+    return { added, images };
+}
+/** save files in serer folder */
+function saveImages(files, messageId, messageCategory) {
+    if (Boolean(files)) {
+        const category = messageCategory === '0' ? 'errors' : 'collaboration';
+        Object.keys(files).forEach((key) => {
+            const filepath = path_1.default.join(__dirname, `../files/contactAuthor/${category}/${messageId}`, files[key].name);
+            files[key].mv(filepath);
+        });
+    }
+}
+exports.default = { validateMessage, checkForImages, saveImages };

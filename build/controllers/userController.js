@@ -55,7 +55,6 @@ const updateEnlistments = (req, res) => __awaiter(void 0, void 0, void 0, functi
         return res.status(204).json({ message: `UserID: ${_id}. Given user does not exists in db` });
     try {
         yield Users_1.default.updateOne({ _id }, {
-            // email: podsiadlo@gmail.com
             Enlistments: {
                 shopRules: true,
                 email,

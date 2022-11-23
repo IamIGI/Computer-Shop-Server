@@ -13,40 +13,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Contact_1 = __importDefault(require("../model/Contact"));
-const ForbiddenWords_1 = __importDefault(require("../model/ForbiddenWords"));
 const errorHandlers_1 = require("../middleware/errorHandlers");
 const format_1 = __importDefault(require("date-fns/format"));
-const path_1 = __importDefault(require("path"));
+const contact_services_1 = __importDefault(require("../services/contact.services"));
 const sendMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`${req.originalUrl}`);
     //category: 0 - error, 1 - cooperation
     const files = req.files;
     const { name, email, message, category } = req.body;
+    console.log(name, email, message, category);
     const date = (0, format_1.default)(new Date(), 'yyyy.MM.dd-HH:mm:ss');
-    //validate message
-    //Check for vulgar and offensive content
-    const forbiddenWords = (yield ForbiddenWords_1.default.find({}).exec())[0].forbiddenWords;
-    for (let i = 0; i < forbiddenWords.length; i++) {
-        if (name.includes(forbiddenWords[i])) {
-            return res.status(200).json({ message: 'Given name contains vulgar and offensive content', code: '002' });
-        }
+    if (yield contact_services_1.default.validateMessage(name)) {
+        return res.status(200).json({ message: 'Given name contains vulgar and offensive content', code: '002' });
     }
-    for (let i = 0; i < forbiddenWords.length; i++) {
-        if (message.includes(forbiddenWords[i])) {
-            return res
-                .status(200)
-                .json({ message: 'Given content contains vulgar and offensive content', code: '001' });
-        }
+    if (yield contact_services_1.default.validateMessage(message)) {
+        return res.status(200).json({ message: 'Given content contains vulgar and offensive content', code: '001' });
     }
-    let added = false;
-    let images = []; // ? is it working?
-    if (Boolean(files)) {
-        added = true;
-        Object.keys(files).forEach((key) => {
-            images.push(files[key].name);
-        });
-    }
-    //save message
+    let { added, images } = contact_services_1.default.checkForImages(files);
     const newMessage = new Contact_1.default({
         name,
         email,
@@ -55,24 +38,12 @@ const sendMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         category,
         image: {
             added,
-            images, //dopytac
+            images,
         },
     });
     try {
-        // save text data of the message
         const response = yield newMessage.save();
-        // save files data of the message
-        if (Boolean(files)) {
-            Object.keys(files).forEach((key) => {
-                const filepath = path_1.default.join(__dirname, `../files/contactAuthor/errors/${response._id}`, files[key].name);
-                files[key].mv(filepath, (err) => {
-                    if (err)
-                        return console.log({ status: 'error', message: err });
-                    if (err)
-                        return res.status(400).json({ status: 'error', message: err });
-                });
-            });
-        }
+        contact_services_1.default.saveImages(files, response._id, category);
         console.log({ status: 'success', message: 'new message to author', date, code: '000' });
         res.status(200).json({ status: 'success', message: 'new message to author', date, code: '000' });
     }
