@@ -16,18 +16,20 @@ const Contact_1 = __importDefault(require("../model/Contact"));
 const errorHandlers_1 = require("../middleware/errorHandlers");
 const format_1 = __importDefault(require("date-fns/format"));
 const contact_services_1 = __importDefault(require("../services/contact.services"));
+const validateMessage_1 = __importDefault(require("../utils/validateMessage"));
+const isImageAttachedMessage_1 = __importDefault(require("../utils/isImageAttachedMessage"));
 const sendMessage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`${req.originalUrl}`);
     const files = req.files;
     const { name, email, message, category } = req.body;
     const date = (0, format_1.default)(new Date(), 'yyyy.MM.dd-HH:mm:ss');
-    if (yield contact_services_1.default.validateMessage(name)) {
+    if (yield (0, validateMessage_1.default)(name)) {
         return res.status(200).json({ message: 'Given name contains vulgar and offensive content', code: '002' });
     }
-    if (yield contact_services_1.default.validateMessage(message)) {
+    if (yield (0, validateMessage_1.default)(message)) {
         return res.status(200).json({ message: 'Given content contains vulgar and offensive content', code: '001' });
     }
-    let { added, images } = contact_services_1.default.checkForImages(files);
+    let { added, images } = (0, isImageAttachedMessage_1.default)(files);
     const newMessage = new Contact_1.default({
         name,
         email,
