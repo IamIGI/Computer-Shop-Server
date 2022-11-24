@@ -25,6 +25,7 @@ export interface CommentSchema {
         images: string[];
     };
     usersWhoLiked?: [{ userId: string; likeUp: boolean }];
+    length?: number;
 }
 
 export interface CommentInput {

@@ -11,7 +11,10 @@ const eachScoreInit = [
     { number: 0, percentage: 0 },
 ];
 
-function filterRating(filteredComments: { comments: CommentSchema[]; length: number }, rating: number) {
+function filterRating(
+    filteredComments: { comments: CommentSchema[]; length: number },
+    rating: number
+): { comments: CommentSchema[]; length: number } {
     if (rating === 0) return filteredComments;
 
     const filtered = [];
@@ -22,7 +25,10 @@ function filterRating(filteredComments: { comments: CommentSchema[]; length: num
     return { comments: filtered, length: filtered.length };
 }
 
-function filterConfirmed(filteredComments: { comments: CommentSchema[]; length: number }, confirmed: boolean) {
+function filterConfirmed(
+    filteredComments: { comments: CommentSchema[]; length: number },
+    confirmed: boolean
+): { comments: CommentSchema[]; length: number } {
     //0 - true, 1- false, 2 - mean "No filter"
     if (!confirmed) return filteredComments;
 

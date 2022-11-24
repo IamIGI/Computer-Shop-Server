@@ -4,6 +4,8 @@ import format from 'date-fns/format';
 import { Request, Response } from 'express';
 import fileUpload from 'express-fileupload';
 import contactServices from '../services/contact.services';
+import validateMessage from '../utils/validateMessage';
+import imageAttachedToMessage from '../utils/isImageAttachedMessage';
 
 interface fileRequest extends fileUpload.UploadedFile {
     name: string;
@@ -12,19 +14,19 @@ interface fileRequest extends fileUpload.UploadedFile {
 
 const sendMessage = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
-    const files = req.files as unknown as fileRequest[];
+    const files = req.files as fileUpload.FileArray;
     const { name, email, message, category } = req.body;
     const date = format(new Date(), 'yyyy.MM.dd-HH:mm:ss');
 
-    if (await contactServices.validateMessage(name)) {
+    if (await validateMessage(name)) {
         return res.status(200).json({ message: 'Given name contains vulgar and offensive content', code: '002' });
     }
 
-    if (await contactServices.validateMessage(message)) {
+    if (await validateMessage(message)) {
         return res.status(200).json({ message: 'Given content contains vulgar and offensive content', code: '001' });
     }
 
-    let { added, images } = contactServices.checkForImages(files);
+    let { added, images } = imageAttachedToMessage(files);
 
     const newMessage = new Contact({
         name,
