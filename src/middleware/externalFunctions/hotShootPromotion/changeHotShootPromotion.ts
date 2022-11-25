@@ -72,7 +72,6 @@ async function changeHotShootPromotion(discountValue: number) {
                                     productData: productForHotShoot,
                                     discount: discountValue,
                                     date: changeDate,
-
                                     isMorning,
                                 },
                             },

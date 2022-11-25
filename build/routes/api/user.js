@@ -19,6 +19,15 @@ router
 router
     .route('/enlistments')
     .put((0, verifyRoles_1.default)(roles_list_1.default.Admin, roles_list_1.default.Editor, roles_list_1.default.User), userController_1.default.updateEnlistments);
+router
+    .route('/template/add')
+    .post((0, verifyRoles_1.default)(roles_list_1.default.Admin, roles_list_1.default.Editor, roles_list_1.default.User), userController_1.default.addRecipientTemplate);
+router
+    .route('/template/get')
+    .get((0, verifyRoles_1.default)(roles_list_1.default.Admin, roles_list_1.default.Editor, roles_list_1.default.User), userController_1.default.getRecipientTemplate);
+router
+    .route('/template/edit')
+    .post((0, verifyRoles_1.default)(roles_list_1.default.Admin, roles_list_1.default.Editor, roles_list_1.default.User), userController_1.default.editRecipientTemplate);
 router.route('/delete').post((0, verifyRoles_1.default)(roles_list_1.default.Admin, roles_list_1.default.User), userController_1.default.deleteUser);
 //account order data
 router
