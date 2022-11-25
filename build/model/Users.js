@@ -5,6 +5,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const Schema = mongoose_1.default.Schema;
+const recipientTemplateSchema = new Schema({
+    name: String,
+    street: String,
+    zipCode: String,
+    place: String,
+    email: String,
+    phone: Number,
+    comment: String,
+});
 const userSchema = new Schema({
     firstName: String,
     lastName: String,
@@ -29,6 +38,16 @@ const userSchema = new Schema({
     userOrders: [Array],
     userComments: Array,
     commentedProducts: Array,
+    recipientTemplates: [
+        {
+            name: String,
+            street: String,
+            zipCode: String,
+            place: String,
+            email: String,
+            phone: Number,
+        },
+    ],
 });
 const UserModel = mongoose_1.default.model('users', userSchema);
 exports.default = UserModel;

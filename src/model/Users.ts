@@ -1,5 +1,14 @@
 import mongoose from 'mongoose';
 
+export interface recipientTemplate {
+    name: string;
+    street: string;
+    zipCode: string;
+    place: string;
+    email: string;
+    phone: number;
+}
+
 export interface UserInput {
     firstName: string;
     lastName: string;
@@ -24,11 +33,22 @@ export interface UserInput {
     userOrders: string[];
     userComments: string[]; // maybe mongoose.Schema.Types.ObjectId[]
     commentedProducts: string[];
+    recipientTemplates?: recipientTemplate[];
 }
 
 export interface UserDocument extends UserInput, mongoose.Document {}
 
 const Schema = mongoose.Schema;
+
+const recipientTemplateSchema = new Schema({
+    name: String,
+    street: String,
+    zipCode: String,
+    place: String,
+    email: String,
+    phone: Number,
+    comment: String,
+});
 
 const userSchema = new Schema({
     firstName: String,
@@ -54,6 +74,16 @@ const userSchema = new Schema({
     userOrders: [Array],
     userComments: Array,
     commentedProducts: Array,
+    recipientTemplates: [
+        {
+            name: String,
+            street: String,
+            zipCode: String,
+            place: String,
+            email: String,
+            phone: Number,
+        },
+    ],
 });
 
 const UserModel = mongoose.model<UserDocument>('users', userSchema);

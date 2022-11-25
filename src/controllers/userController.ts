@@ -3,6 +3,7 @@ import { apiErrorHandler } from '../middleware/errorHandlers';
 import bcrypt from 'bcrypt';
 import { logEvents } from '../middleware/logEvents';
 import { Request, Response } from 'express';
+import userServices from '../services/user.services';
 
 const getUserData = async (req: Request, res: Response) => {
     console.log(req.originalUrl);
@@ -46,18 +47,8 @@ const updateEnlistments = async (req: Request, res: Response) => {
     if (!user) return res.status(204).json({ message: `UserID: ${_id}. Given user does not exists in db` });
 
     try {
-        await UserModel.updateOne(
-            { _id },
-            {
-                Enlistments: {
-                    shopRules: true,
-                    email,
-                    sms,
-                    phone,
-                    adjustedOffers,
-                },
-            }
-        );
+        await userServices.updateEnlistments(_id, email, sms, phone, adjustedOffers);
+
         logEvents(`Status: 202\t UserID: ${_id}.\t Account enlistments updated.`, `reqLog.Log`);
         res.status(202).json({ success: `UserID: ${_id}.  Account enlistments updated.` });
     } catch (err) {
@@ -65,9 +56,72 @@ const updateEnlistments = async (req: Request, res: Response) => {
     }
 };
 
+const addRecipientTemplate = async (req: Request, res: Response) => {
+    console.log(`${req.originalUrl}`);
+    const {
+        userId,
+        recipientTemplate: { name, street, zipCode, place, email, phone },
+    } = req.body;
+
+    const user = await UserModel.findOne({ _id: userId }).exec();
+    if (!user) return res.status(204).json({ message: `UserID: ${userId}. Given user does not exists in db` });
+
+    if (!(await userServices.allowRecipientTemplate(userId)))
+        return res.status(400).json({ message: `UserID: ${userId}. User can have max 4 templates` });
+
+    try {
+        await userServices.updateRecipientDetailsTemplates(userId, name, street, zipCode, place, email, phone);
+
+        logEvents(`Status: 202\t UserID: ${userId}.\t Added new recipient template.`, `reqLog.Log`);
+        res.status(202).json({ success: `UserID: ${userId}.  Added new recipient template.` });
+    } catch (err) {
+        apiErrorHandler(req, res, err as Error);
+    }
+};
+
+const getRecipientTemplate = async (req: Request, res: Response) => {
+    console.log(req.originalUrl);
+    const { userId } = req.body;
+    const user = await UserModel.findOne({ _id: userId }).exec();
+    if (!user) return res.status(204).json({ message: `UserID: ${userId}. Given user does not exists in db` });
+
+    console.log(`User: ${userId} data send`);
+    return res.status(200).json(user.recipientTemplates);
+};
+
+const editRecipientTemplate = async (req: Request, res: Response) => {
+    console.log(`${req.originalUrl}`);
+    const {
+        userId,
+        recipientId,
+        recipientTemplate: { name, street, zipCode, place, email, phone },
+    } = req.body;
+
+    const user = await UserModel.findOne({ _id: userId }).exec();
+    if (!user) return res.status(204).json({ message: `UserID: ${userId}. Given user does not exists in db` });
+
+    try {
+        await userServices.replaceRecipientDetailsTemplate(
+            userId,
+            recipientId,
+            name,
+            street,
+            zipCode,
+            place,
+            email,
+            phone
+        );
+
+        logEvents(`Status: 202\t UserID: ${userId}.\t Successfully edited recipient template.`, `reqLog.Log`);
+        res.status(202).json({ success: `UserID: ${userId}.  Successfully edited recipient template.` });
+    } catch (err) {
+        apiErrorHandler(req, res, err as Error);
+    }
+};
+
 const deleteUser = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
-    let { _id, password } = req.body;
+    const { _id, password } = req.body;
 
     const user = await UserModel.findOne({ _id }).exec();
     if (!user) return res.status(204).json({ message: `UserID: ${_id}. Given user does not exists in db` });
@@ -76,7 +130,6 @@ const deleteUser = async (req: Request, res: Response) => {
     if (!match) return res.status(406).json({ message: `Wrong password for user: ${_id}` });
 
     try {
-        console.log('deleting user.');
         await user.deleteOne({ _id });
         logEvents(`Status: 202\t UserID: ${_id}.\t Account was deleted.`, `reqLog.Log`);
         res.status(202).json({ message: `UserID: ${_id}. Account was successfully deleted` });
@@ -85,4 +138,12 @@ const deleteUser = async (req: Request, res: Response) => {
     }
 };
 
-export default { getUserData, updateAccountData, updateEnlistments, deleteUser };
+export default {
+    getUserData,
+    updateAccountData,
+    updateEnlistments,
+    deleteUser,
+    addRecipientTemplate,
+    getRecipientTemplate,
+    editRecipientTemplate,
+};
