@@ -2,6 +2,7 @@ import PromoCodesModel from '../model/PromoCodes';
 
 async function updatePromoCodes(category: string, product: string, code: string): Promise<object> {
     const documentId = '6384898726c34784116adace';
+    console.log(category === 'products');
     let response: object;
     switch (category) {
         case 'general':
@@ -102,9 +103,14 @@ async function updatePromoCodes(category: string, product: string, code: string)
                 default:
                     response = { err: 'bad product key', message: 'given product do not exists' };
             }
-
+            break;
         default:
-            response = { err: 'bad category key', message: 'given category do not exists' };
+            response = {
+                err: 'bad category key',
+                message: 'given category do not exists',
+                category,
+                isTrue: category === 'products',
+            };
             console.log('given category do not exists');
     }
 

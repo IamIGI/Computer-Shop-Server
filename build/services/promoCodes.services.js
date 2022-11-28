@@ -16,6 +16,7 @@ const PromoCodes_1 = __importDefault(require("../model/PromoCodes"));
 function updatePromoCodes(category, product, code) {
     return __awaiter(this, void 0, void 0, function* () {
         const documentId = '6384898726c34784116adace';
+        console.log(category === 'products');
         let response;
         switch (category) {
             case 'general':
@@ -86,8 +87,14 @@ function updatePromoCodes(category, product, code) {
                     default:
                         response = { err: 'bad product key', message: 'given product do not exists' };
                 }
+                break;
             default:
-                response = { err: 'bad category key', message: 'given category do not exists' };
+                response = {
+                    err: 'bad category key',
+                    message: 'given category do not exists',
+                    category,
+                    isTrue: category === 'products',
+                };
                 console.log('given category do not exists');
         }
         yield PromoCodes_1.default.updateOne({
