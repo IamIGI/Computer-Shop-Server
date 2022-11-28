@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Articles_1 = __importDefault(require("../model/Articles"));
+/** filter articles by given type: none / news / guide */
 function filterArticles(articleType) {
     return __awaiter(this, void 0, void 0, function* () {
         if (articleType === 'none') {
