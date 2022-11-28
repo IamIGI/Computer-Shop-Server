@@ -30,5 +30,12 @@ const addPromoCodes = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 const getPromoCodes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`${req.originalUrl}`);
     const category = req.params.category;
+    try {
+        const promoCodes = yield promoCodes_services_1.default.filterPromoCodes(category);
+        return res.status(200).json(promoCodes);
+    }
+    catch (err) {
+        (0, errorHandlers_1.apiErrorHandler)(req, res, err);
+    }
 });
 exports.default = { addPromoCodes, getPromoCodes };

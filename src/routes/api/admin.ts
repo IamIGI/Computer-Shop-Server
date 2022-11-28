@@ -9,6 +9,6 @@ import promoCodesController from '../../controllers/promoCodesController';
 router.route('/hotShoot/set').post(verifyRoles(ROLES_LIST.Admin!), hotShootController.setHotShoot);
 router.route('/webUpdates/update').post(verifyRoles(ROLES_LIST.Admin!), webUpdatesController.addNewUpdate);
 router.route('/promoCodes/add').post(verifyRoles(ROLES_LIST.Admin!), promoCodesController.addPromoCodes);
-router.route('/promoCodes/get/:category').post(verifyRoles(ROLES_LIST.Admin!), promoCodesController.getPromoCodes);
+router.route('/promoCodes/get/:category').get(verifyRoles(ROLES_LIST.Admin!), promoCodesController.getPromoCodes);
 
 export = router;

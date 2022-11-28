@@ -1,4 +1,4 @@
-import PromoCodesModel from '../model/PromoCodes';
+import PromoCodesModel, { PromoCodesDocument } from '../model/PromoCodes';
 import format from 'date-fns/format';
 
 async function addPromoCodes(category: string, product: string, code: string, expiredIn: number): Promise<void> {
@@ -33,4 +33,8 @@ async function checkIfPromoCodeExists(code: string): Promise<boolean> {
     }
 }
 
-export default { addPromoCodes, checkIfPromoCodeExists };
+async function filterPromoCodes(category: string): Promise<PromoCodesDocument> {
+    return await PromoCodesModel.find({ category }).lean();
+}
+
+export default { addPromoCodes, checkIfPromoCodeExists, filterPromoCodes };

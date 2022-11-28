@@ -12,5 +12,5 @@ const promoCodesController_1 = __importDefault(require("../../controllers/promoC
 router.route('/hotShoot/set').post((0, verifyRoles_1.default)(roles_list_1.default.Admin), hotShootController_1.default.setHotShoot);
 router.route('/webUpdates/update').post((0, verifyRoles_1.default)(roles_list_1.default.Admin), webUpdatesController_1.default.addNewUpdate);
 router.route('/promoCodes/add').post((0, verifyRoles_1.default)(roles_list_1.default.Admin), promoCodesController_1.default.addPromoCodes);
-router.route('/promoCodes/get/:category').post((0, verifyRoles_1.default)(roles_list_1.default.Admin), promoCodesController_1.default.getPromoCodes);
+router.route('/promoCodes/get/:category').get((0, verifyRoles_1.default)(roles_list_1.default.Admin), promoCodesController_1.default.getPromoCodes);
 module.exports = router;

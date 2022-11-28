@@ -20,6 +20,13 @@ const addPromoCodes = async (req: Request, res: Response) => {
 const getPromoCodes = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
     const category = req.params.category;
+
+    try {
+        const promoCodes = await promoCodesServices.filterPromoCodes(category);
+        return res.status(200).json(promoCodes);
+    } catch (err) {
+        apiErrorHandler(req, res, err as Error);
+    }
 };
 
 export default { addPromoCodes, getPromoCodes };

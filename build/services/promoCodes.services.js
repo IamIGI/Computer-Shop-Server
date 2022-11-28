@@ -47,4 +47,9 @@ function checkIfPromoCodeExists(code) {
         }
     });
 }
-exports.default = { addPromoCodes, checkIfPromoCodeExists };
+function filterPromoCodes(category) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield PromoCodes_1.default.find({ category }).lean();
+    });
+}
+exports.default = { addPromoCodes, checkIfPromoCodeExists, filterPromoCodes };
