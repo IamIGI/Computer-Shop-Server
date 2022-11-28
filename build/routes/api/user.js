@@ -24,11 +24,14 @@ router
     .post((0, verifyRoles_1.default)(roles_list_1.default.Admin, roles_list_1.default.Editor, roles_list_1.default.User), userController_1.default.addRecipientTemplate);
 router
     .route('/template/get')
-    .get((0, verifyRoles_1.default)(roles_list_1.default.Admin, roles_list_1.default.Editor, roles_list_1.default.User), userController_1.default.getRecipientTemplate);
+    .post((0, verifyRoles_1.default)(roles_list_1.default.Admin, roles_list_1.default.Editor, roles_list_1.default.User), userController_1.default.getRecipientTemplate);
 router
     .route('/template/edit')
     .post((0, verifyRoles_1.default)(roles_list_1.default.Admin, roles_list_1.default.Editor, roles_list_1.default.User), userController_1.default.editRecipientTemplate);
-router.route('/delete').post((0, verifyRoles_1.default)(roles_list_1.default.Admin, roles_list_1.default.User), userController_1.default.deleteUser);
+router
+    .route('/template/delete')
+    .delete((0, verifyRoles_1.default)(roles_list_1.default.Admin, roles_list_1.default.Editor, roles_list_1.default.User), userController_1.default.deleteRecipientTemplate);
+router.route('/delete').delete((0, verifyRoles_1.default)(roles_list_1.default.Admin, roles_list_1.default.User), userController_1.default.deleteUser);
 //account order data
 router
     .route('/orderhistory/:orderId')

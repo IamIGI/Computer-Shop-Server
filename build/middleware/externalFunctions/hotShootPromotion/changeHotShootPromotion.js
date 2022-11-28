@@ -83,13 +83,11 @@ function changeHotShootPromotion(discountValue) {
             // later write there "else" so if there is something in queue then use this item for promotion
             //remove item from blocked list if 47 hours time block pass
             const removeItemFromBlockedList = (0, noLongerBlockedProducts_1.default)(hotShoot.blocked, 47);
-            console.log({ message: 'Item removed from blocked list', item: removeItemFromBlockedList });
             if (removeItemFromBlockedList.length !== 0) {
                 //update blocked list
                 const blockedListUpdate = yield HotShoot_1.default.updateOne({ _id: '631b62207137bd1bfd2c60aa' }, {
                     $pull: { blocked: { productId: removeItemFromBlockedList[0].productId } },
                 });
-                console.log(blockedListUpdate);
             }
             return {
                 message: 'Timer Hot Shoot promotion change successfully',

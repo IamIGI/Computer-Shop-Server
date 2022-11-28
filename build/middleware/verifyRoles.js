@@ -5,7 +5,7 @@ const verifyRoles = (...allowedRoles) => {
         if (!req.roles)
             return res.status(401).json({ message: 'VerifyRoles: no roles are specified in the request' });
         const rolesArray = [...allowedRoles];
-        console.log('Allowed Roles: ' + rolesArray + '\t Account role:' + req.roles);
+        // console.log('Allowed Roles: ' + rolesArray + '\t Account role:' + (req as CustomRequestJWT).roles);
         const result = req.roles
             .map((role) => rolesArray.includes(role))
             .find((val) => val === true);

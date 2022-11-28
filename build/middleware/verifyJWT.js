@@ -9,7 +9,7 @@ require('dotenv').config(path_1.default.join(__dirname, '..', '.env'));
 const verifyJWT = (req, res, next) => {
     console.log(req.originalUrl);
     const authHeader = req.headers.authorization || req.headers.Authorization;
-    console.log(`Token: ${authHeader}`);
+    // console.log(`Token: ${authHeader}`);
     if (!(authHeader === null || authHeader === void 0 ? void 0 : authHeader.startsWith('Bearer ')))
         return res.status(401).json({ message: 'missing authorization token' });
     const token = authHeader.split(' ')[1];
