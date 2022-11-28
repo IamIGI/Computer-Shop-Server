@@ -21,12 +21,18 @@ router
     .post(verifyRoles(ROLES_LIST.Admin!, ROLES_LIST.Editor!, ROLES_LIST.User!), userController.addRecipientTemplate);
 router
     .route('/template/get')
-    .get(verifyRoles(ROLES_LIST.Admin!, ROLES_LIST.Editor!, ROLES_LIST.User!), userController.getRecipientTemplate);
+    .post(verifyRoles(ROLES_LIST.Admin!, ROLES_LIST.Editor!, ROLES_LIST.User!), userController.getRecipientTemplate);
 router
     .route('/template/edit')
     .post(verifyRoles(ROLES_LIST.Admin!, ROLES_LIST.Editor!, ROLES_LIST.User!), userController.editRecipientTemplate);
+router
+    .route('/template/delete')
+    .delete(
+        verifyRoles(ROLES_LIST.Admin!, ROLES_LIST.Editor!, ROLES_LIST.User!),
+        userController.deleteRecipientTemplate
+    );
 
-router.route('/delete').post(verifyRoles(ROLES_LIST.Admin!, ROLES_LIST.User!), userController.deleteUser);
+router.route('/delete').delete(verifyRoles(ROLES_LIST.Admin!, ROLES_LIST.User!), userController.deleteUser);
 
 //account order data
 router

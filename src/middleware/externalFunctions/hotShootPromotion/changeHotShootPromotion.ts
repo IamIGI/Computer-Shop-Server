@@ -90,7 +90,6 @@ async function changeHotShootPromotion(discountValue: number) {
 
         //remove item from blocked list if 47 hours time block pass
         const removeItemFromBlockedList = noLongerBlockedProducts(hotShoot.blocked, 47);
-        console.log({ message: 'Item removed from blocked list', item: removeItemFromBlockedList });
         if (removeItemFromBlockedList.length !== 0) {
             //update blocked list
             const blockedListUpdate = await HotShootModel.updateOne(
@@ -99,7 +98,6 @@ async function changeHotShootPromotion(discountValue: number) {
                     $pull: { blocked: { productId: removeItemFromBlockedList[0].productId } },
                 }
             );
-            console.log(blockedListUpdate);
         }
         return {
             message: 'Timer Hot Shoot promotion change successfully',

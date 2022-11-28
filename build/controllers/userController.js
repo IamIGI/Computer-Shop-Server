@@ -83,6 +83,7 @@ const addRecipientTemplate = (req, res) => __awaiter(void 0, void 0, void 0, fun
 const getRecipientTemplate = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(req.originalUrl);
     const { userId } = req.body;
+    console.log('userId: ' + userId);
     const user = yield Users_1.default.findOne({ _id: userId }).exec();
     if (!user)
         return res.status(204).json({ message: `UserID: ${userId}. Given user does not exists in db` });
@@ -99,6 +100,24 @@ const editRecipientTemplate = (req, res) => __awaiter(void 0, void 0, void 0, fu
         yield user_services_1.default.replaceRecipientDetailsTemplate(userId, recipientId, name, street, zipCode, place, email, phone);
         (0, logEvents_1.logEvents)(`Status: 202\t UserID: ${userId}.\t Successfully edited recipient template.`, `reqLog.Log`);
         res.status(202).json({ success: `UserID: ${userId}.  Successfully edited recipient template.` });
+    }
+    catch (err) {
+        (0, errorHandlers_1.apiErrorHandler)(req, res, err);
+    }
+});
+const deleteRecipientTemplate = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(`${req.originalUrl}`);
+    const { userId, recipientId } = req.body;
+    console.log(userId, recipientId);
+    const user = yield Users_1.default.findOne({ _id: userId }).exec();
+    if (!user)
+        return res.status(204).json({ message: `UserID: ${userId}. Given user does not exists in db` });
+    try {
+        yield Users_1.default.updateOne({ _id: userId }, {
+            $pull: { recipientTemplates: { _id: recipientId } },
+        });
+        (0, logEvents_1.logEvents)(`Status: 202\t UserID: ${userId}.\t Deleted recipient template.`, `reqLog.Log`);
+        res.status(202).json({ success: `UserID: ${userId}.  Deleted recipient template.` });
     }
     catch (err) {
         (0, errorHandlers_1.apiErrorHandler)(req, res, err);
@@ -130,4 +149,5 @@ exports.default = {
     addRecipientTemplate,
     getRecipientTemplate,
     editRecipientTemplate,
+    deleteRecipientTemplate,
 };

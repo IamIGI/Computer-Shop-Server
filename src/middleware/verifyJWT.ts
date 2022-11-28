@@ -21,7 +21,7 @@ export interface CustomRequestJWT extends Request {
 const verifyJWT = (req: Request, res: Response, next: NextFunction) => {
     console.log(req.originalUrl);
     const authHeader = (req.headers.authorization as string) || (req.headers.Authorization as string);
-    console.log(`Token: ${authHeader}`);
+    // console.log(`Token: ${authHeader}`);
     if (!authHeader?.startsWith('Bearer ')) return res.status(401).json({ message: 'missing authorization token' });
     const token = authHeader.split(' ')[1];
 
