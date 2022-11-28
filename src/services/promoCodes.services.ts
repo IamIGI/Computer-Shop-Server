@@ -1,129 +1,36 @@
 import PromoCodesModel from '../model/PromoCodes';
+import format from 'date-fns/format';
 
-async function updatePromoCodes(category: string, product: string, code: string): Promise<object> {
-    const documentId = '6384898726c34784116adace';
-    console.log(category === 'products');
-    let response: object;
-    switch (category) {
-        case 'general':
-            response = await PromoCodesModel.updateOne(
-                {
-                    _id: documentId,
-                },
-                {
-                    $push: { general: code },
-                }
-            );
+async function addPromoCodes(category: string, product: string, code: string, expiredIn: number): Promise<void> {
+    try {
+        const newPromoCode = new PromoCodesModel({
+            category,
+            product,
+            code,
+            createdAt: format(new Date(), 'yyyy.MM.dd'),
+            expiredIn: format(
+                new Date(Date.now() + 1000 /*sec*/ * 60 /*min*/ * 60 /*hour*/ * 24 /*day*/ * expiredIn),
+                'yyyy.MM.dd'
+            ),
+        });
 
-            break;
-        case 'delivery':
-            response = await PromoCodesModel.updateOne(
-                {
-                    _id: documentId,
-                },
-                {
-                    $push: { 'category.delivery': code },
-                }
-            );
-            break;
-        case 'products':
-            switch (product) {
-                case 'dell':
-                    response = await PromoCodesModel.updateOne(
-                        {
-                            _id: documentId,
-                        },
-                        {
-                            $push: { 'category.products.dell': code },
-                        }
-                    );
-
-                    break;
-                case 'msi':
-                    response = await PromoCodesModel.updateOne(
-                        {
-                            _id: documentId,
-                        },
-                        {
-                            $push: { 'category.products.msi': code },
-                        }
-                    );
-                    break;
-                case 'hp':
-                    response = await PromoCodesModel.updateOne(
-                        {
-                            _id: documentId,
-                        },
-                        {
-                            $push: { 'category.products.hp': code },
-                        }
-                    );
-                    break;
-                case 'asus':
-                    response = await PromoCodesModel.updateOne(
-                        {
-                            _id: documentId,
-                        },
-                        {
-                            $push: { 'category.products.asus': code },
-                        }
-                    );
-                    break;
-                case 'apple':
-                    response = await PromoCodesModel.updateOne(
-                        {
-                            _id: documentId,
-                        },
-                        {
-                            $push: { 'category.products.apple': code },
-                        }
-                    );
-                    break;
-                case 'microsoft':
-                    response = await PromoCodesModel.updateOne(
-                        {
-                            _id: documentId,
-                        },
-                        {
-                            $push: { 'category.products.microsoft': code },
-                        }
-                    );
-                    break;
-                case 'general':
-                    response = await PromoCodesModel.updateOne(
-                        {
-                            _id: documentId,
-                        },
-                        {
-                            $push: { 'category.products.general': code },
-                        }
-                    );
-                    break;
-
-                default:
-                    response = { err: 'bad product key', message: 'given product do not exists' };
-            }
-            break;
-        default:
-            response = {
-                err: 'bad category key',
-                message: 'given category do not exists',
-                category,
-                isTrue: category === 'products',
-            };
-            console.log('given category do not exists');
+        const response = await newPromoCode.save();
+        console.log(response);
+    } catch (err) {
+        console.log(err);
+        throw err;
     }
-
-    await PromoCodesModel.updateOne(
-        {
-            _id: documentId,
-        },
-        {
-            $push: { allCodes: code },
-        }
-    );
-
-    return response!;
 }
 
-export default { updatePromoCodes };
+async function checkIfPromoCodeExists(code: string): Promise<boolean> {
+    try {
+        const exists = await PromoCodesModel.findOne({ code }).exec();
+        if (!exists) return false;
+        return true;
+    } catch (err) {
+        console.log(err);
+        throw err;
+    }
+}
+
+export default { addPromoCodes, checkIfPromoCodeExists };

@@ -13,96 +13,38 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const PromoCodes_1 = __importDefault(require("../model/PromoCodes"));
-function updatePromoCodes(category, product, code) {
+const format_1 = __importDefault(require("date-fns/format"));
+function addPromoCodes(category, product, code, expiredIn) {
     return __awaiter(this, void 0, void 0, function* () {
-        const documentId = '6384898726c34784116adace';
-        console.log(category === 'products');
-        let response;
-        switch (category) {
-            case 'general':
-                response = yield PromoCodes_1.default.updateOne({
-                    _id: documentId,
-                }, {
-                    $push: { general: code },
-                });
-                break;
-            case 'delivery':
-                response = yield PromoCodes_1.default.updateOne({
-                    _id: documentId,
-                }, {
-                    $push: { 'category.delivery': code },
-                });
-                break;
-            case 'products':
-                switch (product) {
-                    case 'dell':
-                        response = yield PromoCodes_1.default.updateOne({
-                            _id: documentId,
-                        }, {
-                            $push: { 'category.products.dell': code },
-                        });
-                        break;
-                    case 'msi':
-                        response = yield PromoCodes_1.default.updateOne({
-                            _id: documentId,
-                        }, {
-                            $push: { 'category.products.msi': code },
-                        });
-                        break;
-                    case 'hp':
-                        response = yield PromoCodes_1.default.updateOne({
-                            _id: documentId,
-                        }, {
-                            $push: { 'category.products.hp': code },
-                        });
-                        break;
-                    case 'asus':
-                        response = yield PromoCodes_1.default.updateOne({
-                            _id: documentId,
-                        }, {
-                            $push: { 'category.products.asus': code },
-                        });
-                        break;
-                    case 'apple':
-                        response = yield PromoCodes_1.default.updateOne({
-                            _id: documentId,
-                        }, {
-                            $push: { 'category.products.apple': code },
-                        });
-                        break;
-                    case 'microsoft':
-                        response = yield PromoCodes_1.default.updateOne({
-                            _id: documentId,
-                        }, {
-                            $push: { 'category.products.microsoft': code },
-                        });
-                        break;
-                    case 'general':
-                        response = yield PromoCodes_1.default.updateOne({
-                            _id: documentId,
-                        }, {
-                            $push: { 'category.products.general': code },
-                        });
-                        break;
-                    default:
-                        response = { err: 'bad product key', message: 'given product do not exists' };
-                }
-                break;
-            default:
-                response = {
-                    err: 'bad category key',
-                    message: 'given category do not exists',
-                    category,
-                    isTrue: category === 'products',
-                };
-                console.log('given category do not exists');
+        try {
+            const newPromoCode = new PromoCodes_1.default({
+                category,
+                product,
+                code,
+                createdAt: (0, format_1.default)(new Date(), 'yyyy.MM.dd'),
+                expiredIn: (0, format_1.default)(new Date(Date.now() + 1000 /*sec*/ * 60 /*min*/ * 60 /*hour*/ * 24 /*day*/ * expiredIn), 'yyyy.MM.dd'),
+            });
+            const response = yield newPromoCode.save();
+            console.log(response);
         }
-        yield PromoCodes_1.default.updateOne({
-            _id: documentId,
-        }, {
-            $push: { allCodes: code },
-        });
-        return response;
+        catch (err) {
+            console.log(err);
+            throw err;
+        }
     });
 }
-exports.default = { updatePromoCodes };
+function checkIfPromoCodeExists(code) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const exists = yield PromoCodes_1.default.findOne({ code }).exec();
+            if (!exists)
+                return false;
+            return true;
+        }
+        catch (err) {
+            console.log(err);
+            throw err;
+        }
+    });
+}
+exports.default = { addPromoCodes, checkIfPromoCodeExists };
