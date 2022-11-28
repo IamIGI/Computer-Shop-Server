@@ -1,21 +1,14 @@
 import ArticleModel from '../model/Articles';
 import { apiErrorHandler } from '../middleware/errorHandlers';
 import { Request, Response } from 'express';
-
-async function DBgetArticles(articleType: string) {
-    if (articleType === 'none') {
-        return await ArticleModel.find({}).lean();
-    } else {
-        return await ArticleModel.find({ type: articleType }).lean();
-    }
-}
+import articleServices from '../services/article.services';
 
 const getAllArticles = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
     const type = req.params.type;
 
     try {
-        const articles = await DBgetArticles(type);
+        const articles = await articleServices.filterArticles(type);
         return res.status(200).json(articles);
     } catch (err) {
         apiErrorHandler(req, res, err as Error);

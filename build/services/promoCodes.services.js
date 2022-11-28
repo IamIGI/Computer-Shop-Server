@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const PromoCodes_1 = __importDefault(require("../model/PromoCodes"));
 const format_1 = __importDefault(require("date-fns/format"));
+/**add promo codes to db with expiration date given by number of days count from current date */
 function addPromoCodes(category, product, code, expiredIn) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -47,4 +48,10 @@ function checkIfPromoCodeExists(code) {
         }
     });
 }
-exports.default = { addPromoCodes, checkIfPromoCodeExists };
+/** filter promoCodes by given category: delivery, products, general */
+function filterPromoCodes(category) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield PromoCodes_1.default.find({ category }).lean();
+    });
+}
+exports.default = { addPromoCodes, checkIfPromoCodeExists, filterPromoCodes };

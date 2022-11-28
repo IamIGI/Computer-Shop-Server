@@ -14,21 +14,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const Articles_1 = __importDefault(require("../model/Articles"));
 const errorHandlers_1 = require("../middleware/errorHandlers");
-function DBgetArticles(articleType) {
-    return __awaiter(this, void 0, void 0, function* () {
-        if (articleType === 'none') {
-            return yield Articles_1.default.find({}).lean();
-        }
-        else {
-            return yield Articles_1.default.find({ type: articleType }).lean();
-        }
-    });
-}
+const article_services_1 = __importDefault(require("../services/article.services"));
 const getAllArticles = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`${req.originalUrl}`);
     const type = req.params.type;
     try {
-        const articles = yield DBgetArticles(type);
+        const articles = yield article_services_1.default.filterArticles(type);
         return res.status(200).json(articles);
     }
     catch (err) {

@@ -1,6 +1,6 @@
-import PromoCodesModel from '../model/PromoCodes';
+import PromoCodesModel, { PromoCodesDocument } from '../model/PromoCodes';
 import format from 'date-fns/format';
-
+/**add promo codes to db with expiration date given by number of days count from current date */
 async function addPromoCodes(category: string, product: string, code: string, expiredIn: number): Promise<void> {
     try {
         const newPromoCode = new PromoCodesModel({
@@ -33,4 +33,9 @@ async function checkIfPromoCodeExists(code: string): Promise<boolean> {
     }
 }
 
-export default { addPromoCodes, checkIfPromoCodeExists };
+/** filter promoCodes by given category: delivery, products, general */
+async function filterPromoCodes(category: string): Promise<PromoCodesDocument> {
+    return await PromoCodesModel.find({ category }).lean();
+}
+
+export default { addPromoCodes, checkIfPromoCodeExists, filterPromoCodes };
