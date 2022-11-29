@@ -15,8 +15,8 @@ export interface PromoInput {
     category: string;
     product?: string;
     code: string;
-    type?: string;
-    value?: number;
+    type: string;
+    value: number;
     createdAt: string;
     expiredIn: string;
 }

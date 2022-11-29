@@ -42,13 +42,12 @@ const checkProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     console.log(`${req.originalUrl}`);
     const { products, code } = req.body;
     if (!(yield promoCodes_services_1.default.checkIfPromoCodeExists(code)))
-        return res.status(400).json({ message: 'Bad code' });
+        return res.status(200).json({ message: 'Bad code', errCode: '001' });
     const promoCodeType = yield promoCodes_services_1.default.getPromoCodeType(code);
-    if (promoCodeType.category === 'delivery')
-        return res.status(200).json({ freeDelivery: true });
     let productsForDiscount = yield promoCodes_services_1.default.getProductsForDiscount(products, promoCodeType);
+    console.log(productsForDiscount);
     if (productsForDiscount.length === 0)
-        return res.status(200).json({ message: 'No product for discount' });
+        return res.status(200).json({ message: 'No product for discount', errCode: '002' });
     productsForDiscount = promoCodes_services_1.default.getCheapestOneProduct(productsForDiscount);
     productsForDiscount = promoCodes_services_1.default.discountProduct(productsForDiscount, promoCodeType);
     return res.status(200).json(productsForDiscount);

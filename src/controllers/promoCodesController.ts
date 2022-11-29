@@ -32,13 +32,15 @@ const getPromoCodes = async (req: Request, res: Response) => {
 const checkProducts = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
     const { products, code } = req.body;
-    if (!(await promoCodesServices.checkIfPromoCodeExists(code))) return res.status(400).json({ message: 'Bad code' });
+
+    if (!(await promoCodesServices.checkIfPromoCodeExists(code)))
+        return res.status(200).json({ message: 'Bad code', errCode: '001' });
     const promoCodeType = await promoCodesServices.getPromoCodeType(code);
 
-    if (promoCodeType.category === 'delivery') return res.status(200).json({ freeDelivery: true });
-
     let productsForDiscount = await promoCodesServices.getProductsForDiscount(products, promoCodeType);
-    if (productsForDiscount.length === 0) return res.status(200).json({ message: 'No product for discount' });
+    console.log(productsForDiscount);
+    if (productsForDiscount.length === 0)
+        return res.status(200).json({ message: 'No product for discount', errCode: '002' });
     productsForDiscount = promoCodesServices.getCheapestOneProduct(productsForDiscount);
     productsForDiscount = promoCodesServices.discountProduct(productsForDiscount, promoCodeType);
     return res.status(200).json(productsForDiscount);

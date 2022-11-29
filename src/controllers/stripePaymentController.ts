@@ -8,13 +8,25 @@ import ProductModel from '../model/Products';
 
 const stripe = new Stripe(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY!);
 
+interface basketItems {
+    prevImg: string;
+    _id: string;
+    quantity: number;
+    name: string;
+    brand: string;
+    price: number;
+    isDiscount: boolean;
+    priceBeforeDiscount: number;
+}
+
 const checkout = async (req: Request, res: Response) => {
     console.log(req.originalUrl);
     const { products, delivery } = req.body;
+    console.log(products, delivery);
 
-    async function getOrderedProduct(item: ProductDocument) {
-        const product = await ProductModel.findOne({ _id: item.id }).lean();
-        if (product === null) return res.status(404).send('No product match given code');
+    async function getOrderedProduct(product: basketItems) {
+        // const product = await ProductModel.findOne({ _id: item._id }).lean();
+        // if (product === null) return res.status(404).send('No product match given code');
         const obj = {
             price_data: {
                 currency: 'pln',
@@ -22,11 +34,9 @@ const checkout = async (req: Request, res: Response) => {
                     name: product.name,
                     images: [product.prevImg],
                 },
-                unit_amount: product.special_offer.mode
-                    ? (product.price - product.special_offer.price) * 100
-                    : product.price * 100,
+                unit_amount: Number((product.price * 100).toFixed(2)),
             },
-            quantity: item.quantity,
+            quantity: product.quantity,
         };
         return obj;
     }

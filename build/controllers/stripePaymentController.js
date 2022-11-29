@@ -16,16 +16,15 @@ const errorHandlers_1 = require("../middleware/errorHandlers");
 // const stripe = require('stripe')(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY);
 const stripe_1 = __importDefault(require("stripe"));
 const clientURL_1 = __importDefault(require("../config/clientURL"));
-const Products_1 = __importDefault(require("../model/Products"));
 const stripe = new stripe_1.default(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY);
 const checkout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(req.originalUrl);
     const { products, delivery } = req.body;
-    function getOrderedProduct(item) {
+    console.log(products, delivery);
+    function getOrderedProduct(product) {
         return __awaiter(this, void 0, void 0, function* () {
-            const product = yield Products_1.default.findOne({ _id: item.id }).lean();
-            if (product === null)
-                return res.status(404).send('No product match given code');
+            // const product = await ProductModel.findOne({ _id: item._id }).lean();
+            // if (product === null) return res.status(404).send('No product match given code');
             const obj = {
                 price_data: {
                     currency: 'pln',
@@ -33,11 +32,9 @@ const checkout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                         name: product.name,
                         images: [product.prevImg],
                     },
-                    unit_amount: product.special_offer.mode
-                        ? (product.price - product.special_offer.price) * 100
-                        : product.price * 100,
+                    unit_amount: Number((product.price * 100).toFixed(2)),
                 },
-                quantity: item.quantity,
+                quantity: product.quantity,
             };
             return obj;
         });
