@@ -52,7 +52,7 @@ async function filterPromoCodes(category: string): Promise<PromoCodesDocument> {
 /** get  the promoCode type*/
 async function getPromoCodeType(
     code: string
-): Promise<{ category: string; product?: string; type?: string; value?: number }> {
+): Promise<{ category: string; type: string; value: number; product?: string }> {
     try {
         const promoCode = await PromoCodesModel.findOne({ code }).exec();
 
@@ -67,15 +67,12 @@ async function getPromoCodeType(
                 value,
             };
         }
-        if (promoCode.category === 'general') {
-            const { category, type, value } = promoCode;
-            return {
-                category,
-                type,
-                value,
-            };
-        }
-        return { category: promoCode.category };
+        const { category, type, value } = promoCode;
+        return {
+            category,
+            type,
+            value,
+        };
     } catch (err) {
         console.log(err);
         throw err;
@@ -85,7 +82,7 @@ async function getPromoCodeType(
 /** return products for discount, erase products that already are discounted, return just products of given brand if promoCode is about given product */
 async function getProductsForDiscount(
     products: ProductToBeDiscounted[],
-    promoCodeType: { category: string; product?: string; type?: string; value?: number }
+    promoCodeType: { category: string; type: string; value: number; product?: string }
 ): Promise<ProductToBeDiscounted[] | []> {
     const productsWithoutDiscounts = products.filter((product) => product.isDiscount === false);
 
@@ -119,19 +116,30 @@ function getCheapestOneProduct(products: ProductToBeDiscounted[]): ProductToBeDi
 /**Type must be: currency / percentage */
 function discountProduct(
     products: ProductToBeDiscounted[],
-    promoCodeType: { category: string; product?: string; type?: string; value?: number }
+    promoCodeType: { category: string; type: string; value: number; product?: string }
 ): ProductToBeDiscounted[] {
     let discountedProduct = products[0];
-    if (promoCodeType.type === 'percentage') {
-        const discountedPrice = Number(
-            (discountedProduct.price - discountedProduct.price * promoCodeType.value! * 0.01).toFixed(2)
-        );
-        discountedProduct = { ...discountedProduct, price: discountedPrice, isDiscount: true };
+    let discountedPrice = 0;
+    switch (promoCodeType.type) {
+        case 'percentage':
+            discountedPrice = Number(
+                (discountedProduct.price - discountedProduct.price * promoCodeType.value! * 0.01).toFixed(2)
+            );
+            break;
+        case 'currency':
+            discountedPrice = Number((discountedProduct.price - promoCodeType.value!).toFixed(2));
+            break;
+
+        default:
+            throw 'Bad promoCode type';
     }
-    if (promoCodeType.type === 'currency') {
-        const discountedPrice = Number((discountedProduct.price - promoCodeType.value!).toFixed(2));
-        discountedProduct = { ...discountedProduct, price: discountedPrice, isDiscount: true };
-    }
+
+    discountedProduct = {
+        ...discountedProduct,
+        price: discountedPrice,
+        isDiscount: true,
+        priceBeforeDiscount: discountedProduct.price,
+    };
 
     // create array with discounted Products
     products.shift();

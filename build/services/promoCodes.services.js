@@ -74,15 +74,12 @@ function getPromoCodeType(code) {
                     value,
                 };
             }
-            if (promoCode.category === 'general') {
-                const { category, type, value } = promoCode;
-                return {
-                    category,
-                    type,
-                    value,
-                };
-            }
-            return { category: promoCode.category };
+            const { category, type, value } = promoCode;
+            return {
+                category,
+                type,
+                value,
+            };
         }
         catch (err) {
             console.log(err);
@@ -121,14 +118,18 @@ function getCheapestOneProduct(products) {
 /**Type must be: currency / percentage */
 function discountProduct(products, promoCodeType) {
     let discountedProduct = products[0];
-    if (promoCodeType.type === 'percentage') {
-        const discountedPrice = Number((discountedProduct.price - discountedProduct.price * promoCodeType.value * 0.01).toFixed(2));
-        discountedProduct = Object.assign(Object.assign({}, discountedProduct), { price: discountedPrice, isDiscount: true });
+    let discountedPrice = 0;
+    switch (promoCodeType.type) {
+        case 'percentage':
+            discountedPrice = Number((discountedProduct.price - discountedProduct.price * promoCodeType.value * 0.01).toFixed(2));
+            break;
+        case 'currency':
+            discountedPrice = Number((discountedProduct.price - promoCodeType.value).toFixed(2));
+            break;
+        default:
+            throw 'Bad promoCode type';
     }
-    if (promoCodeType.type === 'currency') {
-        const discountedPrice = Number((discountedProduct.price - promoCodeType.value).toFixed(2));
-        discountedProduct = Object.assign(Object.assign({}, discountedProduct), { price: discountedPrice, isDiscount: true });
-    }
+    discountedProduct = Object.assign(Object.assign({}, discountedProduct), { price: discountedPrice, isDiscount: true, priceBeforeDiscount: discountedProduct.price });
     // create array with discounted Products
     products.shift();
     let discountedProducts = [];
