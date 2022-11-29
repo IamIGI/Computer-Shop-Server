@@ -38,7 +38,6 @@ const checkProducts = async (req: Request, res: Response) => {
     const promoCodeType = await promoCodesServices.getPromoCodeType(code);
 
     let productsForDiscount = await promoCodesServices.getProductsForDiscount(products, promoCodeType);
-    console.log(productsForDiscount);
     if (productsForDiscount.length === 0)
         return res.status(200).json({ message: 'No product for discount', errCode: '002' });
     productsForDiscount = promoCodesServices.getCheapestOneProduct(productsForDiscount);

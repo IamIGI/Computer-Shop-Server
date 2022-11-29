@@ -20,11 +20,8 @@ const stripe = new stripe_1.default(process.env.NEXT_PUBLIC_STRIPE_SECRET_KEY);
 const checkout = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(req.originalUrl);
     const { products, delivery } = req.body;
-    console.log(products, delivery);
     function getOrderedProduct(product) {
         return __awaiter(this, void 0, void 0, function* () {
-            // const product = await ProductModel.findOne({ _id: item._id }).lean();
-            // if (product === null) return res.status(404).send('No product match given code');
             const obj = {
                 price_data: {
                     currency: 'pln',

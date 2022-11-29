@@ -45,7 +45,6 @@ const checkProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         return res.status(200).json({ message: 'Bad code', errCode: '001' });
     const promoCodeType = yield promoCodes_services_1.default.getPromoCodeType(code);
     let productsForDiscount = yield promoCodes_services_1.default.getProductsForDiscount(products, promoCodeType);
-    console.log(productsForDiscount);
     if (productsForDiscount.length === 0)
         return res.status(200).json({ message: 'No product for discount', errCode: '002' });
     productsForDiscount = promoCodes_services_1.default.getCheapestOneProduct(productsForDiscount);

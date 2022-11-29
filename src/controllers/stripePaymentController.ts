@@ -22,11 +22,8 @@ interface basketItems {
 const checkout = async (req: Request, res: Response) => {
     console.log(req.originalUrl);
     const { products, delivery } = req.body;
-    console.log(products, delivery);
 
     async function getOrderedProduct(product: basketItems) {
-        // const product = await ProductModel.findOne({ _id: item._id }).lean();
-        // if (product === null) return res.status(404).send('No product match given code');
         const obj = {
             price_data: {
                 currency: 'pln',
