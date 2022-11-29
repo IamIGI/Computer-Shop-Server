@@ -15,6 +15,8 @@ export interface PromoInput {
     category: string;
     product?: string;
     code: string;
+    type?: string;
+    value?: number;
     createdAt: string;
     expiredIn: string;
 }
@@ -27,6 +29,8 @@ const promoCodesSchema = new Schema({
     category: String,
     product: String,
     code: String,
+    type: String,
+    value: Number,
     createdAt: String,
     expiredIn: String,
 });
