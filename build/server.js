@@ -45,6 +45,7 @@ app.use('/content', require('./routes/api/content'));
 app.use('/articles', require('./routes/api/articles'));
 app.use('/webupdates', require('./routes/api/updatelog'));
 app.use('/contact', require('./routes/api/contact'));
+app.use('/promocodes', require('./routes/api/promocodes'));
 app.use('/order', require('./routes/api/order'));
 app.use('/stripe', require('./routes/api/stripe'));
 //protected Routes

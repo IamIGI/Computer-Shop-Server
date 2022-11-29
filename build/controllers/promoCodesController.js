@@ -16,11 +16,11 @@ const errorHandlers_1 = require("../middleware/errorHandlers");
 const promoCodes_services_1 = __importDefault(require("../services/promoCodes.services"));
 const addPromoCodes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`${req.originalUrl}`);
-    const { category, product, code, expiredIn } = req.body; //category: general , category: delivery, category : products
+    const { category, product, code, type, value, expiredIn } = req.body; //category: general , category: delivery, category : products
     try {
         if (yield promoCodes_services_1.default.checkIfPromoCodeExists(code))
             return res.status(400).json({ message: 'Code already exists in db' });
-        yield promoCodes_services_1.default.addPromoCodes(category, product, code, expiredIn);
+        yield promoCodes_services_1.default.addPromoCodes(category, product, code, expiredIn, type, value);
         return res.status(200).json({ message: 'New promo code added to db' });
     }
     catch (err) {
@@ -38,4 +38,19 @@ const getPromoCodes = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         (0, errorHandlers_1.apiErrorHandler)(req, res, err);
     }
 });
-exports.default = { addPromoCodes, getPromoCodes };
+const checkProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(`${req.originalUrl}`);
+    const { products, code } = req.body;
+    if (!(yield promoCodes_services_1.default.checkIfPromoCodeExists(code)))
+        return res.status(400).json({ message: 'Bad code' });
+    const promoCodeType = yield promoCodes_services_1.default.getPromoCodeType(code);
+    if (promoCodeType.category === 'delivery')
+        return res.status(200).json({ freeDelivery: true });
+    let productsForDiscount = yield promoCodes_services_1.default.getProductsForDiscount(products, promoCodeType);
+    if (productsForDiscount.length === 0)
+        return res.status(200).json({ message: 'No product for discount' });
+    productsForDiscount = promoCodes_services_1.default.getCheapestOneProduct(productsForDiscount);
+    productsForDiscount = promoCodes_services_1.default.discountProduct(productsForDiscount, promoCodeType);
+    return res.status(200).json(productsForDiscount);
+});
+exports.default = { addPromoCodes, getPromoCodes, checkProducts };

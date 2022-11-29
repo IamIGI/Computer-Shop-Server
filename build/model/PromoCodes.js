@@ -9,6 +9,8 @@ const promoCodesSchema = new Schema({
     category: String,
     product: String,
     code: String,
+    type: String,
+    value: Number,
     createdAt: String,
     expiredIn: String,
 });

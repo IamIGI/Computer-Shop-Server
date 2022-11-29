@@ -14,19 +14,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const PromoCodes_1 = __importDefault(require("../model/PromoCodes"));
 const format_1 = __importDefault(require("date-fns/format"));
-/**add promo codes to db with expiration date given by number of days count from current date */
-function addPromoCodes(category, product, code, expiredIn) {
+/**add promo codes to db with expiration date given by number of days count from current date. Type must be: currency / percentage */
+function addPromoCodes(category, product, code, expiredIn, type, value) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const newPromoCode = new PromoCodes_1.default({
                 category,
                 product,
                 code,
+                type,
+                value,
                 createdAt: (0, format_1.default)(new Date(), 'yyyy.MM.dd'),
                 expiredIn: (0, format_1.default)(new Date(Date.now() + 1000 /*sec*/ * 60 /*min*/ * 60 /*hour*/ * 24 /*day*/ * expiredIn), 'yyyy.MM.dd'),
             });
             const response = yield newPromoCode.save();
-            console.log(response);
         }
         catch (err) {
             console.log(err);
@@ -34,6 +35,7 @@ function addPromoCodes(category, product, code, expiredIn) {
         }
     });
 }
+/** check if promo code exists in db */
 function checkIfPromoCodeExists(code) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
@@ -51,7 +53,96 @@ function checkIfPromoCodeExists(code) {
 /** filter promoCodes by given category: delivery, products, general */
 function filterPromoCodes(category) {
     return __awaiter(this, void 0, void 0, function* () {
+        if ((category = 'none'))
+            return yield PromoCodes_1.default.find({}).lean();
         return yield PromoCodes_1.default.find({ category }).lean();
     });
 }
-exports.default = { addPromoCodes, checkIfPromoCodeExists, filterPromoCodes };
+/** get  the promoCode type*/
+function getPromoCodeType(code) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const promoCode = yield PromoCodes_1.default.findOne({ code }).exec();
+            if (!promoCode)
+                throw { err: 'bad code', reason: 'given code do not exists in db' };
+            if (promoCode.category === 'products') {
+                const { category, product, type, value } = promoCode;
+                return {
+                    category,
+                    product,
+                    type,
+                    value,
+                };
+            }
+            if (promoCode.category === 'general') {
+                const { category, type, value } = promoCode;
+                return {
+                    category,
+                    type,
+                    value,
+                };
+            }
+            return { category: promoCode.category };
+        }
+        catch (err) {
+            console.log(err);
+            throw err;
+        }
+    });
+}
+/** return products for discount, erase products that already are discounted, return just products of given brand if promoCode is about given product */
+function getProductsForDiscount(products, promoCodeType) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const productsWithoutDiscounts = products.filter((product) => product.isDiscount === false);
+        if (productsWithoutDiscounts.length === 0)
+            return [];
+        if (promoCodeType.category === 'products') {
+            if (!promoCodeType.product)
+                throw { err: 'noProduct', reason: 'given code do not have brand to be discounted' };
+            return productsWithoutDiscounts.filter((product) => product.brand.toLowerCase() === promoCodeType.product.toLowerCase());
+        }
+        return productsWithoutDiscounts;
+    });
+}
+/** get the cheapest one product and change the value of  isDiscount key to true */
+function getCheapestOneProduct(products) {
+    let productForDiscount = products[0];
+    products.map((item) => {
+        if (productForDiscount.price > item.price)
+            productForDiscount = item;
+    });
+    if (productForDiscount.quantity > 1)
+        return [
+            Object.assign(Object.assign({}, productForDiscount), { quantity: 1 }),
+            Object.assign(Object.assign({}, productForDiscount), { quantity: productForDiscount.quantity - 1 }),
+        ];
+    return [productForDiscount];
+}
+/**Type must be: currency / percentage */
+function discountProduct(products, promoCodeType) {
+    let discountedProduct = products[0];
+    if (promoCodeType.type === 'percentage') {
+        const discountedPrice = Number((discountedProduct.price - discountedProduct.price * promoCodeType.value * 0.01).toFixed(2));
+        discountedProduct = Object.assign(Object.assign({}, discountedProduct), { price: discountedPrice, isDiscount: true });
+    }
+    if (promoCodeType.type === 'currency') {
+        const discountedPrice = Number((discountedProduct.price - promoCodeType.value).toFixed(2));
+        discountedProduct = Object.assign(Object.assign({}, discountedProduct), { price: discountedPrice, isDiscount: true });
+    }
+    // create array with discounted Products
+    products.shift();
+    let discountedProducts = [];
+    discountedProducts.push(discountedProduct);
+    if (products[0] !== undefined)
+        discountedProducts.push(products[0]);
+    return discountedProducts;
+}
+exports.default = {
+    addPromoCodes,
+    checkIfPromoCodeExists,
+    filterPromoCodes,
+    getPromoCodeType,
+    getProductsForDiscount,
+    getCheapestOneProduct,
+    discountProduct,
+};
