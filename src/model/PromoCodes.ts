@@ -1,5 +1,15 @@
-import { secondsInHour } from 'date-fns';
 import mongoose from 'mongoose';
+
+export interface ProductToBeDiscounted {
+    isDiscount: boolean;
+    name: string;
+    brand: string;
+    prevImg: string;
+    price: number;
+    priceBeforeDiscount: number;
+    quantity: number;
+    _id: string;
+}
 
 export interface PromoInput {
     category: string;

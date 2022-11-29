@@ -51,7 +51,62 @@ function checkIfPromoCodeExists(code) {
 /** filter promoCodes by given category: delivery, products, general */
 function filterPromoCodes(category) {
     return __awaiter(this, void 0, void 0, function* () {
+        if ((category = 'none'))
+            return yield PromoCodes_1.default.find({}).lean();
         return yield PromoCodes_1.default.find({ category }).lean();
     });
 }
-exports.default = { addPromoCodes, checkIfPromoCodeExists, filterPromoCodes };
+/** get  the promoCode type*/
+function getPromoCodeType(code) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const promoCode = yield PromoCodes_1.default.findOne({ code }).exec();
+            if (!promoCode)
+                throw { err: 'bad code', reason: 'given code do not exists in db' };
+            if (promoCode.category === 'products')
+                return { category: promoCode.category, product: promoCode.product };
+            return { category: promoCode.category };
+        }
+        catch (err) {
+            console.log(err);
+            throw err;
+        }
+    });
+}
+/** return products for discount, erase products that already are discounted, return just products of given brand if promoCode is about given product */
+function getProductsForDiscount(products, promoCodeType) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const productsWithoutDiscounts = products.filter((product) => product.isDiscount === false);
+        if (productsWithoutDiscounts.length === 0)
+            return [];
+        if (promoCodeType.category === 'products') {
+            if (!promoCodeType.product)
+                throw { err: 'noProduct', reason: 'given code do not have brand to be discounted' };
+            console.log(productsWithoutDiscounts);
+            return productsWithoutDiscounts.filter((product) => product.brand.toLowerCase() === promoCodeType.product.toLowerCase());
+        }
+        return productsWithoutDiscounts;
+    });
+}
+function getCheapestOneProduct(products) {
+    let productForDiscount = products[0];
+    products.map((item) => {
+        if (productForDiscount.price > item.price)
+            productForDiscount = item;
+    });
+    productForDiscount = Object.assign(Object.assign({}, productForDiscount), { isDiscount: true });
+    if (productForDiscount.quantity > 1)
+        return [
+            Object.assign(Object.assign({}, productForDiscount), { quantity: 1 }),
+            Object.assign(Object.assign({}, productForDiscount), { quantity: productForDiscount.quantity - 1 }),
+        ];
+    return [productForDiscount];
+}
+exports.default = {
+    addPromoCodes,
+    checkIfPromoCodeExists,
+    filterPromoCodes,
+    getPromoCodeType,
+    getProductsForDiscount,
+    getCheapestOneProduct,
+};

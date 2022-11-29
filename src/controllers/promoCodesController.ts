@@ -29,4 +29,20 @@ const getPromoCodes = async (req: Request, res: Response) => {
     }
 };
 
-export default { addPromoCodes, getPromoCodes };
+const checkProducts = async (req: Request, res: Response) => {
+    console.log(`${req.originalUrl}`);
+    const { products, code } = req.body;
+
+    if (!(await promoCodesServices.checkIfPromoCodeExists(code))) return res.status(400).json({ message: 'Bad code' });
+    const promoCodeType = await promoCodesServices.getPromoCodeType(code);
+    console.log(promoCodeType);
+
+    if (promoCodeType.category === 'delivery') return res.status(200).json({ freeDelivery: true });
+    let productsForDiscount = await promoCodesServices.getProductsForDiscount(products, promoCodeType);
+
+    productsForDiscount = promoCodesServices.getCheapestOneProduct(productsForDiscount);
+
+    return res.status(200).json(productsForDiscount);
+};
+
+export default { addPromoCodes, getPromoCodes, checkProducts };

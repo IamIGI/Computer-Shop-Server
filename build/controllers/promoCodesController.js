@@ -38,4 +38,17 @@ const getPromoCodes = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         (0, errorHandlers_1.apiErrorHandler)(req, res, err);
     }
 });
-exports.default = { addPromoCodes, getPromoCodes };
+const checkProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(`${req.originalUrl}`);
+    const { products, code } = req.body;
+    if (!(yield promoCodes_services_1.default.checkIfPromoCodeExists(code)))
+        return res.status(400).json({ message: 'Bad code' });
+    const promoCodeType = yield promoCodes_services_1.default.getPromoCodeType(code);
+    console.log(promoCodeType);
+    if (promoCodeType.category === 'delivery')
+        return res.status(200).json({ freeDelivery: true });
+    let productsForDiscount = yield promoCodes_services_1.default.getProductsForDiscount(products, promoCodeType);
+    productsForDiscount = promoCodes_services_1.default.getCheapestOneProduct(productsForDiscount);
+    return res.status(200).json(productsForDiscount);
+});
+exports.default = { addPromoCodes, getPromoCodes, checkProducts };
