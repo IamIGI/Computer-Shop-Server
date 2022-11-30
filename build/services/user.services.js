@@ -87,9 +87,28 @@ function updateEnlistments(userId, email, sms, phone, adjustedOffers) {
         }
     });
 }
+function authenticateUser(res, userId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (userId === undefined) {
+            res.status(400).json({ message: `UserID: ${userId}.`, reason: 'No userId provided' });
+            return false;
+        }
+        if (userId.length !== 24) {
+            res.status(400).json({ message: `UserID: ${userId}.`, reason: 'Bad userId template. Required 24 chars' });
+            return false;
+        }
+        const user = yield Users_1.default.findOne({ _id: userId }).exec();
+        if (!user) {
+            res.status(204).json({ message: `UserID: ${userId}.`, reason: 'Only logged user can use promo codes' });
+            return false;
+        }
+        return true;
+    });
+}
 exports.default = {
     allowRecipientTemplate,
     updateRecipientDetailsTemplates,
     replaceRecipientDetailsTemplate,
     updateEnlistments,
+    authenticateUser,
 };

@@ -33,6 +33,7 @@ const orderSchema = new Schema({
             comment: String,
         },
     },
+    usedPromoCode: String,
 });
 const OrderModel = mongoose_1.default.model('Orders', orderSchema);
 exports.default = OrderModel;

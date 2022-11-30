@@ -5,6 +5,14 @@ import orderPDF from '../middleware/pdfCreator/orderInvoice';
 import ordersServices from '../services/orders.services';
 
 import { Request, Response } from 'express';
+import promoCodesServices from '../services/promoCodes.services';
+
+async function assignPromoCodeToUser(promoCodeIsUsed: boolean, userId: string, code: string): Promise<void> {
+    // save discount promoCode to userAccount
+    if (promoCodeIsUsed && !(await promoCodesServices.isCodeAlreadyBeenUsedByUser(code, userId))) {
+        await promoCodesServices.assignPromoCodesToUser(userId, code);
+    }
+}
 
 const makeOrder = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
@@ -31,6 +39,8 @@ const makeOrder = async (req: Request, res: Response) => {
 
     try {
         const response = await ordersServices.saveOrder(newOrder, doc.user);
+
+        await assignPromoCodeToUser(doc.usedPromoCode.isUsed, doc.user, doc.usedPromoCode.code);
 
         return res.status(response.status).json({ message: response.message, OrderId: response.OrderId });
     } catch (err) {

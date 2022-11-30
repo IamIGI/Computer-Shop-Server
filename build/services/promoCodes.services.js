@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const PromoCodes_1 = __importDefault(require("../model/PromoCodes"));
 const format_1 = __importDefault(require("date-fns/format"));
+const Users_1 = __importDefault(require("../model/Users"));
 /**add promo codes to db with expiration date given by number of days count from current date. Type must be: currency / percentage */
 function addPromoCodes(category, product, code, expiredIn, type, value) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -27,7 +28,7 @@ function addPromoCodes(category, product, code, expiredIn, type, value) {
                 createdAt: (0, format_1.default)(new Date(), 'yyyy.MM.dd'),
                 expiredIn: (0, format_1.default)(new Date(Date.now() + 1000 /*sec*/ * 60 /*min*/ * 60 /*hour*/ * 24 /*day*/ * expiredIn), 'yyyy.MM.dd'),
             });
-            const response = yield newPromoCode.save();
+            yield newPromoCode.save();
         }
         catch (err) {
             console.log(err);
@@ -138,6 +139,47 @@ function discountProduct(products, promoCodeType) {
         discountedProducts.push(products[0]);
     return discountedProducts;
 }
+function isCodeAlreadyBeenUsedByUser(code, userId) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const user = yield Users_1.default.findOne({ _id: userId }).exec();
+            if (!user)
+                throw { err: 'no user', message: 'need for logged user' };
+            const userUsedPromoCodes = user.usedPromoCodes;
+            if (userUsedPromoCodes === undefined)
+                return false;
+            if (userUsedPromoCodes.length === 0)
+                return false;
+            for (let i = 0; i < userUsedPromoCodes.length; i++) {
+                if (userUsedPromoCodes[i].code === code)
+                    return true;
+            }
+            return false;
+        }
+        catch (err) {
+            throw err;
+        }
+    });
+}
+function assignPromoCodesToUser(userId, code) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const user = yield Users_1.default.findOne({ _id: userId }).exec();
+            if (!user)
+                throw { err: 'no user', message: 'need for logged user' };
+            const response = yield Users_1.default.updateOne({ _id: userId }, {
+                $push: {
+                    usedPromoCodes: { code, date: (0, format_1.default)(new Date(), 'yyyy.MM.dd-HH:mm:ss') },
+                },
+            });
+            console.log(response);
+            console.log('Successfully assigned code to user');
+        }
+        catch (err) {
+            throw err;
+        }
+    });
+}
 exports.default = {
     addPromoCodes,
     checkIfPromoCodeExists,
@@ -146,4 +188,6 @@ exports.default = {
     getProductsForDiscount,
     getCheapestOneProduct,
     discountProduct,
+    isCodeAlreadyBeenUsedByUser,
+    assignPromoCodesToUser,
 };

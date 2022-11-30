@@ -52,13 +52,12 @@ app.use('/content', require('./routes/api/content'));
 app.use('/articles', require('./routes/api/articles'));
 app.use('/webupdates', require('./routes/api/updatelog'));
 app.use('/contact', require('./routes/api/contact'));
-
-app.use('/promocodes', require('./routes/api/promocodes'));
 app.use('/order', require('./routes/api/order'));
 app.use('/stripe', require('./routes/api/stripe'));
 
 //protected Routes
 app.use(verifyJWT);
+app.use('/promocodes', require('./routes/api/promocodes'));
 app.use('/user', require('./routes/api/user'));
 app.use('/admin', require('./routes/api/admin'));
 

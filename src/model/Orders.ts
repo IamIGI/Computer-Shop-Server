@@ -29,6 +29,7 @@ export interface OrderInput {
             comment: string;
         };
     };
+    usedPromoCode: { isUsed: boolean; code?: string };
 }
 
 export interface OrderDocument extends OrderInput, mongoose.Document {}
@@ -63,6 +64,7 @@ const orderSchema = new Schema({
             comment: String,
         },
     },
+    usedPromoCode: String,
 });
 
 const OrderModel = mongoose.model<OrderDocument>('Orders', orderSchema);

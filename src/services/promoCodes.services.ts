@@ -1,5 +1,6 @@
 import PromoCodesModel, { PromoCodesDocument, ProductToBeDiscounted } from '../model/PromoCodes';
 import format from 'date-fns/format';
+import UserModel from '../model/Users';
 
 /**add promo codes to db with expiration date given by number of days count from current date. Type must be: currency / percentage */
 async function addPromoCodes(
@@ -24,7 +25,7 @@ async function addPromoCodes(
             ),
         });
 
-        const response = await newPromoCode.save();
+        await newPromoCode.save();
     } catch (err) {
         console.log(err);
         throw err;
@@ -149,6 +150,47 @@ function discountProduct(
     return discountedProducts;
 }
 
+async function isCodeAlreadyBeenUsedByUser(code: string, userId: string): Promise<boolean> {
+    try {
+        const user = await UserModel.findOne({ _id: userId }).exec();
+        if (!user) throw { err: 'no user', message: 'need for logged user' };
+
+        const userUsedPromoCodes = user.usedPromoCodes;
+
+        if (userUsedPromoCodes === undefined) return false;
+        if (userUsedPromoCodes.length === 0) return false;
+
+        for (let i = 0; i < userUsedPromoCodes.length; i++) {
+            if (userUsedPromoCodes[i].code === code) return true;
+        }
+
+        return false;
+    } catch (err) {
+        throw err;
+    }
+}
+
+async function assignPromoCodesToUser(userId: string, code: string): Promise<void> {
+    try {
+        const user = await UserModel.findOne({ _id: userId }).exec();
+        if (!user) throw { err: 'no user', message: 'need for logged user' };
+
+        const response = await UserModel.updateOne(
+            { _id: userId },
+            {
+                $push: {
+                    usedPromoCodes: { code, date: format(new Date(), 'yyyy.MM.dd-HH:mm:ss') },
+                },
+            }
+        );
+
+        console.log(response);
+        console.log('Successfully assigned code to user');
+    } catch (err) {
+        throw err;
+    }
+}
+
 export default {
     addPromoCodes,
     checkIfPromoCodeExists,
@@ -157,4 +199,6 @@ export default {
     getProductsForDiscount,
     getCheapestOneProduct,
     discountProduct,
+    isCodeAlreadyBeenUsedByUser,
+    assignPromoCodesToUser,
 };

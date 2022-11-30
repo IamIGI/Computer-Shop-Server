@@ -31,9 +31,10 @@ export interface UserInput {
         Admin: number;
     };
     userOrders: string[];
-    userComments: string[]; // maybe mongoose.Schema.Types.ObjectId[]
+    userComments: string[];
     commentedProducts: string[];
     recipientTemplates?: recipientTemplate[];
+    usedPromoCodes?: { code: string; date: string }[];
 }
 
 export interface UserDocument extends UserInput, mongoose.Document {}
@@ -72,6 +73,7 @@ const userSchema = new Schema({
         Admin: Number,
     },
     userOrders: [Array],
+    usedPromoCodes: [{ code: String, date: String }],
     userComments: Array,
     commentedProducts: Array,
     recipientTemplates: [

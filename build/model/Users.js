@@ -36,6 +36,7 @@ const userSchema = new Schema({
         Admin: Number,
     },
     userOrders: [Array],
+    usedPromoCodes: [{ code: String, date: String }],
     userComments: Array,
     commentedProducts: Array,
     recipientTemplates: [

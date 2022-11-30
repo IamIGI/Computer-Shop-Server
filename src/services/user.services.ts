@@ -1,4 +1,5 @@
 import UserModel from '../model/Users';
+import { Request, Response } from 'express';
 
 async function allowRecipientTemplate(userId: string): Promise<boolean> {
     const user = await UserModel.findOne({ _id: userId }).exec();
@@ -100,9 +101,29 @@ async function updateEnlistments(
     }
 }
 
+async function authenticateUser(res: Response, userId: string): Promise<boolean> {
+    if (userId === undefined) {
+        res.status(400).json({ message: `UserID: ${userId}.`, reason: 'No userId provided' });
+        return false;
+    }
+    if (userId.length !== 24) {
+        res.status(400).json({ message: `UserID: ${userId}.`, reason: 'Bad userId template. Required 24 chars' });
+        return false;
+    }
+
+    const user = await UserModel.findOne({ _id: userId }).exec();
+    if (!user) {
+        res.status(204).json({ message: `UserID: ${userId}.`, reason: 'Only logged user can use promo codes' });
+        return false;
+    }
+
+    return true;
+}
+
 export default {
     allowRecipientTemplate,
     updateRecipientDetailsTemplates,
     replaceRecipientDetailsTemplate,
     updateEnlistments,
+    authenticateUser,
 };
