@@ -9,6 +9,9 @@ const getAllArticles = async (req: Request, res: Response) => {
 
     try {
         const articles = await articleServices.filterArticles(type);
+
+        articles.reverse();
+
         return res.status(200).json(articles);
     } catch (err) {
         apiErrorHandler(req, res, err as Error);

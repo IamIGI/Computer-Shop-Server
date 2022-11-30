@@ -20,6 +20,7 @@ const getAllArticles = (req, res) => __awaiter(void 0, void 0, void 0, function*
     const type = req.params.type;
     try {
         const articles = yield article_services_1.default.filterArticles(type);
+        articles.reverse();
         return res.status(200).json(articles);
     }
     catch (err) {

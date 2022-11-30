@@ -21,7 +21,9 @@ export interface ArticlesInput {
     description: ArticlesDescription;
 }
 
-export interface ArticlesDocument extends ArticlesInput, mongoose.Document {}
+export interface ArticlesDocument extends ArticlesInput, mongoose.Document {
+    [x: string]: any; // added for array.reverse();
+}
 
 const Schema = mongoose.Schema;
 
