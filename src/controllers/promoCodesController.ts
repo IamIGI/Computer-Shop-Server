@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { apiErrorHandler } from '../middleware/errorHandlers';
-import UserModel from '../model/Users';
 import promoCodesServices from '../services/promoCodes.services';
 import userServices from '../services/user.services';
 
@@ -34,7 +33,6 @@ const getPromoCodes = async (req: Request, res: Response) => {
 const checkProducts = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
     const { products, code, auth } = req.body;
-    console.log('Auth: ' + auth);
 
     if (!(await userServices.authenticateUser(res, auth))) return;
 

@@ -172,7 +172,6 @@ function assignPromoCodesToUser(userId, code) {
                     usedPromoCodes: { code, date: (0, format_1.default)(new Date(), 'yyyy.MM.dd-HH:mm:ss') },
                 },
             });
-            console.log(response);
             console.log('Successfully assigned code to user');
         }
         catch (err) {

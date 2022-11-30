@@ -42,7 +42,6 @@ const getPromoCodes = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 const checkProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`${req.originalUrl}`);
     const { products, code, auth } = req.body;
-    console.log('Auth: ' + auth);
     if (!(yield user_services_1.default.authenticateUser(res, auth)))
         return;
     if (!(yield promoCodes_services_1.default.checkIfPromoCodeExists(code)))

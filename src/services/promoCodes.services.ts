@@ -184,7 +184,6 @@ async function assignPromoCodesToUser(userId: string, code: string): Promise<voi
             }
         );
 
-        console.log(response);
         console.log('Successfully assigned code to user');
     } catch (err) {
         throw err;
