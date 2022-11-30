@@ -27,9 +27,7 @@ function saveOrder(newOrder, userId) {
             });
             return { status: 201, message: 'Successfully save new order to userAccount', OrderId: result._id };
         }
-        else {
-            return { status: 201, message: 'Successfully save new order', OrderId: result._id };
-        }
+        return { status: 201, message: 'Successfully save new order', OrderId: result._id };
     });
 }
 function accountOrderHistory(userId, pageNr) {

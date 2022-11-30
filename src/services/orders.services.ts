@@ -1,5 +1,5 @@
 import OrderModel, { OrderDocument } from '../model/Orders';
-import Users from '../model/Users';
+import UserModel from '../model/Users';
 
 /** Save order to db */
 async function saveOrder(
@@ -11,25 +11,25 @@ async function saveOrder(
     const result = await newOrder.save();
 
     if (userId) {
-        const user = await Users.findOne({ _id: userId }).exec();
+        const user = await UserModel.findOne({ _id: userId }).exec();
         if (!user) return { status: 406, message: 'No user found' };
-        await Users.updateOne(
+        await UserModel.updateOne(
             { _id: userId },
             {
                 $push: { userOrders: result._id },
             }
         );
         return { status: 201, message: 'Successfully save new order to userAccount', OrderId: result._id };
-    } else {
-        return { status: 201, message: 'Successfully save new order', OrderId: result._id };
     }
+
+    return { status: 201, message: 'Successfully save new order', OrderId: result._id };
 }
 
 async function accountOrderHistory(
     userId: string,
     pageNr: number
 ): Promise<{ status: number; message: string; orderData?: OrderDocument[]; orderCount?: number }> {
-    const user = await Users.findOne({ _id: userId }).exec();
+    const user = await UserModel.findOne({ _id: userId }).exec();
 
     if (!user) return { status: 406, message: 'No user found' };
     const a = pageNr * 5 - 4 - 1;

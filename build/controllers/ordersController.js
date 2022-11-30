@@ -17,6 +17,15 @@ const errorHandlers_1 = require("../middleware/errorHandlers");
 const format_1 = __importDefault(require("date-fns/format"));
 const orderInvoice_1 = __importDefault(require("../middleware/pdfCreator/orderInvoice"));
 const orders_services_1 = __importDefault(require("../services/orders.services"));
+const promoCodes_services_1 = __importDefault(require("../services/promoCodes.services"));
+function assignPromoCodeToUser(promoCodeIsUsed, userId, code) {
+    return __awaiter(this, void 0, void 0, function* () {
+        // save discount promoCode to userAccount
+        if (promoCodeIsUsed && !(yield promoCodes_services_1.default.isCodeAlreadyBeenUsedByUser(code, userId))) {
+            yield promoCodes_services_1.default.assignPromoCodesToUser(userId, code);
+        }
+    });
+}
 const makeOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`${req.originalUrl}`);
     const doc = req.body;
@@ -41,6 +50,7 @@ const makeOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     });
     try {
         const response = yield orders_services_1.default.saveOrder(newOrder, doc.user);
+        yield assignPromoCodeToUser(doc.usedPromoCode.isUsed, doc.user, doc.usedPromoCode.code);
         return res.status(response.status).json({ message: response.message, OrderId: response.OrderId });
     }
     catch (err) {

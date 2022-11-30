@@ -1,11 +1,6 @@
 import fileUpload from 'express-fileupload';
 import path from 'path';
 
-interface fileRequest extends fileUpload.UploadedFile {
-    name: string;
-    files: any;
-}
-
 /** save files in serer folder */
 function saveImages(files: fileUpload.FileArray, messageId: string, messageCategory: string): void {
     if (Boolean(files)) {

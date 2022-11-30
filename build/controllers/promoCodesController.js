@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const errorHandlers_1 = require("../middleware/errorHandlers");
 const promoCodes_services_1 = __importDefault(require("../services/promoCodes.services"));
+const user_services_1 = __importDefault(require("../services/user.services"));
 const addPromoCodes = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`${req.originalUrl}`);
     const { category, product, code, type, value, expiredIn } = req.body; //category: general , category: delivery, category : products
@@ -40,10 +41,14 @@ const getPromoCodes = (req, res) => __awaiter(void 0, void 0, void 0, function* 
 });
 const checkProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`${req.originalUrl}`);
-    const { products, code } = req.body;
+    const { products, code, auth } = req.body;
+    if (!(yield user_services_1.default.authenticateUser(res, auth)))
+        return;
     if (!(yield promoCodes_services_1.default.checkIfPromoCodeExists(code)))
         return res.status(200).json({ message: 'Bad code', errCode: '001' });
     const promoCodeType = yield promoCodes_services_1.default.getPromoCodeType(code);
+    if (yield promoCodes_services_1.default.isCodeAlreadyBeenUsedByUser(code, auth))
+        return res.status(200).json({ message: 'code already been used by user', errCode: '003' });
     let productsForDiscount = yield promoCodes_services_1.default.getProductsForDiscount(products, promoCodeType);
     if (productsForDiscount.length === 0)
         return res.status(200).json({ message: 'No product for discount', errCode: '002' });
