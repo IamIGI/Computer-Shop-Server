@@ -15,7 +15,7 @@ async function changeHotShootPromotion(discountValue: number) {
 
     if (changePromotionItem) {
         //remove old promotion from Product collection
-        await ProductModel.updateOne(
+        const response1 = await ProductModel.updateOne(
             { _id: currentProductForHotShoot.productData._id },
             {
                 $set: {
@@ -27,7 +27,8 @@ async function changeHotShootPromotion(discountValue: number) {
             },
             { new: true }
         ).exec();
-
+        console.log(' ChangeHotShootPromotion.ts -> Remove old promotion DB update: ');
+        console.log(response1);
         //if there is no queued promotion
         let productForHotShoot: ProductDocument;
         if (hotShoot.queue.length === 0) {
@@ -43,10 +44,11 @@ async function changeHotShootPromotion(discountValue: number) {
                 //if blocked do not contain chosen item
                 if (findItem.length === 0) {
                     isBlocked = false;
-                    console.log(productForHotShoot._id);
+
+                    console.log(' ChangeHotShootPromotion.ts -> New promotion: ' + productForHotShoot._id);
                     const _id = productForHotShoot._id;
                     //update product data
-                    await ProductModel.findOneAndUpdate(
+                    const response2 = await ProductModel.findOneAndUpdate(
                         { _id },
                         {
                             special_offer: {
@@ -57,14 +59,16 @@ async function changeHotShootPromotion(discountValue: number) {
                         { new: true }
                     ).exec();
 
-                    console.log(productForHotShoot._id);
-
+                    console.log(' ChangeHotShootPromotion.ts -> update new product hotShootPromotion');
+                    console.log(response2);
                     //set new promotion and add item to blocked list
                     const restOfDate = format(new Date(), 'yyyy.MM.dd-H').split('-')[0];
+                    // const restOfDate = '2022.12.02-21:59'.split('-')[0];
                     const hour = parseInt(format(new Date(), 'yyyy.MM.dd-H').split('-')[1]) + 1; //change is made on 9:59:58 || 21:59:58
+                    // const hour = parseInt('2022.12.02-21:59'.split('-')[1]) + 1; //change is made on 9:59:58 || 21:59:58
                     const changeDate = `${restOfDate}-${hour.toString()}:00`;
 
-                    await HotShootModel.updateOne(
+                    const response3 = await HotShootModel.updateOne(
                         { _id: '631b62207137bd1bfd2c60aa' },
                         {
                             $set: {
@@ -83,6 +87,9 @@ async function changeHotShootPromotion(discountValue: number) {
                             upsert: true,
                         }
                     );
+
+                    console.log(' ChangeHotShootPromotion.ts -> Update product in db and add it to blocked list');
+                    console.log(response3);
                 }
             }
         }
@@ -90,6 +97,7 @@ async function changeHotShootPromotion(discountValue: number) {
 
         //remove item from blocked list if 47 hours time block pass
         const removeItemFromBlockedList = noLongerBlockedProducts(hotShoot.blocked, 47);
+        console.log(' ChangeHotShootPromotion.ts -> Item for unblock: ' + removeItemFromBlockedList);
         if (removeItemFromBlockedList.length !== 0) {
             //update blocked list
             const blockedListUpdate = await HotShootModel.updateOne(
@@ -98,6 +106,8 @@ async function changeHotShootPromotion(discountValue: number) {
                     $pull: { blocked: { productId: removeItemFromBlockedList[0].productId } },
                 }
             );
+            console.log(' ChangeHotShootPromotion.ts -> Remove no longer blocked element');
+            console.log(blockedListUpdate);
         }
         return {
             message: 'Timer Hot Shoot promotion change successfully',

@@ -20,13 +20,15 @@ const node_schedule_1 = __importDefault(require("node-schedule"));
 //morning Promotion
 node_schedule_1.default.scheduleJob('58 59 09 * * *', function () {
     return __awaiter(this, void 0, void 0, function* () {
-        const response = yield (0, changeHotShootPromotion_1.default)(700);
+        console.log(' hotShootController.ts -> timer start 10:00');
+        yield (0, changeHotShootPromotion_1.default)(700);
     });
 });
 //evening Promotion
 node_schedule_1.default.scheduleJob('58 59 21 * * *', function () {
     return __awaiter(this, void 0, void 0, function* () {
-        const response = yield (0, changeHotShootPromotion_1.default)(500);
+        console.log(' hotShootController.ts -> timer start 22:00');
+        yield (0, changeHotShootPromotion_1.default)(500);
     });
 });
 const getHotShoot = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
