@@ -7,6 +7,8 @@ const getDateDiffInHours_1 = __importDefault(require("../getDateDiffInHours"));
 const format_1 = __importDefault(require("date-fns/format"));
 function noLongerBlockedProducts(blockedList, hoursBlocked) {
     const currentDate = (0, format_1.default)(new Date(), 'yyyy.MM.dd-H:m');
+    console.log('noLongerBlockedProducts.ts -> currentDate: ' + currentDate);
+    // const currentDate = '2022.12.02-21:59';
     const removeItem = blockedList.filter((blockedProduct) => {
         if ((0, getDateDiffInHours_1.default)(new Date(blockedProduct.date), new Date(currentDate)) >= hoursBlocked) {
             return blockedProduct;

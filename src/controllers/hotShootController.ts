@@ -7,12 +7,14 @@ import { Request, Response } from 'express';
 //-------Schedule HotShootPromotion automatic change
 //morning Promotion
 schedule.scheduleJob('58 59 09 * * *', async function () {
-    const response = await changeHotShootPromotion(700);
+    console.log(' hotShootController.ts -> timer start 10:00');
+    await changeHotShootPromotion(700);
 });
 
 //evening Promotion
 schedule.scheduleJob('58 59 21 * * *', async function () {
-    const response = await changeHotShootPromotion(500);
+    console.log(' hotShootController.ts -> timer start 22:00');
+    await changeHotShootPromotion(500);
 });
 
 const getHotShoot = async (req: Request, res: Response) => {
