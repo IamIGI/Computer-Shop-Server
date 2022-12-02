@@ -255,9 +255,8 @@ async function changeUserLikeChoice(
 /** get user  images from server files for given product */
 const getUsersProductImages = (productId: string): string[] => {
     let urlArray: string[] = [];
-    let fileName: string[] = []; // there was change from string to array ' = '' -> = []'
+    let fileName: string[] = [];
     let imagePath: string = '';
-    console.log(path.join(__dirname, `../files/comments/${productId}/`));
     const targetPath = path.join(__dirname, `../files/comments/${productId}/`);
     if (!fs.existsSync(targetPath)) return urlArray;
 

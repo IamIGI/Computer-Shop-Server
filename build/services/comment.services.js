@@ -219,9 +219,8 @@ function changeUserLikeChoice(currentLike, newLike, productId, commentId, userId
 /** get user  images from server files for given product */
 const getUsersProductImages = (productId) => {
     let urlArray = [];
-    let fileName = []; // there was change from string to array ' = '' -> = []'
+    let fileName = [];
     let imagePath = '';
-    console.log(path_1.default.join(__dirname, `../files/comments/${productId}/`));
     const targetPath = path_1.default.join(__dirname, `../files/comments/${productId}/`);
     if (!fs_1.default.existsSync(targetPath))
         return urlArray;
