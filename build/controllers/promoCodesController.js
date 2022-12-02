@@ -53,7 +53,6 @@ const checkProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     if (productsForDiscount.length === 0)
         return res.status(200).json({ message: 'No product for discount', errCode: '002' });
     productsForDiscount = promoCodes_services_1.default.getCheapestOneProduct(productsForDiscount);
-    console.log(productsForDiscount);
     productsForDiscount = promoCodes_services_1.default.discountProduct(productsForDiscount, promoCodeType);
     return res.status(200).json(productsForDiscount);
 });
