@@ -26,6 +26,9 @@ const getComments = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     const { productId, filters: { rating, confirmed }, sortBy, } = req.body;
     // get images
     const usersImages = comment_services_1.default.getUsersProductImages(productId);
+    console.log('images:');
+    console.log(usersImages);
+    console.log('-----');
     try {
         const productComments = yield Comments_1.default.findOne({ productId }).exec();
         if (!productComments)

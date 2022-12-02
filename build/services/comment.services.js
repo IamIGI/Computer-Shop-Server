@@ -221,7 +221,8 @@ const getUsersProductImages = (productId) => {
     let urlArray = [];
     let fileName = []; // there was change from string to array ' = '' -> = []'
     let imagePath = '';
-    const targetPath = path_1.default.join(__dirname, `../../files/comments/${productId}/`);
+    console.log(path_1.default.join(__dirname, `../files/comments/${productId}/`));
+    const targetPath = path_1.default.join(__dirname, `../files/comments/${productId}/`);
     if (!fs_1.default.existsSync(targetPath))
         return urlArray;
     const dirInProduct = fs_1.default.readdirSync(targetPath);
