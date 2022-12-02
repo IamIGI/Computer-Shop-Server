@@ -6,7 +6,7 @@ export interface recipientTemplate {
     zipCode: string;
     place: string;
     email: string;
-    phone: number;
+    phone: String;
 }
 
 export interface UserInput {
@@ -47,7 +47,7 @@ const recipientTemplateSchema = new Schema({
     zipCode: String,
     place: String,
     email: String,
-    phone: Number,
+    phone: String,
     comment: String,
 });
 
@@ -83,7 +83,7 @@ const userSchema = new Schema({
             zipCode: String,
             place: String,
             email: String,
-            phone: Number,
+            phone: String,
         },
     ],
 });

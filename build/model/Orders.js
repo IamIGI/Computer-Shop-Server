@@ -29,7 +29,7 @@ const orderSchema = new Schema({
             zipCode: String,
             place: String,
             email: String,
-            phone: Number,
+            phone: String,
             comment: String,
         },
     },
