@@ -17,7 +17,7 @@ async function updateRecipientDetailsTemplates(
     zipCode: string,
     place: string,
     email: string,
-    phone: number
+    phone: string
 ): Promise<void> {
     try {
         await UserModel.updateOne(
@@ -48,7 +48,7 @@ async function replaceRecipientDetailsTemplate(
     zipCode: string,
     place: string,
     email: string,
-    phone: number
+    phone: string
 ): Promise<void> {
     try {
         await UserModel.updateOne(

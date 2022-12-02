@@ -11,7 +11,7 @@ const recipientTemplateSchema = new Schema({
     zipCode: String,
     place: String,
     email: String,
-    phone: Number,
+    phone: String,
     comment: String,
 });
 const userSchema = new Schema({
@@ -46,7 +46,7 @@ const userSchema = new Schema({
             zipCode: String,
             place: String,
             email: String,
-            phone: Number,
+            phone: String,
         },
     ],
 });

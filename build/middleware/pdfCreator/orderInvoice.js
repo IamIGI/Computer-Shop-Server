@@ -328,19 +328,25 @@ function buildPDF(dataCallback, endCallback, data) {
                 .text(`${products[i].quantity}`, 317, 333 + lineHeight, { width: 28, align: 'center' });
             doc.font(robotoRegular)
                 .fontSize(9)
-                .text(`${products[i].price}`, 345, 333 + lineHeight, { width: 48, align: 'right' });
+                .text(`${products[i].price.toFixed(2)}`, 345, 333 + lineHeight, { width: 48, align: 'right' });
             doc.font(robotoRegular)
                 .fontSize(9)
-                .text(`${nettoCost}`, 392, 333 + lineHeight, { width: 48, align: 'right' });
+                .text(`${(nettoCost * products[i].quantity).toFixed(2)}`, 392, 333 + lineHeight, {
+                width: 48,
+                align: 'right',
+            });
             doc.font(robotoRegular)
                 .fontSize(9)
                 .text('23%', 442, 333 + lineHeight, { width: 28, align: 'right' });
             doc.font(robotoRegular)
                 .fontSize(9)
-                .text(`${vatValue}`, 473, 333 + lineHeight, { width: 48, align: 'right' });
+                .text(`${(vatValue * products[i].quantity).toFixed(2)}`, 473, 333 + lineHeight, {
+                width: 48,
+                align: 'right',
+            });
             doc.font(robotoRegular)
                 .fontSize(9)
-                .text(`${products[i].price * products[i].quantity}`, 525, 333 + lineHeight, {
+                .text(`${(products[i].price * products[i].quantity).toFixed(2)}`, 525, 333 + lineHeight, {
                 width: 43,
                 align: 'right',
             });
@@ -393,7 +399,7 @@ function buildPDF(dataCallback, endCallback, data) {
             .text(`${(totalCost * 0.23).toFixed(2)}`, 381, tableEndPosition + 30, { width: 110, align: 'right' });
         doc.font(robotoRegular)
             .fontSize(10)
-            .text(`${totalCost}`, 459, tableEndPosition + 30, { width: 110, align: 'right' });
+            .text(`${totalCost.toFixed(2)}`, 459, tableEndPosition + 30, { width: 110, align: 'right' });
         //SumUp--------InTotal
         doc.moveTo(180, tableEndPosition + 42)
             .lineTo(570, tableEndPosition + 42)
@@ -410,7 +416,7 @@ function buildPDF(dataCallback, endCallback, data) {
             .text(`${(totalCost * 0.23).toFixed(2)}`, 381, tableEndPosition + 42, { width: 110, align: 'right' });
         doc.font(robotoRegular)
             .fontSize(10)
-            .text(`${totalCost}`, 459, tableEndPosition + 42, { width: 110, align: 'right' });
+            .text(`${totalCost.toFixed(2)}`, 459, tableEndPosition + 42, { width: 110, align: 'right' });
         doc.moveTo(180, tableEndPosition + 55)
             .lineTo(570, tableEndPosition + 55)
             .fillAndStroke('gray');
@@ -421,7 +427,7 @@ function buildPDF(dataCallback, endCallback, data) {
             .text('Do zapłaty: ', 30, tableEndPosition + 70, { width: 70, align: 'left' });
         doc.font(robotoRegular)
             .fontSize(10)
-            .text(`${totalCost} zł`, 100, tableEndPosition + 70);
+            .text(`${totalCost.toFixed(2)} zł`, 100, tableEndPosition + 70);
         doc.font(robotoMedium)
             .fontSize(11)
             .text('Uwaga: Dokument faktury nie jest dokumentem prawdziwym i nie jest podstawą do odliczenia VAT.', 50, tableEndPosition + 100);
