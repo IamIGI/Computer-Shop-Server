@@ -5,6 +5,7 @@
     "main": "server.js",
     "scripts": {
         "start": "node build/server.js",
+        "prod": "node server.js",
         "dev": "nodemon server",
         "devts": "ts-node-dev --respawn --transpile-only src/server.ts"
     },
