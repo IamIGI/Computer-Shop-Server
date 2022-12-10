@@ -15,21 +15,35 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Articles_1 = __importDefault(require("../model/Articles"));
 const errorHandlers_1 = require("../middleware/errorHandlers");
 const article_services_1 = __importDefault(require("../services/article.services"));
+const mongoose_1 = __importDefault(require("mongoose"));
 const getAllArticles = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`${req.originalUrl}`);
     const type = req.params.type;
     try {
         const articles = yield article_services_1.default.filterArticles(type);
-        articles.reverse();
         return res.status(200).json(articles);
     }
     catch (err) {
         (0, errorHandlers_1.apiErrorHandler)(req, res, err);
     }
 });
+const getArticlesForHomePage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(`${req.originalUrl}`);
+    const numberOfArticlesToReturn = 3;
+    try {
+        const articles = yield article_services_1.default.returnNumberOfArticles(numberOfArticlesToReturn);
+        return res.status(200).json(articles);
+    }
+    catch (err) {
+        console.log(err);
+        (0, errorHandlers_1.apiErrorHandler)(req, res, err);
+    }
+});
 const getArticle = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`${req.originalUrl}`);
     const _id = req.params.id;
+    if (!mongoose_1.default.Types.ObjectId.isValid(_id))
+        return res.status(400).json({ err: 'bad id', message: 'given Id is not mongoDB id type' });
     try {
         const article = yield Articles_1.default.findOne({ _id }).exec();
         return res.status(200).json(article);
@@ -38,4 +52,4 @@ const getArticle = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         (0, errorHandlers_1.apiErrorHandler)(req, res, err);
     }
 });
-exports.default = { getAllArticles, getArticle };
+exports.default = { getAllArticles, getArticlesForHomePage, getArticle };

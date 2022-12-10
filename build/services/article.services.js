@@ -17,11 +17,24 @@ const Articles_1 = __importDefault(require("../model/Articles"));
 function filterArticles(articleType) {
     return __awaiter(this, void 0, void 0, function* () {
         if (articleType === 'none') {
-            return yield Articles_1.default.find({}).lean();
+            return yield Articles_1.default.find({}).sort({ $natural: -1 }).lean();
         }
         else {
-            return yield Articles_1.default.find({ type: articleType }).lean();
+            return yield Articles_1.default.find({ type: articleType }).sort({ $natural: -1 }).lean();
         }
     });
 }
-exports.default = { filterArticles };
+/** return last n arguments sorted by date when they where added to mongoDB collection */
+function returnNumberOfArticles(number) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield Articles_1.default.find({}, {
+            followedBy: {
+                $slice: number,
+            },
+        })
+            .sort({ $natural: -1 })
+            .limit(3)
+            .lean();
+    });
+}
+exports.default = { filterArticles, returnNumberOfArticles };

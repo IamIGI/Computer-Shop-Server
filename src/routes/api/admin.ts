@@ -1,6 +1,6 @@
 import express from 'express';
 const router = express.Router();
-import hotShootController from '../../controllers/hotShootController';
+import hotShootController from '../../config/hotShootController';
 import ROLES_LIST from '../../config/roles_list';
 import verifyRoles from '../../middleware/verifyRoles';
 import webUpdatesController from '../../controllers/webUpdatesController';
