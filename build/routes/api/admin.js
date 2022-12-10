@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 const express_1 = __importDefault(require("express"));
 const router = express_1.default.Router();
-const hotShootController_1 = __importDefault(require("../../config/hotShootController"));
+const hotShootController_1 = __importDefault(require("../../controllers/hotShootController"));
 const roles_list_1 = __importDefault(require("../../config/roles_list"));
 const verifyRoles_1 = __importDefault(require("../../middleware/verifyRoles"));
 const webUpdatesController_1 = __importDefault(require("../../controllers/webUpdatesController"));
