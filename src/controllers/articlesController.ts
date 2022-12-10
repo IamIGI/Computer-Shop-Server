@@ -25,7 +25,6 @@ const getArticlesForHomePage = async (req: Request, res: Response) => {
         const articles = await articleServices.returnNumberOfArticles(numberOfArticlesToReturn);
         return res.status(200).json(articles);
     } catch (err) {
-        console.log(err);
         apiErrorHandler(req, res, err as Error);
     }
 };

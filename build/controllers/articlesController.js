@@ -35,7 +35,6 @@ const getArticlesForHomePage = (req, res) => __awaiter(void 0, void 0, void 0, f
         return res.status(200).json(articles);
     }
     catch (err) {
-        console.log(err);
         (0, errorHandlers_1.apiErrorHandler)(req, res, err);
     }
 });
