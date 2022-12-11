@@ -7,7 +7,6 @@ export function filterDiscounts(arr: ProductDocument[], discounts: boolean) {
     let filtered = arr.filter((product) => {
         return product.special_offer.mode;
     });
-
     return filtered;
 }
 

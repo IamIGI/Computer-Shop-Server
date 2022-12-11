@@ -32,6 +32,13 @@ export const getComments = async (req: Request, res: Response) => {
 
         filteredComments.comments = commentServices.sortComments(filteredComments.comments, sortBy); //date, -date, content.rating, likes.up
 
+        console.log({
+            comments: filteredComments.comments,
+            images: usersImages,
+            length: filteredComments.length,
+            length_AllComments: productComments.comments.length,
+        });
+
         return res.status(200).json({
             comments: filteredComments.comments,
             images: usersImages,

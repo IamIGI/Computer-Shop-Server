@@ -51,7 +51,6 @@ const getProduct = async (req: Request, res: Response) => {
         } else {
             product.numberOfOpinions = comments.comments.length;
         }
-
         console.log({ message: 'return product data', productId: productCode });
         res.status(200).send(product);
     } catch (err) {

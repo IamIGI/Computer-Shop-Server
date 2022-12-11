@@ -36,6 +36,12 @@ const getComments = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         let filteredComments = { comments: productComments.comments, length: productComments.comments.length };
         filteredComments = comment_services_1.default.filterComments(filteredComments, rating, confirmed);
         filteredComments.comments = comment_services_1.default.sortComments(filteredComments.comments, sortBy); //date, -date, content.rating, likes.up
+        console.log({
+            comments: filteredComments.comments,
+            images: usersImages,
+            length: filteredComments.length,
+            length_AllComments: productComments.comments.length,
+        });
         return res.status(200).json({
             comments: filteredComments.comments,
             images: usersImages,

@@ -12,18 +12,74 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const Products_1 = __importDefault(require("../../../model/Products"));
-const getRandomInt_1 = __importDefault(require("../getRandomInt"));
-const isChangePromotionNow_1 = __importDefault(require("./isChangePromotionNow"));
-const noLongerBlockedProducts_1 = __importDefault(require("./noLongerBlockedProducts"));
+const Products_1 = __importDefault(require("../model/Products"));
+const getRandomInt_1 = __importDefault(require("../middleware/externalFunctions/getRandomInt"));
 const format_1 = __importDefault(require("date-fns/format"));
-const HotShoot_1 = __importDefault(require("../../../model/HotShoot"));
+const HotShoot_1 = __importDefault(require("../model/HotShoot"));
+const getDateDiffInHours_1 = __importDefault(require("../middleware/externalFunctions/getDateDiffInHours"));
+function isChangePromotionNow(productForHotShoot) {
+    let changePromotionItem = false;
+    let isMorning = false;
+    //check 12 hours interval
+    //currentTime
+    const currentFormatDate = (0, format_1.default)(new Date(), 'yyyy.MM.dd-H:m');
+    // const currentFormatDate = '2022.12.02-21:59';
+    const currentDate = currentFormatDate.split('-')[0];
+    const currentTime = currentFormatDate.split('-')[1];
+    const currentHour = parseInt(currentTime.split(':')[0]);
+    //promotionTime
+    const promotionDate = productForHotShoot.date.split('-')[0];
+    const promotionTime = productForHotShoot.date.split('-')[1];
+    const promotionHour = parseInt(promotionTime.split(':')[0]);
+    const hourDiff = promotionHour - currentHour; //22 - 9 = 13 | 10 - 21 = -11
+    console.log(hourDiff);
+    if (productForHotShoot.isMorning) {
+        console.log(' isChangePromotionNow.ts ->  isMorning: ' + productForHotShoot.isMorning);
+        console.log('isChangePromotionNow.ts ->  Check date: ' + currentDate !== promotionDate, +' isChangePromotionNow.ts ->  Check hours: ' + hourDiff === 13);
+        if (currentDate !== promotionDate && hourDiff === 13) {
+            changePromotionItem = true;
+            isMorning = false;
+            console.log('set 10am promotion');
+            return { changePromotionItem, isMorning };
+        }
+    }
+    else {
+        if (currentDate === promotionDate && hourDiff === -11) {
+            changePromotionItem = true;
+            isMorning = true;
+            console.log('set 10pm promotion');
+            return { changePromotionItem, isMorning };
+        }
+    }
+    return { changePromotionItem, isMorning };
+}
+function noLongerBlockedProducts(blockedList, hoursBlocked) {
+    const currentDate = (0, format_1.default)(new Date(), 'yyyy.MM.dd-H:m');
+    console.log('noLongerBlockedProducts.ts -> currentDate: ' + currentDate);
+    // const currentDate = '2022.12.02-21:59';
+    const removeItem = blockedList.filter((blockedProduct) => {
+        if ((0, getDateDiffInHours_1.default)(new Date(blockedProduct.date), new Date(currentDate)) >= hoursBlocked) {
+            return blockedProduct;
+        }
+    });
+    return removeItem;
+}
+/** discount product by given percentage value. 0 - 60% */
+function discountProduct(percentage, product) {
+    if (percentage < 1 || percentage > 60) {
+        throw { message: 'percentage value must be between 1-60%', percentageValue: percentage };
+    }
+    const productDefaultPrice = product.price;
+    const promoPrice = Number((productDefaultPrice - productDefaultPrice * percentage * 0.01).toFixed(2));
+    return promoPrice;
+}
+/** discount product by given percentage. Function unblock products after 48 hours and change promotion if 12 h passed 10 am 10 pm. Discount mu be between 1 - 60% */
 function changeHotShootPromotion(discountValue) {
     return __awaiter(this, void 0, void 0, function* () {
         const hotShoot = (yield HotShoot_1.default.find({}).lean())[0];
         const products = yield Products_1.default.find({}).lean();
         let currentProductForHotShoot = hotShoot.promotion;
-        const { changePromotionItem, isMorning } = (0, isChangePromotionNow_1.default)(currentProductForHotShoot);
+        const { changePromotionItem, isMorning } = isChangePromotionNow(currentProductForHotShoot);
         console.log(`ChangePromotion: ${changePromotionItem}, isMorning: ${isMorning}`);
         if (changePromotionItem) {
             //remove old promotion from Product collection
@@ -50,6 +106,12 @@ function changeHotShootPromotion(discountValue) {
                     //if blocked do not contain chosen item
                     if (findItem.length === 0) {
                         isBlocked = false;
+                        //----------percentage Update, fix discountValue update
+                        //Update product object;
+                        productForHotShoot.special_offer.mode = true;
+                        productForHotShoot.special_offer.price = discountValue;
+                        discountValue = discountProduct(discountValue, productForHotShoot);
+                        //-------
                         console.log(' ChangeHotShootPromotion.ts -> New promotion: ' + productForHotShoot._id);
                         const _id = productForHotShoot._id;
                         //update product data
@@ -63,9 +125,7 @@ function changeHotShootPromotion(discountValue) {
                         console.log(response2);
                         //set new promotion and add item to blocked list
                         const restOfDate = (0, format_1.default)(new Date(), 'yyyy.MM.dd-H').split('-')[0];
-                        // const restOfDate = '2022.12.02-21:59'.split('-')[0];
-                        const hour = parseInt((0, format_1.default)(new Date(), 'yyyy.MM.dd-H').split('-')[1]) + 1; //change is made on 9:59:58 || 21:59:58
-                        // const hour = parseInt('2022.12.02-21:59'.split('-')[1]) + 1; //change is made on 9:59:58 || 21:59:58
+                        const hour = parseInt((0, format_1.default)(new Date(), 'yyyy.MM.dd-H').split('-')[1]) + 1;
                         const changeDate = `${restOfDate}-${hour.toString()}:00`;
                         const response3 = yield HotShoot_1.default.updateOne({ _id: '631b62207137bd1bfd2c60aa' }, {
                             $set: {
@@ -89,7 +149,7 @@ function changeHotShootPromotion(discountValue) {
             }
             // later write there "else" so if there is something in queue then use this item for promotion
             //remove item from blocked list if 47 hours time block pass
-            const removeItemFromBlockedList = (0, noLongerBlockedProducts_1.default)(hotShoot.blocked, 47);
+            const removeItemFromBlockedList = noLongerBlockedProducts(hotShoot.blocked, 47);
             console.log(' ChangeHotShootPromotion.ts -> Item for unblock: ' + removeItemFromBlockedList);
             if (removeItemFromBlockedList.length !== 0) {
                 //update blocked list
@@ -101,7 +161,7 @@ function changeHotShootPromotion(discountValue) {
             }
             return {
                 message: 'Timer Hot Shoot promotion change successfully',
-                product: { id: productForHotShoot._id }, //for now use ! ts param, cuz I we do not implement admin functionality to que up the hotShoot promotion
+                product: { id: productForHotShoot._id },
             };
         }
         return {
@@ -110,4 +170,4 @@ function changeHotShootPromotion(discountValue) {
         };
     });
 }
-exports.default = changeHotShootPromotion;
+exports.default = { changeHotShootPromotion, discountProduct };
