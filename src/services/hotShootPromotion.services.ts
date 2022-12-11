@@ -61,11 +61,15 @@ function noLongerBlockedProducts(blockedList: hotShootBlocked[], hoursBlocked: n
 
 /** discount product by given percentage value. 0 - 60% */
 function discountProduct(percentage: number, product: ProductDocument): number {
+    const productDefaultPrice = product.price;
     if (percentage < 1 || percentage > 60) {
-        throw { message: 'percentage value must be between 1-60%', percentageValue: percentage };
+        console.log({
+            message: 'percentage value must be between 1-60% Returned default price',
+            percentageValue: percentage,
+        });
+        return productDefaultPrice;
     }
 
-    const productDefaultPrice = product.price;
     const promoPrice = Number((productDefaultPrice - productDefaultPrice * percentage * 0.01).toFixed(2));
     return promoPrice;
 }
