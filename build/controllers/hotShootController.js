@@ -13,7 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const HotShoot_1 = __importDefault(require("../model/HotShoot"));
-const changeHotShootPromotion_1 = __importDefault(require("../middleware/externalFunctions/hotShootPromotion/changeHotShootPromotion"));
+const hotShootPromotion_services_1 = __importDefault(require("../services/hotShootPromotion.services"));
 const errorHandlers_1 = require("../middleware/errorHandlers");
 const node_schedule_1 = __importDefault(require("node-schedule"));
 //-------Schedule HotShootPromotion automatic change
@@ -21,14 +21,14 @@ const node_schedule_1 = __importDefault(require("node-schedule"));
 node_schedule_1.default.scheduleJob('58 59 09 * * *', function () {
     return __awaiter(this, void 0, void 0, function* () {
         console.log(' hotShootController.ts -> timer start 10:00');
-        yield (0, changeHotShootPromotion_1.default)(700);
+        yield hotShootPromotion_services_1.default.changeHotShootPromotion(20);
     });
 });
 //evening Promotion
 node_schedule_1.default.scheduleJob('58 59 21 * * *', function () {
     return __awaiter(this, void 0, void 0, function* () {
         console.log(' hotShootController.ts -> timer start 22:00');
-        yield (0, changeHotShootPromotion_1.default)(500);
+        yield hotShootPromotion_services_1.default.changeHotShootPromotion(25);
     });
 });
 const getHotShoot = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -46,7 +46,7 @@ const getHotShoot = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 const changeHotShootTimer = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`${req.originalUrl}`);
     try {
-        const response = yield (0, changeHotShootPromotion_1.default)(600);
+        const response = yield hotShootPromotion_services_1.default.changeHotShootPromotion(20);
         console.log(response);
         return res.status(200).json(response);
     }
@@ -57,6 +57,8 @@ const changeHotShootTimer = (req, res) => __awaiter(void 0, void 0, void 0, func
 });
 const setHotShoot = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`${req.originalUrl}`);
-    res.status(200).json({ message: 'Hot Shoot promotion set', send: req.body });
+    const { discountValue, product } = req.body;
+    const response = hotShootPromotion_services_1.default.discountProduct(discountValue, product);
+    res.status(200).json({ message: 'Hot Shoot promotion set', discountValue: response, productPrice: product.price });
 });
 exports.default = { getHotShoot, changeHotShootTimer, setHotShoot };
