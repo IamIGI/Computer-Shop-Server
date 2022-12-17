@@ -97,7 +97,7 @@ function changeHotShootPromotion(discountValue) {
             }, { new: true }).exec();
             console.log(' ChangeHotShootPromotion.ts -> Remove old promotion DB update: ');
             console.log(response1);
-            //if there is no queued promotion
+            //if there is no queued promotion by admin use random product
             let productForHotShoot;
             if (hotShoot.queue.length === 0) {
                 // check if given product was already in promotion

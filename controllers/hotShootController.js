@@ -20,14 +20,14 @@ const node_schedule_1 = __importDefault(require("node-schedule"));
 //morning Promotion
 node_schedule_1.default.scheduleJob('58 59 09 * * *', function () {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log(' hotShootController.ts -> timer start 10:00');
+        console.log(' hotShootController.ts -> timer start 10:00, promo by 20 %');
         yield hotShootPromotion_services_1.default.changeHotShootPromotion(20);
     });
 });
 //evening Promotion
 node_schedule_1.default.scheduleJob('58 59 21 * * *', function () {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log(' hotShootController.ts -> timer start 22:00');
+        console.log(' hotShootController.ts -> timer start 22:00, promo by 25%');
         yield hotShootPromotion_services_1.default.changeHotShootPromotion(25);
     });
 });

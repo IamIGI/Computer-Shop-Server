@@ -26,9 +26,6 @@ const getComments = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     const { productId, filters: { rating, confirmed }, sortBy, } = req.body;
     // get images
     const usersImages = comment_services_1.default.getUsersProductImages(productId);
-    console.log('images:');
-    console.log(usersImages);
-    console.log('-----');
     try {
         const productComments = yield Comments_1.default.findOne({ productId }).exec();
         if (!productComments)
@@ -36,12 +33,13 @@ const getComments = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         let filteredComments = { comments: productComments.comments, length: productComments.comments.length };
         filteredComments = comment_services_1.default.filterComments(filteredComments, rating, confirmed);
         filteredComments.comments = comment_services_1.default.sortComments(filteredComments.comments, sortBy); //date, -date, content.rating, likes.up
-        return res.status(200).json({
+        const commentsObject = {
             comments: filteredComments.comments,
             images: usersImages,
             length: filteredComments.length,
             length_AllComments: productComments.comments.length,
-        });
+        };
+        return res.status(200).json(commentsObject);
     }
     catch (err) {
         console.log(err);
