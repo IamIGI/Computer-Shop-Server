@@ -152,7 +152,10 @@ export const likeComment = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
     const { productId, commentId, userId, likes } = req.body;
 
-    if (!userId) return res.status(403).json({ message: 'Only logged user can give like', userId: `${userId}` });
+    if (!userId)
+        return res
+            .status(200)
+            .json({ message: 'Only logged user can give like', userId: `${userId}`, statusCode: '001' });
 
     const { likedComment, userLikedAlready } = await commentServices.checkForUserLike(productId, commentId, userId);
 
@@ -179,6 +182,7 @@ export const likeComment = async (req: Request, res: Response) => {
             like: response.like,
             commentId: response.commentId,
             userId: response.userId,
+            statusCode: response.statusCode,
         });
     }
 };

@@ -203,11 +203,27 @@ async function changeUserLikeChoice(
     productId: string,
     commentId: string,
     userId: string
-): Promise<{ status: number; message: string; like?: string; userId?: string; commentId?: string }> {
+): Promise<{
+    status: number;
+    message: string;
+    like?: string;
+    userId?: string;
+    commentId?: string;
+    statusCode: string;
+}> {
     if (currentLike === newLike) {
-        console.log({ message: 'Like action: The user can only change his choice', userId: `${userId}` });
+        console.log({
+            message: 'Like action: The user can only change his choice',
+            userId: `${userId}`,
+            statusCode: '002',
+        });
 
-        return { status: 405, message: 'Like action: The user can only change his choice', userId: userId };
+        return {
+            status: 200,
+            message: 'Like action: The user can only change his choice',
+            userId: userId,
+            statusCode: '002',
+        };
     }
     console.log('userChangeHisChoice');
 
@@ -245,7 +261,7 @@ async function changeUserLikeChoice(
             }
         ).exec();
         console.log(response);
-        return { status: 201, message: `Updated likes`, like: likeType, commentId };
+        return { status: 201, message: `Updated likes`, like: likeType, commentId, statusCode: '003' };
     } catch (err) {
         console.log(err);
         throw err;
