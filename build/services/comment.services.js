@@ -176,8 +176,17 @@ function saveFirstLikeFromGivenUser(thumbUp, productId, userId, commentId) {
 function changeUserLikeChoice(currentLike, newLike, productId, commentId, userId) {
     return __awaiter(this, void 0, void 0, function* () {
         if (currentLike === newLike) {
-            console.log({ message: 'Like action: The user can only change his choice', userId: `${userId}` });
-            return { status: 405, message: 'Like action: The user can only change his choice', userId: userId };
+            console.log({
+                message: 'Like action: The user can only change his choice',
+                userId: `${userId}`,
+                statusCode: '002',
+            });
+            return {
+                status: 200,
+                message: 'Like action: The user can only change his choice',
+                userId: userId,
+                statusCode: '002',
+            };
         }
         console.log('userChangeHisChoice');
         let likeType = 'Down';
@@ -208,7 +217,7 @@ function changeUserLikeChoice(currentLike, newLike, productId, commentId, userId
                 ],
             }).exec();
             console.log(response);
-            return { status: 201, message: `Updated likes`, like: likeType, commentId };
+            return { status: 201, message: `Updated likes`, like: likeType, commentId, statusCode: '003' };
         }
         catch (err) {
             console.log(err);

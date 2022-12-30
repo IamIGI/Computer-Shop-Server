@@ -9,7 +9,7 @@ router.route('/averageScore/:productId').get(commentsController.getProductAverag
 router.route('/get').post(commentsController.getComments);
 router.route('/add').post(
     fileUpload({ createParentPath: true }), // to fix
-    fileExtLimiter(['.png', '.jpg', 'jpeg']),
+    fileExtLimiter(['.png', '.jpg', '.jpeg']),
     fileSizeLimiter,
     commentsController.addComment
 );

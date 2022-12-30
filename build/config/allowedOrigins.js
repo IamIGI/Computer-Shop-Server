@@ -5,7 +5,8 @@ const allowedOrigins = [
     'http://localhost:3500',
     'http://localhost:3000',
     'http://localhost:3001',
+    'http://localhost:5173',
     'https://hotshot.tk',
-    'https://hotshoot.tk',
+    'https://hotshoot.tk', //PROD
 ];
 exports.default = allowedOrigins;

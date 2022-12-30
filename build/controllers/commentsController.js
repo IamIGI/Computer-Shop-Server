@@ -141,7 +141,9 @@ const likeComment = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     console.log(`${req.originalUrl}`);
     const { productId, commentId, userId, likes } = req.body;
     if (!userId)
-        return res.status(403).json({ message: 'Only logged user can give like', userId: `${userId}` });
+        return res
+            .status(200)
+            .json({ message: 'Only logged user can give like', userId: `${userId}`, statusCode: '001' });
     const { likedComment, userLikedAlready } = yield comment_services_1.default.checkForUserLike(productId, commentId, userId);
     //------commment--------
     if (!userLikedAlready) {
@@ -155,6 +157,7 @@ const likeComment = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             like: response.like,
             commentId: response.commentId,
             userId: response.userId,
+            statusCode: response.statusCode,
         });
     }
 });
