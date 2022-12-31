@@ -74,10 +74,10 @@ function discountProduct(percentage, product) {
         });
         return productDefaultPrice;
     }
-    const promoPrice = Number((productDefaultPrice - productDefaultPrice * percentage * 0.01).toFixed(2));
+    const promoPrice = Number((productDefaultPrice * percentage * 0.01).toFixed(2));
     return promoPrice;
 }
-/** discount product by given percentage. Function unblock products after 48 hours and change promotion if 12 h passed 10 am 10 pm. Discount mu be between 1 - 60% */
+/** discount product by given percentage. Function unblock products after 48 hours and change promotion if 12h passed 10 am 10 pm. Discount must be between 1 - 60% */
 function changeHotShootPromotion(discountValue) {
     return __awaiter(this, void 0, void 0, function* () {
         const hotShoot = (yield HotShoot_1.default.find({}).lean())[0];

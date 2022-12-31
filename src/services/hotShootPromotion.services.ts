@@ -70,11 +70,11 @@ function discountProduct(percentage: number, product: ProductDocument): number {
         return productDefaultPrice;
     }
 
-    const promoPrice = Number((productDefaultPrice - productDefaultPrice * percentage * 0.01).toFixed(2));
+    const promoPrice = Number((productDefaultPrice * percentage * 0.01).toFixed(2));
     return promoPrice;
 }
 
-/** discount product by given percentage. Function unblock products after 48 hours and change promotion if 12 h passed 10 am 10 pm. Discount mu be between 1 - 60% */
+/** discount product by given percentage. Function unblock products after 48 hours and change promotion if 12h passed 10 am 10 pm. Discount must be between 1 - 60% */
 async function changeHotShootPromotion(discountValue: number) {
     const hotShoot = (await HotShootModel.find({}).lean())[0];
     const products = await ProductModel.find({}).lean();
