@@ -3,7 +3,8 @@ const allowedOrigins: string[] = [
     'http://localhost:3500', //CRA - create react app
     'http://localhost:3000', //CRA
     'http://localhost:3001', //CRA
-    'http://localhost:5173', //VITE -
+    'http://localhost:5173', //VITE - dev
+    'http://localhost:4173', //VITE - dev/prod
     'https://hotshot.tk', //PROD
     'https://hotshoot.tk', //PROD
 ];
