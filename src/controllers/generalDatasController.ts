@@ -3,10 +3,6 @@ import { ContactInfoDocument } from '../model/generalData/contactInfo';
 import { DeliveryPricesDocument } from '../model/generalData/deliveryPrices';
 import generalDataServices from '../services/generalData.services';
 
-interface BadDataNameInterface {
-    err: string;
-}
-
 const getGeneralData = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
     const type = req.params.type;
