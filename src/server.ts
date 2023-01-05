@@ -49,6 +49,7 @@ app.use('/logout', require('./routes/logout'));
 app.use('/comments', require('./routes/api/comments'));
 app.use('/hotshoot', require('./routes/api/hotshootpromotion'));
 app.use('/content', require('./routes/api/content'));
+app.use('/generaldatas', require('./routes/api/generalData'));
 app.use('/articles', require('./routes/api/articles'));
 app.use('/webupdates', require('./routes/api/updatelog'));
 app.use('/contact', require('./routes/api/contact'));
