@@ -25,6 +25,7 @@ const makeOrder = async (req: Request, res: Response) => {
             deliveryMethod: doc.transactionInfo.deliveryMethod,
             paymentMethod: doc.transactionInfo.paymentMethod,
             price: doc.transactionInfo.price,
+            isDiscount: false,
             recipientDetails: {
                 name: doc.transactionInfo.recipientDetails.name,
                 street: doc.transactionInfo.recipientDetails.street,

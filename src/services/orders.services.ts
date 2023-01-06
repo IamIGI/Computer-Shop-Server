@@ -1,14 +1,23 @@
 import OrderModel, { OrderDocument } from '../model/Orders';
 import UserModel from '../model/Users';
 
+function checkForDiscount(order: OrderDocument): OrderDocument {
+    for (let i = 0; i < order.products.length; i++) {
+        if (order.products[i].isDiscount) {
+            order.transactionInfo.isDiscount = true;
+        }
+    }
+    return order;
+}
+
 /** Save order to db */
 async function saveOrder(
-    newOrder: OrderDocument & {
-        _id: string;
-    },
+    newOrder: OrderDocument,
     userId: string
 ): Promise<{ status: number; message: string; OrderId?: string }> {
-    const result = await newOrder.save();
+    newOrder = checkForDiscount(newOrder);
+
+    const result = await newOrder.save(); // save to orders collection
 
     if (userId) {
         const user = await UserModel.findOne({ _id: userId }).exec();

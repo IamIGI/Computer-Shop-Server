@@ -37,6 +37,7 @@ const makeOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             deliveryMethod: doc.transactionInfo.deliveryMethod,
             paymentMethod: doc.transactionInfo.paymentMethod,
             price: doc.transactionInfo.price,
+            isDiscount: false,
             recipientDetails: {
                 name: doc.transactionInfo.recipientDetails.name,
                 street: doc.transactionInfo.recipientDetails.street,
