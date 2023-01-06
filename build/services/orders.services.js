@@ -14,10 +14,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const Orders_1 = __importDefault(require("../model/Orders"));
 const Users_1 = __importDefault(require("../model/Users"));
+function checkForDiscount(order) {
+    for (let i = 0; i < order.products.length; i++) {
+        if (order.products[i].isDiscount) {
+            console.log('Find discount');
+            order.transactionInfo.isDiscount = true;
+        }
+    }
+    console.log(order);
+    return order;
+}
 /** Save order to db */
 function saveOrder(newOrder, userId) {
     return __awaiter(this, void 0, void 0, function* () {
-        const result = yield newOrder.save();
+        newOrder = checkForDiscount(newOrder);
+        const result = yield newOrder.save(); // save to orders collection
         if (userId) {
             const user = yield Users_1.default.findOne({ _id: userId }).exec();
             if (!user)

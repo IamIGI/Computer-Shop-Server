@@ -1,6 +1,7 @@
 # own
 node_modules
 .env
+build
 
 # Logs
 logs

@@ -22,6 +22,7 @@ const orderSchema = new Schema({
         date: String,
         deliveryMethod: String,
         paymentMethod: String,
+        isDiscount: Boolean,
         price: Number,
         recipientDetails: {
             name: String,
