@@ -4,11 +4,9 @@ import UserModel from '../model/Users';
 function checkForDiscount(order: OrderDocument): OrderDocument {
     for (let i = 0; i < order.products.length; i++) {
         if (order.products[i].isDiscount) {
-            console.log('Find discount');
             order.transactionInfo.isDiscount = true;
         }
     }
-    console.log(order);
     return order;
 }
 

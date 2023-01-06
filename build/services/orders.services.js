@@ -17,11 +17,9 @@ const Users_1 = __importDefault(require("../model/Users"));
 function checkForDiscount(order) {
     for (let i = 0; i < order.products.length; i++) {
         if (order.products[i].isDiscount) {
-            console.log('Find discount');
             order.transactionInfo.isDiscount = true;
         }
     }
-    console.log(order);
     return order;
 }
 /** Save order to db */
