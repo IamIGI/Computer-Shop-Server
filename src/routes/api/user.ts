@@ -4,6 +4,7 @@ import userController from '../../controllers/userController';
 import ROLES_LIST from '../../config/roles_list';
 import verifyRoles from '../../middleware/verifyRoles';
 import ordersController from '../../controllers/ordersController';
+import commentsController from '../../controllers/commentsController';
 
 // logic----------
 // account settings data
@@ -16,6 +17,8 @@ router
 router
     .route('/enlistments')
     .put(verifyRoles(ROLES_LIST.Admin!, ROLES_LIST.Editor!, ROLES_LIST.User!), userController.updateEnlistments);
+
+//account user form order templates
 router
     .route('/template/add')
     .post(verifyRoles(ROLES_LIST.Admin!, ROLES_LIST.Editor!, ROLES_LIST.User!), userController.addRecipientTemplate);
@@ -41,5 +44,11 @@ router
 router
     .route('/orderhistory')
     .post(verifyRoles(ROLES_LIST.Admin!, ROLES_LIST.Editor!, ROLES_LIST.User!), ordersController.getUserHistory);
+
+//account comments
+router
+    .route('/comments/')
+    .get(verifyRoles(ROLES_LIST.Admin!, ROLES_LIST.Editor!, ROLES_LIST.User!), commentsController.getUserComments);
+router;
 
 export = router;
