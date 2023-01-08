@@ -1,4 +1,4 @@
-import { CommentSchema } from '../model/Comments';
+import { CommentDocument, CommentSchema } from '../model/Comments';
 import commentsFilters from '../middleware/filters/commentsFilters';
 import CommentModel from '../model/Comments';
 import { apiErrorHandler } from '../middleware/errorHandlers';
@@ -51,7 +51,7 @@ async function createDocumentForProductComments(req: Request, res: Response, pro
         }
     }
 }
-/**return true when suer commented already on this product */
+/**return true when user commented already on this product */
 function userCommentOnProduct(user: UserDocument, productId: string): boolean {
     for (let i = 0; i < user.commentedProducts.length; i++) {
         if (user.commentedProducts[i] == productId) {
@@ -285,6 +285,61 @@ const getUsersProductImages = (productId: string): string[] => {
 
     return urlArray;
 };
+//: Promise<CommentSchema[] | {errMsg: string}>
+const userComments = async (
+    userId: string,
+    pageNr: number
+): Promise<{ status: number; message: string; commentsData?: CommentDocument[]; commentsCount?: number }> => {
+    const user = await UserModel.findOne({ _id: userId }).exec();
+    if (!user) return { status: 406, message: 'No user found' };
+
+    const a = pageNr * 5 - 4 - 1;
+    const b = pageNr * 5 - 1;
+    let userComments = [];
+    for (let i = a; i <= b; i++) {
+        let commentId = user.userComments[i];
+        userComments.push(commentId);
+    }
+    try {
+        const response = await CommentModel.aggregate([
+            {
+                $match: {
+                    'comments._id': {
+                        $in: [userComments[0], userComments[1], userComments[2], userComments[3], userComments[4]],
+                    },
+                },
+            },
+            {
+                $project: {
+                    comment: {
+                        $filter: {
+                            input: '$comments',
+                            as: 'comment',
+                            cond: {
+                                $in: [
+                                    '$$comment._id',
+                                    [
+                                        userComments[0],
+                                        userComments[1],
+                                        userComments[2],
+                                        userComments[3],
+                                        userComments[4],
+                                    ],
+                                ],
+                            },
+                        },
+                    },
+                },
+            },
+        ]);
+
+        const countComments = user.userComments.length;
+        return { status: 200, message: 'User comments', commentsData: response, commentsCount: countComments };
+    } catch (err) {
+        console.log(err);
+        throw err;
+    }
+};
 
 export default {
     filterComments,
@@ -299,4 +354,5 @@ export default {
     saveFirstLikeFromGivenUser,
     changeUserLikeChoice,
     getUsersProductImages,
+    userComments,
 };

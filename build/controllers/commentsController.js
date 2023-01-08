@@ -12,7 +12,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.likeComment = exports.getProductAverageScore = exports.addComment = exports.getComments = void 0;
 const Users_1 = __importDefault(require("../model/Users"));
 const Comments_1 = __importDefault(require("../model/Comments"));
 const errorHandlers_1 = require("../middleware/errorHandlers");
@@ -48,7 +47,6 @@ const getComments = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         (0, errorHandlers_1.apiErrorHandler)(req, res, err);
     }
 });
-exports.getComments = getComments;
 const addComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`${req.originalUrl}`);
     const files = req.files;
@@ -123,7 +121,6 @@ const addComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         return res.status(201).json({ message: 'Successfully save a new comment', code: 104 });
     }
 });
-exports.addComment = addComment;
 const getProductAverageScore = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`${req.originalUrl}`);
     const productId = req.params.productId;
@@ -136,7 +133,6 @@ const getProductAverageScore = (req, res) => __awaiter(void 0, void 0, void 0, f
         (0, errorHandlers_1.apiErrorHandler)(req, res, err);
     }
 });
-exports.getProductAverageScore = getProductAverageScore;
 const likeComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`${req.originalUrl}`);
     const { productId, commentId, userId, likes } = req.body;
@@ -161,5 +157,20 @@ const likeComment = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
         });
     }
 });
-exports.likeComment = likeComment;
-exports.default = { getComments: exports.getComments, addComment: exports.addComment, getProductAverageScore: exports.getProductAverageScore, likeComment: exports.likeComment };
+const getUserComments = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(`${req.originalUrl}`);
+    const { userId, pageNr } = req.body;
+    console.log(userId, pageNr);
+    try {
+        const response = yield comment_services_1.default.userComments(userId, pageNr);
+        return res.status(response.status).json({
+            message: response.message,
+            commentsData: response.commentsData,
+            commentsCount: response.commentsCount,
+        });
+    }
+    catch (err) {
+        (0, errorHandlers_1.apiErrorHandler)(req, res, err);
+    }
+});
+exports.default = { getComments, addComment, getProductAverageScore, likeComment, getUserComments };

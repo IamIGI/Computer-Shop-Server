@@ -56,7 +56,7 @@ function createDocumentForProductComments(req, res, productId) {
         }
     });
 }
-/**return true when suer commented already on this product */
+/**return true when user commented already on this product */
 function userCommentOnProduct(user, productId) {
     for (let i = 0; i < user.commentedProducts.length; i++) {
         if (user.commentedProducts[i] == productId) {
@@ -241,6 +241,58 @@ const getUsersProductImages = (productId) => {
     }
     return urlArray;
 };
+//: Promise<CommentSchema[] | {errMsg: string}>
+const userComments = (userId, pageNr) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield Users_1.default.findOne({ _id: userId }).exec();
+    if (!user)
+        return { status: 406, message: 'No user found' };
+    const a = pageNr * 5 - 4 - 1;
+    const b = pageNr * 5 - 1;
+    let userComments = [];
+    for (let i = a; i <= b; i++) {
+        let commentId = user.userComments[i];
+        userComments.push(commentId);
+    }
+    try {
+        const response = yield Comments_1.default.aggregate([
+            {
+                $match: {
+                    'comments._id': {
+                        $in: [userComments[0], userComments[1], userComments[2], userComments[3], userComments[4]],
+                    },
+                },
+            },
+            {
+                $project: {
+                    comment: {
+                        $filter: {
+                            input: '$comments',
+                            as: 'comment',
+                            cond: {
+                                $in: [
+                                    '$$comment._id',
+                                    [
+                                        userComments[0],
+                                        userComments[1],
+                                        userComments[2],
+                                        userComments[3],
+                                        userComments[4],
+                                    ],
+                                ],
+                            },
+                        },
+                    },
+                },
+            },
+        ]);
+        const countComments = user.userComments.length;
+        return { status: 200, message: 'User comments', commentsData: response, commentsCount: countComments };
+    }
+    catch (err) {
+        console.log(err);
+        throw err;
+    }
+});
 exports.default = {
     filterComments,
     sortComments,
@@ -254,4 +306,5 @@ exports.default = {
     saveFirstLikeFromGivenUser,
     changeUserLikeChoice,
     getUsersProductImages,
+    userComments,
 };

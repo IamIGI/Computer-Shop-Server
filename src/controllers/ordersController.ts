@@ -51,7 +51,7 @@ const makeOrder = async (req: Request, res: Response) => {
 
 const getUserHistory = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
-    const { userId, pageNr } = req.body;
+    const { userId, pageNr }: { userId: string; pageNr: number } = req.body;
 
     try {
         const response = await ordersServices.accountOrderHistory(userId, pageNr);

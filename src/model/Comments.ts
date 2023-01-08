@@ -20,7 +20,7 @@ export interface CommentSchema {
         rating: number;
         description: string;
     };
-    image: {
+    image?: {
         added: boolean;
         images: string[];
     };

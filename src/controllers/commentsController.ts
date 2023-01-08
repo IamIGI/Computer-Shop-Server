@@ -9,7 +9,7 @@ import commentServices from '../services/comment.services';
 import validateMessage from '../utils/validateMessage';
 import imageAttachedToMessage from '../utils/isImageAttachedMessage';
 
-export const getComments = async (req: Request, res: Response) => {
+const getComments = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
     const {
         productId,
@@ -44,7 +44,7 @@ export const getComments = async (req: Request, res: Response) => {
     }
 };
 
-export const addComment = async (req: Request, res: Response) => {
+const addComment = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
     const files = req.files as fileUpload.FileArray;
     const doc = req.body;
@@ -135,7 +135,7 @@ export const addComment = async (req: Request, res: Response) => {
     }
 };
 
-export const getProductAverageScore = async (req: Request, res: Response) => {
+const getProductAverageScore = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
     const productId = req.params.productId;
 
@@ -148,7 +148,7 @@ export const getProductAverageScore = async (req: Request, res: Response) => {
     }
 };
 
-export const likeComment = async (req: Request, res: Response) => {
+const likeComment = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
     const { productId, commentId, userId, likes } = req.body;
 
@@ -187,4 +187,21 @@ export const likeComment = async (req: Request, res: Response) => {
     }
 };
 
-export default { getComments, addComment, getProductAverageScore, likeComment };
+const getUserComments = async (req: Request, res: Response) => {
+    console.log(`${req.originalUrl}`);
+    const { userId, pageNr }: { userId: string; pageNr: number } = req.body;
+    console.log(userId, pageNr);
+    try {
+        const response = await commentServices.userComments(userId, pageNr);
+
+        return res.status(response.status).json({
+            message: response.message,
+            commentsData: response.commentsData,
+            commentsCount: response.commentsCount,
+        });
+    } catch (err) {
+        apiErrorHandler(req, res, err as Error);
+    }
+};
+
+export default { getComments, addComment, getProductAverageScore, likeComment, getUserComments };

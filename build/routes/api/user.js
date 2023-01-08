@@ -8,6 +8,7 @@ const userController_1 = __importDefault(require("../../controllers/userControll
 const roles_list_1 = __importDefault(require("../../config/roles_list"));
 const verifyRoles_1 = __importDefault(require("../../middleware/verifyRoles"));
 const ordersController_1 = __importDefault(require("../../controllers/ordersController"));
+const commentsController_1 = __importDefault(require("../../controllers/commentsController"));
 // logic----------
 // account settings data
 router
@@ -19,6 +20,7 @@ router
 router
     .route('/enlistments')
     .put((0, verifyRoles_1.default)(roles_list_1.default.Admin, roles_list_1.default.Editor, roles_list_1.default.User), userController_1.default.updateEnlistments);
+//account user form order templates
 router
     .route('/template/add')
     .post((0, verifyRoles_1.default)(roles_list_1.default.Admin, roles_list_1.default.Editor, roles_list_1.default.User), userController_1.default.addRecipientTemplate);
@@ -39,4 +41,9 @@ router
 router
     .route('/orderhistory')
     .post((0, verifyRoles_1.default)(roles_list_1.default.Admin, roles_list_1.default.Editor, roles_list_1.default.User), ordersController_1.default.getUserHistory);
+//account comments
+router
+    .route('/comments/')
+    .get((0, verifyRoles_1.default)(roles_list_1.default.Admin, roles_list_1.default.Editor, roles_list_1.default.User), commentsController_1.default.getUserComments);
+router;
 module.exports = router;
