@@ -163,11 +163,16 @@ const getUserComments = (req, res) => __awaiter(void 0, void 0, void 0, function
     console.log(userId, pageNr);
     try {
         const response = yield comment_services_1.default.userComments(userId, pageNr);
-        return res.status(response.status).json({
+        if (response.commentsData !== undefined) {
+            comment_services_1.default.userCommentsSumUpLikes(response.commentsData);
+        }
+        const object = {
             message: response.message,
             commentsData: response.commentsData,
+            sumOfLikes: response.commentsData !== undefined ? comment_services_1.default.userCommentsSumUpLikes(response.commentsData) : 0,
             commentsCount: response.commentsCount,
-        });
+        };
+        return res.status(response.status).json(object);
     }
     catch (err) {
         (0, errorHandlers_1.apiErrorHandler)(req, res, err);
