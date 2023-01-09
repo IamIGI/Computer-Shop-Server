@@ -1,5 +1,5 @@
 import UserModel from '../model/Users';
-import CommentModel from '../model/Comments';
+import CommentModel, { UserAccountComments } from '../model/Comments';
 import { apiErrorHandler } from '../middleware/errorHandlers';
 import format from 'date-fns/format';
 import commentsFilters from '../middleware/filters/commentsFilters';
@@ -193,12 +193,17 @@ const getUserComments = async (req: Request, res: Response) => {
     console.log(userId, pageNr);
     try {
         const response = await commentServices.userComments(userId, pageNr);
-
-        return res.status(response.status).json({
+        if (response.commentsData !== undefined) {
+            commentServices.userCommentsSumUpLikes(response.commentsData);
+        }
+        const object = {
             message: response.message,
             commentsData: response.commentsData,
+            sumOfLikes:
+                response.commentsData !== undefined ? commentServices.userCommentsSumUpLikes(response.commentsData) : 0,
             commentsCount: response.commentsCount,
-        });
+        };
+        return res.status(response.status).json(object);
     } catch (err) {
         apiErrorHandler(req, res, err as Error);
     }

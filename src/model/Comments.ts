@@ -1,5 +1,31 @@
 import mongoose from 'mongoose';
 
+export interface UserAccountComments {
+    _id: string;
+    productId: string;
+    comment: {
+        _id?: string;
+        userId: string;
+        userName: string;
+        date: string;
+        confirmed: boolean;
+        likes: {
+            up: number;
+            down: number;
+        };
+        content: {
+            rating: number;
+            description: string;
+        };
+        image?: {
+            added: boolean;
+            images: string[];
+        };
+        usersWhoLiked?: [{ userId: string; likeUp: boolean }];
+        length?: number;
+    }[];
+}
+
 export interface CommentSchema {
     _id?: string;
     userId: string;
@@ -7,14 +33,8 @@ export interface CommentSchema {
     date: string;
     confirmed: boolean;
     likes?: {
-        up: {
-            type: number;
-            default: 0;
-        };
-        down: {
-            type: number;
-            default: 0;
-        };
+        up: number;
+        down: number;
     };
     content: {
         rating: number;

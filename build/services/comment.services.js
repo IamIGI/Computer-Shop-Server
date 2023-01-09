@@ -241,7 +241,7 @@ const getUsersProductImages = (productId) => {
     }
     return urlArray;
 };
-//: Promise<CommentSchema[] | {errMsg: string}>
+/** get user comments and number of his comments */
 const userComments = (userId, pageNr) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield Users_1.default.findOne({ _id: userId }).exec();
     if (!user)
@@ -294,6 +294,13 @@ const userComments = (userId, pageNr) => __awaiter(void 0, void 0, void 0, funct
         throw err;
     }
 });
+const userCommentsSumUpLikes = (data) => {
+    let userNumberOfLikes = 0;
+    for (let i = 0; i < data.length; i++) {
+        userNumberOfLikes += data[i].comment[0].likes.up;
+    }
+    return userNumberOfLikes;
+};
 exports.default = {
     filterComments,
     sortComments,
@@ -308,4 +315,5 @@ exports.default = {
     changeUserLikeChoice,
     getUsersProductImages,
     userComments,
+    userCommentsSumUpLikes,
 };

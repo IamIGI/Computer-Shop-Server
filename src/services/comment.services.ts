@@ -1,4 +1,4 @@
-import { CommentDocument, CommentSchema } from '../model/Comments';
+import { CommentDocument, CommentSchema, UserAccountComments } from '../model/Comments';
 import commentsFilters from '../middleware/filters/commentsFilters';
 import CommentModel from '../model/Comments';
 import { apiErrorHandler } from '../middleware/errorHandlers';
@@ -285,11 +285,11 @@ const getUsersProductImages = (productId: string): string[] => {
 
     return urlArray;
 };
-//: Promise<CommentSchema[] | {errMsg: string}>
+/** get user comments and number of his comments */
 const userComments = async (
     userId: string,
     pageNr: number
-): Promise<{ status: number; message: string; commentsData?: CommentDocument[]; commentsCount?: number }> => {
+): Promise<{ status: number; message: string; commentsData?: UserAccountComments[]; commentsCount?: number }> => {
     const user = await UserModel.findOne({ _id: userId }).exec();
     if (!user) return { status: 406, message: 'No user found' };
 
@@ -342,6 +342,16 @@ const userComments = async (
     }
 };
 
+const userCommentsSumUpLikes = (data: UserAccountComments[]): number => {
+    let userNumberOfLikes: number = 0;
+
+    for (let i = 0; i < data.length; i++) {
+        userNumberOfLikes += data[i].comment[0].likes.up;
+    }
+
+    return userNumberOfLikes;
+};
+
 export default {
     filterComments,
     sortComments,
@@ -356,4 +366,5 @@ export default {
     changeUserLikeChoice,
     getUsersProductImages,
     userComments,
+    userCommentsSumUpLikes,
 };
