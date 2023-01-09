@@ -311,6 +311,7 @@ const userComments = async (
             },
             {
                 $project: {
+                    productId: 1,
                     comment: {
                         $filter: {
                             input: '$comments',
