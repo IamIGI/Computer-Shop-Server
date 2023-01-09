@@ -264,6 +264,7 @@ const userComments = (userId, pageNr) => __awaiter(void 0, void 0, void 0, funct
             },
             {
                 $project: {
+                    productId: 1,
                     comment: {
                         $filter: {
                             input: '$comments',
