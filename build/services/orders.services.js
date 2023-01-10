@@ -39,6 +39,7 @@ function saveOrder(newOrder, userId) {
         return { status: 201, message: 'Successfully save new order', OrderId: result._id };
     });
 }
+/** return user order history  */
 function accountOrderHistory(userId, pageNr) {
     return __awaiter(this, void 0, void 0, function* () {
         const user = yield Users_1.default.findOne({ _id: userId }).exec();
@@ -64,4 +65,42 @@ function accountOrderHistory(userId, pageNr) {
         }
     });
 }
-exports.default = { saveOrder, accountOrderHistory };
+/** check if user commented already given product or have notification to comment it already. If not update user db data: set showNotifications: true, push productIds to list of notifications */
+function updateUserActivityOnGivenProduct(userId, orderedProducts) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const user = yield Users_1.default.findOne({ _id: userId }).exec();
+        if (!user) {
+            console.log({ err: 'user not found' });
+            return;
+        }
+        if (user.notifications.newComment.allowNotification) {
+            //merge two arrays of user products activity
+            let productsCommentedOrAlreadyInNotifications = user.commentedProducts;
+            if (user.notifications.newComment.productIds !== undefined) {
+                productsCommentedOrAlreadyInNotifications = Array.from(new Set(user.commentedProducts.concat(user.notifications.newComment.productIds)));
+            }
+            let productsToComment = [];
+            orderedProducts.map((product) => {
+                if (!productsCommentedOrAlreadyInNotifications.includes(product._id))
+                    productsToComment.push(product._id);
+            });
+            if (productsToComment.length === 0) {
+                console.log('User already commented / have notification on given product');
+                return;
+            }
+            try {
+                yield Users_1.default.updateOne({ _id: userId }, {
+                    $set: { 'notifications.newComment.showNotification': true },
+                    $push: { 'notifications.newComment.productIds': productsToComment },
+                });
+                console.log('Update user notification data');
+                console.log(productsToComment);
+            }
+            catch (err) {
+                throw err;
+            }
+            return;
+        }
+    });
+}
+exports.default = { saveOrder, accountOrderHistory, updateUserActivityOnGivenProduct };

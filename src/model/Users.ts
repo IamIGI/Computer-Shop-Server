@@ -35,6 +35,13 @@ export interface UserInput {
     commentedProducts: string[];
     recipientTemplates?: recipientTemplate[];
     usedPromoCodes?: { code: string; date: string }[];
+    notifications: {
+        newComment: {
+            showNotification: boolean;
+            allowNotification: boolean;
+            productIds?: string[];
+        };
+    };
 }
 
 export interface UserDocument extends UserInput, mongoose.Document {}
@@ -86,6 +93,13 @@ const userSchema = new Schema({
             phone: String,
         },
     ],
+    notifications: {
+        newComment: {
+            showNotification: Boolean,
+            allowNotification: Boolean,
+            productIds: [String],
+        },
+    },
 });
 
 const UserModel = mongoose.model<UserDocument>('users', userSchema);

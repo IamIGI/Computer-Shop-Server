@@ -43,6 +43,8 @@ const makeOrder = async (req: Request, res: Response) => {
 
         await assignPromoCodeToUser(doc.usedPromoCode.isUsed, doc.user, doc.usedPromoCode.code);
 
+        await ordersServices.updateUserActivityOnGivenProduct(doc.user, doc.products);
+
         return res.status(response.status).json({ message: response.message, OrderId: response.OrderId });
     } catch (err) {
         apiErrorHandler(req, res, err as Error);

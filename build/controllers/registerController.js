@@ -50,6 +50,12 @@ const handleNewUser = (req, res) => __awaiter(void 0, void 0, void 0, function* 
             roles: { User: 2001 },
             refreshToken: '',
             userOrders: [],
+            notifications: {
+                newComment: {
+                    showNotification: false,
+                    allowNotification: true,
+                },
+            },
         });
         console.log(`Status: 201 success: New user ${result._id} created!`);
         (0, logEvents_1.logEvents)(`Status: 201\t User_Id: ${result._id}\t New user created! \t`, 'reqLog.Log');
