@@ -1,4 +1,5 @@
 import OrderModel, { OrderDocument } from '../model/Orders';
+import { OrderedProductData } from '../model/Products';
 import UserModel from '../model/Users';
 
 function checkForDiscount(order: OrderDocument): OrderDocument {
@@ -33,7 +34,7 @@ async function saveOrder(
 
     return { status: 201, message: 'Successfully save new order', OrderId: result._id };
 }
-
+/** return user order history  */
 async function accountOrderHistory(
     userId: string,
     pageNr: number
@@ -60,4 +61,49 @@ async function accountOrderHistory(
     }
 }
 
-export default { saveOrder, accountOrderHistory };
+/** check if user commented already given product or have notification to comment it already. If not update user db data: set showNotifications: true, push productIds to list of notifications */
+async function updateUserActivityOnGivenProduct(userId: string, orderedProducts: OrderedProductData[]): Promise<void> {
+    const user = await UserModel.findOne({ _id: userId }).exec();
+
+    if (!user) {
+        console.log({ err: 'user not found' });
+        return;
+    }
+
+    if (user.notifications.newComment.allowNotification) {
+        //merge two arrays of user products activity
+        let productsCommentedOrAlreadyInNotifications = user.commentedProducts;
+        if (user.notifications.newComment.productIds !== undefined) {
+            productsCommentedOrAlreadyInNotifications = Array.from(
+                new Set(user.commentedProducts.concat(user.notifications.newComment.productIds))
+            );
+        }
+
+        let productsToComment: string[] = [];
+        orderedProducts.map((product) => {
+            if (!productsCommentedOrAlreadyInNotifications.includes(product._id)) productsToComment.push(product._id);
+        });
+
+        if (productsToComment.length === 0) {
+            console.log('User already commented / have notification on given product');
+            return;
+        }
+
+        try {
+            await UserModel.updateOne(
+                { _id: userId },
+                {
+                    $set: { 'notifications.newComment.showNotification': true },
+                    $push: { 'notifications.newComment.productIds': productsToComment },
+                }
+            );
+            console.log('Update user notification data');
+            console.log(productsToComment);
+        } catch (err) {
+            throw err;
+        }
+        return;
+    }
+}
+
+export default { saveOrder, accountOrderHistory, updateUserActivityOnGivenProduct };

@@ -49,6 +49,13 @@ const userSchema = new Schema({
             phone: String,
         },
     ],
+    notifications: {
+        newComment: {
+            showNotification: Boolean,
+            allowNotification: Boolean,
+            productIds: [String],
+        },
+    },
 });
 const UserModel = mongoose_1.default.model('users', userSchema);
 exports.default = UserModel;

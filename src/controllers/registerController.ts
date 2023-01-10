@@ -51,6 +51,12 @@ const handleNewUser = async (req: Request, res: Response) => {
             roles: { User: 2001 }, //change after to make it flexible
             refreshToken: '',
             userOrders: [],
+            notifications: {
+                newComment: {
+                    showNotification: false,
+                    allowNotification: true,
+                },
+            },
         });
         console.log(`Status: 201 success: New user ${result._id} created!`);
         logEvents(`Status: 201\t User_Id: ${result._id}\t New user created! \t`, 'reqLog.Log');

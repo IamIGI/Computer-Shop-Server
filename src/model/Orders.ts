@@ -1,19 +1,9 @@
 import mongoose from 'mongoose';
+import { OrderedProductData } from './Products';
 
 export interface OrderInput {
     status: number;
-    products: [
-        {
-            _id: string;
-            name: string;
-            prevImg: string;
-            price: number;
-            priceBeforeDiscount: number;
-            isDiscount: boolean;
-            code: number;
-            quantity: number;
-        }
-    ];
+    products: OrderedProductData[];
     transactionInfo: {
         date: string;
         deliveryMethod: string;

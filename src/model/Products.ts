@@ -1,5 +1,16 @@
 import mongoose from 'mongoose';
 
+export interface OrderedProductData {
+    _id: string;
+    name: string;
+    prevImg: string;
+    price: number;
+    priceBeforeDiscount: number;
+    isDiscount: boolean;
+    code: number;
+    quantity: number;
+}
+
 export interface ProductSpecification {
     processor: {
         description: string;
