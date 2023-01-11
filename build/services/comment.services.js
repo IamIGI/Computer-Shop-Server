@@ -301,6 +301,31 @@ const userCommentsSumUpLikes = (data) => {
     }
     return userNumberOfLikes;
 };
+const removeNotification_ADD_COMMENT = (userData, productId) => __awaiter(void 0, void 0, void 0, function* () {
+    const commentNotifications = userData.notifications.newComment.productIds;
+    if (!commentNotifications) {
+        console.log('User do not have any comments notifications alerts left ');
+        return;
+    }
+    const lastNotification = commentNotifications.length === 1;
+    const elementFound = commentNotifications.find((item) => item === productId);
+    if (!elementFound) {
+        console.log('User does not have given product in comments notifications alerts ');
+        return;
+    }
+    try {
+        yield Users_1.default.updateOne({ _id: userData._id }, {
+            $set: { 'notifications.newComment.showNotification': !lastNotification },
+            $pull: {
+                'notifications.newComment.productIds': productId,
+            },
+        });
+        console.log('Successfully removed product from user notifications');
+    }
+    catch (err) {
+        throw err;
+    }
+});
 exports.default = {
     filterComments,
     sortComments,
@@ -316,4 +341,5 @@ exports.default = {
     getUsersProductImages,
     userComments,
     userCommentsSumUpLikes,
+    removeNotification_ADD_COMMENT,
 };

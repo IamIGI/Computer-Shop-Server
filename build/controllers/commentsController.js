@@ -65,6 +65,8 @@ const addComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     //Check if it is a logged user comment
     if (Boolean(doc.userId)) {
         let foundUser = yield Users_1.default.findOne({ _id: doc.userId }).exec();
+        if (!foundUser)
+            return { status: 406, message: 'No user found' };
         userName = foundUser.firstName;
         userCommentedThisProduct = comment_services_1.default.userCommentOnProduct(foundUser, doc.productId);
         if (userCommentedThisProduct) {
@@ -74,6 +76,11 @@ const addComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 .json({ message: 'User commented this product already', code: 102, userId: `${doc.userId}` });
         }
         confirmed = yield comment_services_1.default.confirmedComment(foundUser, doc.productId);
+        // check notifications 'addComment' if productId was commented then remove it from notification
+        // - check for productIds notifcation 'addComment'
+        // - compare it to commented product
+        // - if commented product is in notification productIds arrays then remove it from array
+        yield comment_services_1.default.removeNotification_ADD_COMMENT(foundUser, doc.productId);
     }
     else {
         console.log('Anonymous user');
@@ -81,7 +88,7 @@ const addComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         userId = '';
     }
     let { added, images } = (0, isImageAttachedMessage_1.default)(files);
-    //Save comment to given product comment collection
+    //Save comment to given product comment collection - move to service
     const createComment = yield Comments_1.default.updateOne({ productId: doc.productId }, {
         $push: {
             comments: {

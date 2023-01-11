@@ -48,16 +48,6 @@ export interface UserDocument extends UserInput, mongoose.Document {}
 
 const Schema = mongoose.Schema;
 
-const recipientTemplateSchema = new Schema({
-    name: String,
-    street: String,
-    zipCode: String,
-    place: String,
-    email: String,
-    phone: String,
-    comment: String,
-});
-
 const userSchema = new Schema({
     firstName: String,
     lastName: String,
