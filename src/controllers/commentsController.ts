@@ -82,10 +82,6 @@ const addComment = async (req: Request, res: Response) => {
 
         confirmed = await commentServices.confirmedComment(foundUser!, doc.productId);
 
-        // check notifications 'addComment' if productId was commented then remove it from notification
-        // - check for productIds notifcation 'addComment'
-        // - compare it to commented product
-        // - if commented product is in notification productIds arrays then remove it from array
         await commentServices.removeNotification_ADD_COMMENT(foundUser, doc.productId);
     } else {
         console.log('Anonymous user');

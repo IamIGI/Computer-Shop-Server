@@ -76,10 +76,6 @@ const addComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 .json({ message: 'User commented this product already', code: 102, userId: `${doc.userId}` });
         }
         confirmed = yield comment_services_1.default.confirmedComment(foundUser, doc.productId);
-        // check notifications 'addComment' if productId was commented then remove it from notification
-        // - check for productIds notifcation 'addComment'
-        // - compare it to commented product
-        // - if commented product is in notification productIds arrays then remove it from array
         yield comment_services_1.default.removeNotification_ADD_COMMENT(foundUser, doc.productId);
     }
     else {
