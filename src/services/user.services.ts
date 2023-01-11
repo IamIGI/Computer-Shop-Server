@@ -101,6 +101,22 @@ async function updateEnlistments(
     }
 }
 
+async function updateNotifications(userId: string, name: string, value: boolean): Promise<void> {
+    const dynamicPath = `notifications.${name}.allowNotification`;
+    try {
+        await UserModel.updateOne(
+            { _id: userId },
+            {
+                $set: {
+                    [dynamicPath]: value,
+                },
+            }
+        );
+    } catch (err) {
+        throw err;
+    }
+}
+
 async function authenticateUser(res: Response, userId: string): Promise<boolean> {
     if (userId === undefined) {
         res.status(400).json({ message: `UserID: ${userId}.`, reason: 'No userId provided' });
@@ -126,4 +142,5 @@ export default {
     replaceRecipientDetailsTemplate,
     updateEnlistments,
     authenticateUser,
+    updateNotifications,
 };

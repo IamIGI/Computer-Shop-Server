@@ -20,6 +20,9 @@ router
 router
     .route('/enlistments')
     .put((0, verifyRoles_1.default)(roles_list_1.default.Admin, roles_list_1.default.Editor, roles_list_1.default.User), userController_1.default.updateEnlistments);
+router
+    .route('/notifications')
+    .put((0, verifyRoles_1.default)(roles_list_1.default.Admin, roles_list_1.default.Editor, roles_list_1.default.User), userController_1.default.updateNotifications);
 //account user form order templates
 router
     .route('/template/add')

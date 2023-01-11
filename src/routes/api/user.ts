@@ -17,6 +17,9 @@ router
 router
     .route('/enlistments')
     .put(verifyRoles(ROLES_LIST.Admin!, ROLES_LIST.Editor!, ROLES_LIST.User!), userController.updateEnlistments);
+router
+    .route('/notifications')
+    .put(verifyRoles(ROLES_LIST.Admin!, ROLES_LIST.Editor!, ROLES_LIST.User!), userController.updateNotifications);
 
 //account user form order templates
 router
