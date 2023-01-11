@@ -87,6 +87,21 @@ function updateEnlistments(userId, email, sms, phone, adjustedOffers) {
         }
     });
 }
+function updateNotifications(userId, name, value) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const dynamicPath = `notifications.${name}.allowNotification`;
+        try {
+            yield Users_1.default.updateOne({ _id: userId }, {
+                $set: {
+                    [dynamicPath]: value,
+                },
+            });
+        }
+        catch (err) {
+            throw err;
+        }
+    });
+}
 function authenticateUser(res, userId) {
     return __awaiter(this, void 0, void 0, function* () {
         if (userId === undefined) {
@@ -111,4 +126,5 @@ exports.default = {
     replaceRecipientDetailsTemplate,
     updateEnlistments,
     authenticateUser,
+    updateNotifications,
 };

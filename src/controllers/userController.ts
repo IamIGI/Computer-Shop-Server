@@ -39,7 +39,6 @@ const updateAccountData = async (req: Request, res: Response) => {
 
 const updateEnlistments = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
-    console.log(req.body);
 
     const { _id, email, sms, phone, adjustedOffers } = req.body;
 
@@ -51,6 +50,24 @@ const updateEnlistments = async (req: Request, res: Response) => {
 
         logEvents(`Status: 202\t UserID: ${_id}.\t Account enlistments updated.`, `reqLog.Log`);
         res.status(202).json({ success: `UserID: ${_id}.  Account enlistments updated.` });
+    } catch (err) {
+        apiErrorHandler(req, res, err as Error);
+    }
+};
+
+const updateNotifications = async (req: Request, res: Response) => {
+    console.log(`${req.originalUrl}`);
+
+    const { name, value, userId } = req.body;
+
+    const user = await UserModel.findOne({ _id: userId }).exec();
+    if (!user) return res.status(204).json({ message: `UserID: ${userId}. Given user does not exists in db` });
+
+    try {
+        await userServices.updateNotifications(userId, name, value);
+
+        logEvents(`Status: 202\t UserID: ${userId}.\t Account notifications updated.`, `reqLog.Log`);
+        res.status(202).json({ success: `UserID: ${userId}.  Account notifications updated.` });
     } catch (err) {
         apiErrorHandler(req, res, err as Error);
     }
@@ -171,4 +188,5 @@ export default {
     getRecipientTemplate,
     editRecipientTemplate,
     deleteRecipientTemplate,
+    updateNotifications,
 };

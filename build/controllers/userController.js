@@ -49,7 +49,6 @@ const updateAccountData = (req, res) => __awaiter(void 0, void 0, void 0, functi
 });
 const updateEnlistments = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`${req.originalUrl}`);
-    console.log(req.body);
     const { _id, email, sms, phone, adjustedOffers } = req.body;
     const user = yield Users_1.default.findOne({ _id }).exec();
     if (!user)
@@ -58,6 +57,21 @@ const updateEnlistments = (req, res) => __awaiter(void 0, void 0, void 0, functi
         yield user_services_1.default.updateEnlistments(_id, email, sms, phone, adjustedOffers);
         (0, logEvents_1.logEvents)(`Status: 202\t UserID: ${_id}.\t Account enlistments updated.`, `reqLog.Log`);
         res.status(202).json({ success: `UserID: ${_id}.  Account enlistments updated.` });
+    }
+    catch (err) {
+        (0, errorHandlers_1.apiErrorHandler)(req, res, err);
+    }
+});
+const updateNotifications = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(`${req.originalUrl}`);
+    const { name, value, userId } = req.body;
+    const user = yield Users_1.default.findOne({ _id: userId }).exec();
+    if (!user)
+        return res.status(204).json({ message: `UserID: ${userId}. Given user does not exists in db` });
+    try {
+        yield user_services_1.default.updateNotifications(userId, name, value);
+        (0, logEvents_1.logEvents)(`Status: 202\t UserID: ${userId}.\t Account notifications updated.`, `reqLog.Log`);
+        res.status(202).json({ success: `UserID: ${userId}.  Account notifications updated.` });
     }
     catch (err) {
         (0, errorHandlers_1.apiErrorHandler)(req, res, err);
@@ -150,4 +164,5 @@ exports.default = {
     getRecipientTemplate,
     editRecipientTemplate,
     deleteRecipientTemplate,
+    updateNotifications,
 };
