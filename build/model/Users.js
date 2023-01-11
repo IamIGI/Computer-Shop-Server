@@ -5,15 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importDefault(require("mongoose"));
 const Schema = mongoose_1.default.Schema;
-const recipientTemplateSchema = new Schema({
-    name: String,
-    street: String,
-    zipCode: String,
-    place: String,
-    email: String,
-    phone: String,
-    comment: String,
-});
 const userSchema = new Schema({
     firstName: String,
     lastName: String,

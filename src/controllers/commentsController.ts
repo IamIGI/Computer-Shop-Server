@@ -67,6 +67,8 @@ const addComment = async (req: Request, res: Response) => {
     if (Boolean(doc.userId)) {
         let foundUser = await UserModel.findOne({ _id: doc.userId }).exec();
 
+        if (!foundUser) return { status: 406, message: 'No user found' };
+
         userName = foundUser!.firstName;
 
         userCommentedThisProduct = commentServices.userCommentOnProduct(foundUser!, doc.productId);
@@ -79,6 +81,8 @@ const addComment = async (req: Request, res: Response) => {
         }
 
         confirmed = await commentServices.confirmedComment(foundUser!, doc.productId);
+
+        await commentServices.removeNotification_ADD_COMMENT(foundUser, doc.productId);
     } else {
         console.log('Anonymous user');
         userName = doc.userName;
@@ -87,7 +91,7 @@ const addComment = async (req: Request, res: Response) => {
 
     let { added, images } = imageAttachedToMessage(files);
 
-    //Save comment to given product comment collection
+    //Save comment to given product comment collection - move to service
     const createComment = await CommentModel.updateOne(
         { productId: doc.productId },
         {
