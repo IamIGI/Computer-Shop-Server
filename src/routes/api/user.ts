@@ -51,7 +51,7 @@ router
 //account comments
 router
     .route('/comments/')
-    .get(verifyRoles(ROLES_LIST.Admin!, ROLES_LIST.Editor!, ROLES_LIST.User!), commentsController.getUserComments);
+    .post(verifyRoles(ROLES_LIST.Admin!, ROLES_LIST.Editor!, ROLES_LIST.User!), commentsController.getUserComments);
 router;
 
 router

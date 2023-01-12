@@ -9,6 +9,7 @@ import UserModel from '../model/Users';
 import fileUpload from 'express-fileupload';
 import path from 'path';
 import fs from 'fs';
+import mongoose from 'mongoose';
 
 /** filter comments by rating and if is it confirmed
  * confirmed: //0 - true, 1- false, 2 - mean "No filter"
@@ -298,14 +299,16 @@ const userComments = async (
     let userComments = [];
     for (let i = a; i <= b; i++) {
         let commentId = user.userComments[i];
-        userComments.push(commentId);
+
+        if (commentId) userComments.push(new mongoose.Types.ObjectId(commentId));
     }
+
     try {
         const response = await CommentModel.aggregate([
             {
                 $match: {
                     'comments._id': {
-                        $in: [userComments[0], userComments[1], userComments[2], userComments[3], userComments[4]],
+                        $in: userComments,
                     },
                 },
             },
@@ -317,16 +320,7 @@ const userComments = async (
                             input: '$comments',
                             as: 'comment',
                             cond: {
-                                $in: [
-                                    '$$comment._id',
-                                    [
-                                        userComments[0],
-                                        userComments[1],
-                                        userComments[2],
-                                        userComments[3],
-                                        userComments[4],
-                                    ],
-                                ],
+                                $in: ['$$comment._id', userComments],
                             },
                         },
                     },
