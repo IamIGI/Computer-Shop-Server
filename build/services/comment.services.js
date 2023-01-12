@@ -301,6 +301,7 @@ const userCommentsSumUpLikes = (data) => {
     }
     return userNumberOfLikes;
 };
+/** remove notification about new comment possibility when user already commented given product */
 const removeNotification_ADD_COMMENT = (userData, productId) => __awaiter(void 0, void 0, void 0, function* () {
     const commentNotifications = userData.notifications.newComment.productIds;
     if (!commentNotifications) {
@@ -326,6 +327,29 @@ const removeNotification_ADD_COMMENT = (userData, productId) => __awaiter(void 0
         throw err;
     }
 });
+/** check if it is user comment */
+const deleteUserComment = (userData, commentId, productId) => __awaiter(void 0, void 0, void 0, function* () {
+    const commentFound = userData.userComments.find((comment) => comment === commentId);
+    console.log(userData._id, commentId, productId);
+    if (!commentFound) {
+        console.log('It is not user comment, abort delete');
+        return { status: 204, message: 'It is not user comment, abort delete' };
+    }
+    try {
+        yield Comments_1.default.updateOne({ productId }, {
+            $pull: {
+                comments: { _id: commentId },
+            },
+        });
+        yield Users_1.default.updateOne({ _id: userData._id }, {
+            $pull: { userComments: commentId, commentedProducts: productId },
+        });
+        return { status: 202, message: 'Successfully delete user comment' };
+    }
+    catch (err) {
+        throw err;
+    }
+});
 exports.default = {
     filterComments,
     sortComments,
@@ -342,4 +366,5 @@ exports.default = {
     userComments,
     userCommentsSumUpLikes,
     removeNotification_ADD_COMMENT,
+    deleteUserComment,
 };

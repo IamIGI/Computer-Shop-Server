@@ -1,5 +1,5 @@
 import UserModel from '../model/Users';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 
 async function allowRecipientTemplate(userId: string): Promise<boolean> {
     const user = await UserModel.findOne({ _id: userId }).exec();

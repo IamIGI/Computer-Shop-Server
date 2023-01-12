@@ -49,4 +49,8 @@ router
     .route('/comments/')
     .get((0, verifyRoles_1.default)(roles_list_1.default.Admin, roles_list_1.default.Editor, roles_list_1.default.User), commentsController_1.default.getUserComments);
 router;
+router
+    .route('/comments/deleteComment')
+    .delete((0, verifyRoles_1.default)(roles_list_1.default.Admin, roles_list_1.default.Editor, roles_list_1.default.User), commentsController_1.default.deleteUserComment);
+router;
 module.exports = router;
