@@ -390,9 +390,8 @@ const deleteUserComment = async (
     productId: string
 ): Promise<{ status: number; message: string }> => {
     const commentFound = userData.userComments.find((comment) => comment === commentId);
-    console.log(userData._id, commentId, productId);
+
     if (!commentFound) {
-        console.log('It is not user comment, abort delete');
         return { status: 204, message: 'It is not user comment, abort delete' };
     }
 
