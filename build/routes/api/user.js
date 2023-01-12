@@ -47,7 +47,7 @@ router
 //account comments
 router
     .route('/comments/')
-    .get((0, verifyRoles_1.default)(roles_list_1.default.Admin, roles_list_1.default.Editor, roles_list_1.default.User), commentsController_1.default.getUserComments);
+    .post((0, verifyRoles_1.default)(roles_list_1.default.Admin, roles_list_1.default.Editor, roles_list_1.default.User), commentsController_1.default.getUserComments);
 router;
 router
     .route('/comments/deleteComment')

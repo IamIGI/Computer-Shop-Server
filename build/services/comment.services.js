@@ -19,6 +19,7 @@ const Orders_1 = __importDefault(require("../model/Orders"));
 const Users_1 = __importDefault(require("../model/Users"));
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
+const mongoose_1 = __importDefault(require("mongoose"));
 /** filter comments by rating and if is it confirmed
  * confirmed: //0 - true, 1- false, 2 - mean "No filter"
  */
@@ -251,14 +252,15 @@ const userComments = (userId, pageNr) => __awaiter(void 0, void 0, void 0, funct
     let userComments = [];
     for (let i = a; i <= b; i++) {
         let commentId = user.userComments[i];
-        userComments.push(commentId);
+        if (commentId)
+            userComments.push(new mongoose_1.default.Types.ObjectId(commentId));
     }
     try {
         const response = yield Comments_1.default.aggregate([
             {
                 $match: {
                     'comments._id': {
-                        $in: [userComments[0], userComments[1], userComments[2], userComments[3], userComments[4]],
+                        $in: userComments,
                     },
                 },
             },
@@ -270,16 +272,7 @@ const userComments = (userId, pageNr) => __awaiter(void 0, void 0, void 0, funct
                             input: '$comments',
                             as: 'comment',
                             cond: {
-                                $in: [
-                                    '$$comment._id',
-                                    [
-                                        userComments[0],
-                                        userComments[1],
-                                        userComments[2],
-                                        userComments[3],
-                                        userComments[4],
-                                    ],
-                                ],
+                                $in: ['$$comment._id', userComments],
                             },
                         },
                     },
@@ -330,9 +323,7 @@ const removeNotification_ADD_COMMENT = (userData, productId) => __awaiter(void 0
 /** check if it is user comment */
 const deleteUserComment = (userData, commentId, productId) => __awaiter(void 0, void 0, void 0, function* () {
     const commentFound = userData.userComments.find((comment) => comment === commentId);
-    console.log(userData._id, commentId, productId);
     if (!commentFound) {
-        console.log('It is not user comment, abort delete');
         return { status: 204, message: 'It is not user comment, abort delete' };
     }
     try {
