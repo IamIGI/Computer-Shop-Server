@@ -352,6 +352,7 @@ const userCommentsSumUpLikes = (data: UserAccountComments[]): number => {
     return userNumberOfLikes;
 };
 
+/** remove notification about new comment possibility when user already commented given product */
 const removeNotification_ADD_COMMENT = async (userData: UserDocument, productId: string): Promise<void> => {
     const commentNotifications = userData.notifications.newComment.productIds;
 
@@ -382,6 +383,40 @@ const removeNotification_ADD_COMMENT = async (userData: UserDocument, productId:
         throw err;
     }
 };
+/** check if it is user comment */
+const deleteUserComment = async (
+    userData: UserDocument,
+    commentId: string,
+    productId: string
+): Promise<{ status: number; message: string }> => {
+    const commentFound = userData.userComments.find((comment) => comment === commentId);
+
+    if (!commentFound) {
+        return { status: 204, message: 'It is not user comment, abort delete' };
+    }
+
+    try {
+        await CommentModel.updateOne(
+            { productId },
+            {
+                $pull: {
+                    comments: { _id: commentId },
+                },
+            }
+        );
+
+        await UserModel.updateOne(
+            { _id: userData._id },
+            {
+                $pull: { userComments: commentId, commentedProducts: productId },
+            }
+        );
+
+        return { status: 202, message: 'Successfully delete user comment' };
+    } catch (err) {
+        throw err;
+    }
+};
 
 export default {
     filterComments,
@@ -399,4 +434,5 @@ export default {
     userComments,
     userCommentsSumUpLikes,
     removeNotification_ADD_COMMENT,
+    deleteUserComment,
 };

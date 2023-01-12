@@ -181,4 +181,13 @@ const getUserComments = (req, res) => __awaiter(void 0, void 0, void 0, function
         (0, errorHandlers_1.apiErrorHandler)(req, res, err);
     }
 });
-exports.default = { getComments, addComment, getProductAverageScore, likeComment, getUserComments };
+const deleteUserComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(`${req.originalUrl}`);
+    const { userId, commentId, productId } = req.body;
+    const user = yield Users_1.default.findOne({ _id: userId }).exec();
+    if (!user)
+        return res.status(204).json({ message: `UserID: ${userId}. Given user does not exists in db` });
+    const response = yield comment_services_1.default.deleteUserComment(user, commentId, productId);
+    res.status(response.status).json({ userId: userId, message: response.message });
+});
+exports.default = { getComments, addComment, getProductAverageScore, likeComment, getUserComments, deleteUserComment };

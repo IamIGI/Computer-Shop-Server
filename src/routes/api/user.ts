@@ -54,4 +54,9 @@ router
     .get(verifyRoles(ROLES_LIST.Admin!, ROLES_LIST.Editor!, ROLES_LIST.User!), commentsController.getUserComments);
 router;
 
+router
+    .route('/comments/deleteComment')
+    .delete(verifyRoles(ROLES_LIST.Admin!, ROLES_LIST.Editor!, ROLES_LIST.User!), commentsController.deleteUserComment);
+router;
+
 export = router;

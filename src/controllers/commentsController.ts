@@ -213,4 +213,16 @@ const getUserComments = async (req: Request, res: Response) => {
     }
 };
 
-export default { getComments, addComment, getProductAverageScore, likeComment, getUserComments };
+const deleteUserComment = async (req: Request, res: Response) => {
+    console.log(`${req.originalUrl}`);
+    const { userId, commentId, productId } = req.body;
+
+    const user = await UserModel.findOne({ _id: userId }).exec();
+    if (!user) return res.status(204).json({ message: `UserID: ${userId}. Given user does not exists in db` });
+
+    const response = await commentServices.deleteUserComment(user, commentId, productId);
+
+    res.status(response.status).json({ userId: userId, message: response.message });
+};
+
+export default { getComments, addComment, getProductAverageScore, likeComment, getUserComments, deleteUserComment };
