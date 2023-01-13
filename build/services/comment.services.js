@@ -75,7 +75,6 @@ function confirmedComment(user, productId) {
             if (userOrders_Content[i].products) {
                 for (let j = 0; j < userOrders_Content[i].products.length; j++) {
                     if (productId == userOrders_Content[i].products[j]._id) {
-                        console.log(userOrders_Content[i]);
                         return { confirmed: true, orderId: userOrders_Content[i]._id };
                     }
                 }
@@ -218,7 +217,6 @@ function changeUserLikeChoice(currentLike, newLike, productId, commentId, userId
                     },
                 ],
             }).exec();
-            console.log(response);
             return { status: 201, message: `Updated likes`, like: likeType, commentId, statusCode: '003' };
         }
         catch (err) {
