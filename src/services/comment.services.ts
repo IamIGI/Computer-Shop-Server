@@ -9,7 +9,8 @@ import UserModel from '../model/Users';
 import fileUpload from 'express-fileupload';
 import path from 'path';
 import fs from 'fs';
-import mongoose from 'mongoose';
+import mongoose, { ObjectId } from 'mongoose';
+import { OrderedProductData } from '../model/Products';
 
 /** filter comments by rating and if is it confirmed
  * confirmed: //0 - true, 1- false, 2 - mean "No filter"
@@ -63,19 +64,23 @@ function userCommentOnProduct(user: UserDocument, productId: string): boolean {
 }
 
 /**Return true when user bought this product before comment it */
-async function confirmedComment(user: UserDocument, productId: string): Promise<boolean> {
+async function confirmedComment(
+    user: UserDocument,
+    productId: string
+): Promise<{ confirmed: boolean; orderId?: string }> {
     const userOrders_Id = user.userOrders;
     const userOrders_Content = await OrderModel.find({ _id: { $in: userOrders_Id } });
     for (let i = 0; i < userOrders_Content.length; i++) {
         if (userOrders_Content[i].products) {
             for (let j = 0; j < userOrders_Content[i].products.length; j++) {
                 if (productId == userOrders_Content[i].products[j]._id) {
-                    return true;
+                    console.log(userOrders_Content[i]);
+                    return { confirmed: true, orderId: userOrders_Content[i]._id };
                 }
             }
         }
     }
-    return false;
+    return { confirmed: false };
 }
 
 /** save images ulr in db  */
@@ -290,13 +295,20 @@ const getUsersProductImages = (productId: string): string[] => {
 const userComments = async (
     userId: string,
     pageNr: number
-): Promise<{ status: number; message: string; commentsData?: UserAccountComments[]; commentsCount?: number }> => {
+): Promise<{
+    status: number;
+    message: string;
+    commentsData?: UserAccountComments[];
+    commentsCount?: number;
+    newComments?: { _id: string; products: OrderedProductData[]; transactionInfo: { date: string } }[];
+}> => {
     const user = await UserModel.findOne({ _id: userId }).exec();
     if (!user) return { status: 406, message: 'No user found' };
 
     const a = pageNr * 5 - 4 - 1;
     const b = pageNr * 5 - 1;
-    let userComments = [];
+    let userComments: mongoose.Types.ObjectId[] = [];
+    const countComments = user.userComments.length;
     for (let i = a; i <= b; i++) {
         let commentId = user.userComments[i];
 
@@ -328,8 +340,37 @@ const userComments = async (
             },
         ]);
 
-        const countComments = user.userComments.length;
-        return { status: 200, message: 'User comments', commentsData: response, commentsCount: countComments };
+        console.log(user.notifications.newComment.orderIds);
+        let userOrders: mongoose.Types.ObjectId[] = [];
+        user.notifications.newComment.orderIds?.map((orderId) => {
+            userOrders.push(new mongoose.Types.ObjectId(orderId));
+        });
+
+        const newComments = await OrderModel.aggregate([
+            {
+                $match: {
+                    _id: {
+                        $in: userOrders,
+                    },
+                },
+            },
+            {
+                $project: {
+                    products: 1,
+                    transactionInfo: {
+                        date: 1,
+                    },
+                },
+            },
+        ]);
+
+        return {
+            status: 200,
+            message: 'User comments',
+            commentsData: response,
+            commentsCount: countComments,
+            newComments: newComments,
+        };
     } catch (err) {
         console.log(err);
         throw err;
@@ -347,7 +388,11 @@ const userCommentsSumUpLikes = (data: UserAccountComments[]): number => {
 };
 
 /** remove notification about new comment possibility when user already commented given product */
-const removeNotification_ADD_COMMENT = async (userData: UserDocument, productId: string): Promise<void> => {
+const removeNotification_ADD_COMMENT = async (
+    userData: UserDocument,
+    productId: string,
+    orderId: string
+): Promise<void> => {
     const commentNotifications = userData.notifications.newComment.productIds;
 
     if (!commentNotifications) {
@@ -369,6 +414,7 @@ const removeNotification_ADD_COMMENT = async (userData: UserDocument, productId:
                 $set: { 'notifications.newComment.showNotification': !lastNotification },
                 $pull: {
                     'notifications.newComment.productIds': productId,
+                    'notifications.newComment.orderIds': orderId,
                 },
             }
         );

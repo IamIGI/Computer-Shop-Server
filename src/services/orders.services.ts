@@ -62,7 +62,11 @@ async function accountOrderHistory(
 }
 
 /** check if user commented already given product or have notification to comment it already. If not update user db data: set showNotifications: true, push productIds to list of notifications */
-async function updateUserActivityOnGivenProduct(userId: string, orderedProducts: OrderedProductData[]): Promise<void> {
+async function updateUserActivityOnGivenProduct(
+    userId: string,
+    orderedProducts: OrderedProductData[],
+    OrderId: string
+): Promise<void> {
     const user = await UserModel.findOne({ _id: userId }).exec();
 
     if (!user) {
@@ -94,7 +98,10 @@ async function updateUserActivityOnGivenProduct(userId: string, orderedProducts:
                 { _id: userId },
                 {
                     $set: { 'notifications.newComment.showNotification': true },
-                    $push: { 'notifications.newComment.productIds': productsToComment },
+                    $push: {
+                        'notifications.newComment.productIds': productsToComment,
+                        'notifications.newComment.orderIds': OrderId,
+                    },
                 }
             );
             console.log('Update user notification data');

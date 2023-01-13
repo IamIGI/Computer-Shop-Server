@@ -49,7 +49,7 @@ const addComment = async (req: Request, res: Response) => {
     const files = req.files as fileUpload.FileArray;
     const doc = req.body;
     let userCommentedThisProduct = false;
-    let confirmed = false;
+    let userHaveThisProduct: { confirmed: boolean; orderId?: string } = { confirmed: false, orderId: '' };
     let userName = '';
     let userId = req.body.userId;
 
@@ -80,9 +80,10 @@ const addComment = async (req: Request, res: Response) => {
                 .json({ message: 'User commented this product already', code: 102, userId: `${doc.userId}` });
         }
 
-        confirmed = await commentServices.confirmedComment(foundUser!, doc.productId);
-
-        await commentServices.removeNotification_ADD_COMMENT(foundUser, doc.productId);
+        userHaveThisProduct = await commentServices.confirmedComment(foundUser!, doc.productId);
+        if (userHaveThisProduct.confirmed && userHaveThisProduct.orderId) {
+            await commentServices.removeNotification_ADD_COMMENT(foundUser, doc.productId, userHaveThisProduct.orderId);
+        }
     } else {
         console.log('Anonymous user');
         userName = doc.userName;
@@ -100,7 +101,7 @@ const addComment = async (req: Request, res: Response) => {
                     userId,
                     userName,
                     date: format(new Date(), 'yyyy.MM.dd.HH.mm.ss'),
-                    confirmed,
+                    confirmed: userHaveThisProduct.confirmed,
                     content: {
                         rating: doc.rating,
                         description: doc.description,
@@ -206,6 +207,7 @@ const getUserComments = async (req: Request, res: Response) => {
             sumOfLikes:
                 response.commentsData !== undefined ? commentServices.userCommentsSumUpLikes(response.commentsData) : 0,
             commentsCount: response.commentsCount,
+            newComments: response.newComments,
         };
         return res.status(response.status).json(object);
     } catch (err) {

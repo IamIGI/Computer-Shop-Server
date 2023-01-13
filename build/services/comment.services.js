@@ -75,12 +75,13 @@ function confirmedComment(user, productId) {
             if (userOrders_Content[i].products) {
                 for (let j = 0; j < userOrders_Content[i].products.length; j++) {
                     if (productId == userOrders_Content[i].products[j]._id) {
-                        return true;
+                        console.log(userOrders_Content[i]);
+                        return { confirmed: true, orderId: userOrders_Content[i]._id };
                     }
                 }
             }
         }
-        return false;
+        return { confirmed: false };
     });
 }
 /** save images ulr in db  */
@@ -244,12 +245,14 @@ const getUsersProductImages = (productId) => {
 };
 /** get user comments and number of his comments */
 const userComments = (userId, pageNr) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const user = yield Users_1.default.findOne({ _id: userId }).exec();
     if (!user)
         return { status: 406, message: 'No user found' };
     const a = pageNr * 5 - 4 - 1;
     const b = pageNr * 5 - 1;
     let userComments = [];
+    const countComments = user.userComments.length;
     for (let i = a; i <= b; i++) {
         let commentId = user.userComments[i];
         if (commentId)
@@ -279,8 +282,35 @@ const userComments = (userId, pageNr) => __awaiter(void 0, void 0, void 0, funct
                 },
             },
         ]);
-        const countComments = user.userComments.length;
-        return { status: 200, message: 'User comments', commentsData: response, commentsCount: countComments };
+        console.log(user.notifications.newComment.orderIds);
+        let userOrders = [];
+        (_a = user.notifications.newComment.orderIds) === null || _a === void 0 ? void 0 : _a.map((orderId) => {
+            userOrders.push(new mongoose_1.default.Types.ObjectId(orderId));
+        });
+        const newComments = yield Orders_1.default.aggregate([
+            {
+                $match: {
+                    _id: {
+                        $in: userOrders,
+                    },
+                },
+            },
+            {
+                $project: {
+                    products: 1,
+                    transactionInfo: {
+                        date: 1,
+                    },
+                },
+            },
+        ]);
+        return {
+            status: 200,
+            message: 'User comments',
+            commentsData: response,
+            commentsCount: countComments,
+            newComments: newComments,
+        };
     }
     catch (err) {
         console.log(err);
@@ -295,7 +325,7 @@ const userCommentsSumUpLikes = (data) => {
     return userNumberOfLikes;
 };
 /** remove notification about new comment possibility when user already commented given product */
-const removeNotification_ADD_COMMENT = (userData, productId) => __awaiter(void 0, void 0, void 0, function* () {
+const removeNotification_ADD_COMMENT = (userData, productId, orderId) => __awaiter(void 0, void 0, void 0, function* () {
     const commentNotifications = userData.notifications.newComment.productIds;
     if (!commentNotifications) {
         console.log('User do not have any comments notifications alerts left ');
@@ -312,6 +342,7 @@ const removeNotification_ADD_COMMENT = (userData, productId) => __awaiter(void 0
             $set: { 'notifications.newComment.showNotification': !lastNotification },
             $pull: {
                 'notifications.newComment.productIds': productId,
+                'notifications.newComment.orderIds': orderId,
             },
         });
         console.log('Successfully removed product from user notifications');

@@ -52,7 +52,9 @@ const makeOrder = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const response = yield orders_services_1.default.saveOrder(newOrder, doc.user);
         yield assignPromoCodeToUser(doc.usedPromoCode.isUsed, doc.user, doc.usedPromoCode.code);
-        yield orders_services_1.default.updateUserActivityOnGivenProduct(doc.user, doc.products);
+        if (response.OrderId) {
+            yield orders_services_1.default.updateUserActivityOnGivenProduct(doc.user, doc.products, response.OrderId);
+        }
         return res.status(response.status).json({ message: response.message, OrderId: response.OrderId });
     }
     catch (err) {
