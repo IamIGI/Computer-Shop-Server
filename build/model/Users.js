@@ -45,6 +45,7 @@ const userSchema = new Schema({
             showNotification: Boolean,
             allowNotification: Boolean,
             productIds: [String],
+            orderIds: [String],
         },
     },
 });

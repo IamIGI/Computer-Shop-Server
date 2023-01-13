@@ -52,7 +52,7 @@ const addComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
     const files = req.files;
     const doc = req.body;
     let userCommentedThisProduct = false;
-    let confirmed = false;
+    let userHaveThisProduct = { confirmed: false, orderId: '' };
     let userName = '';
     let userId = req.body.userId;
     if (yield (0, validateMessage_1.default)(doc.userName)) {
@@ -75,8 +75,10 @@ const addComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 .status(403)
                 .json({ message: 'User commented this product already', code: 102, userId: `${doc.userId}` });
         }
-        confirmed = yield comment_services_1.default.confirmedComment(foundUser, doc.productId);
-        yield comment_services_1.default.removeNotification_ADD_COMMENT(foundUser, doc.productId);
+        userHaveThisProduct = yield comment_services_1.default.confirmedComment(foundUser, doc.productId);
+        if (userHaveThisProduct.confirmed && userHaveThisProduct.orderId) {
+            yield comment_services_1.default.removeNotification_ADD_COMMENT(foundUser, doc.productId, userHaveThisProduct.orderId);
+        }
     }
     else {
         console.log('Anonymous user');
@@ -91,7 +93,7 @@ const addComment = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
                 userId,
                 userName,
                 date: (0, format_1.default)(new Date(), 'yyyy.MM.dd.HH.mm.ss'),
-                confirmed,
+                confirmed: userHaveThisProduct.confirmed,
                 content: {
                     rating: doc.rating,
                     description: doc.description,
@@ -174,6 +176,7 @@ const getUserComments = (req, res) => __awaiter(void 0, void 0, void 0, function
             commentsData: response.commentsData,
             sumOfLikes: response.commentsData !== undefined ? comment_services_1.default.userCommentsSumUpLikes(response.commentsData) : 0,
             commentsCount: response.commentsCount,
+            newComments: response.newComments,
         };
         return res.status(response.status).json(object);
     }
