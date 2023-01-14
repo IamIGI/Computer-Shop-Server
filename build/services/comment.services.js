@@ -241,6 +241,20 @@ const getUsersProductImages = (productId) => {
     }
     return urlArray;
 };
+/** return user new comments notification data (productData and orderData)*/
+const userProductsToComment = (newComments, productsIds) => {
+    let productsData = [];
+    newComments.map((orderData) => {
+        orderData.products.map((product) => {
+            productsIds.map((productId) => {
+                if (productId === String(product._id))
+                    productsData.push({ product, orderDate: orderData.transactionInfo.date.split(':')[0] });
+            });
+        });
+    });
+    console.log(productsData);
+    return productsData;
+};
 /** get user comments and number of his comments */
 const userComments = (userId, pageNr) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
@@ -280,34 +294,37 @@ const userComments = (userId, pageNr) => __awaiter(void 0, void 0, void 0, funct
                 },
             },
         ]);
-        console.log(user.notifications.newComment.orderIds);
-        let userOrders = [];
-        (_a = user.notifications.newComment.orderIds) === null || _a === void 0 ? void 0 : _a.map((orderId) => {
-            userOrders.push(new mongoose_1.default.Types.ObjectId(orderId));
-        });
-        const newComments = yield Orders_1.default.aggregate([
-            {
-                $match: {
-                    _id: {
-                        $in: userOrders,
+        let productsToComment = undefined;
+        if (user.notifications.newComment.productIds && user.notifications.newComment.orderIds) {
+            let userOrders = [];
+            (_a = user.notifications.newComment.orderIds) === null || _a === void 0 ? void 0 : _a.map((orderId) => {
+                userOrders.push(new mongoose_1.default.Types.ObjectId(orderId));
+            });
+            const newComments = yield Orders_1.default.aggregate([
+                {
+                    $match: {
+                        _id: {
+                            $in: userOrders,
+                        },
                     },
                 },
-            },
-            {
-                $project: {
-                    products: 1,
-                    transactionInfo: {
-                        date: 1,
+                {
+                    $project: {
+                        products: 1,
+                        transactionInfo: {
+                            date: 1,
+                        },
                     },
                 },
-            },
-        ]);
+            ]);
+            productsToComment = userProductsToComment(newComments, user.notifications.newComment.productIds);
+        }
         return {
             status: 200,
             message: 'User comments',
             commentsData: response,
             commentsCount: countComments,
-            newComments: newComments,
+            newComments: productsToComment,
         };
     }
     catch (err) {
