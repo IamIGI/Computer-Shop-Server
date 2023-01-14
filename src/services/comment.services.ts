@@ -290,6 +290,35 @@ const getUsersProductImages = (productId: string): string[] => {
 
     return urlArray;
 };
+
+interface NewCommentsInterface {
+    _id: string;
+    products: OrderedProductData[];
+    transactionInfo: { date: string };
+}
+
+interface NotificationProduct {
+    product: OrderedProductData;
+    orderDate: string;
+}
+
+/** return user new comments notification data (productData and orderData)*/
+const userProductsToComment = (
+    newComments: NewCommentsInterface[],
+    productsIds: string[]
+): { product: OrderedProductData; orderDate: string }[] => {
+    let productsData: NotificationProduct[] = [];
+    newComments.map((orderData) => {
+        orderData.products.map((product) => {
+            productsIds.map((productId) => {
+                if (productId === String(product._id))
+                    productsData.push({ product, orderDate: orderData.transactionInfo.date.split(':')[0] });
+            });
+        });
+    });
+    return productsData;
+};
+
 /** get user comments and number of his comments */
 const userComments = async (
     userId: string,
@@ -299,7 +328,7 @@ const userComments = async (
     message: string;
     commentsData?: UserAccountComments[];
     commentsCount?: number;
-    newComments?: { _id: string; products: OrderedProductData[]; transactionInfo: { date: string } }[];
+    newComments?: NotificationProduct[];
 }> => {
     const user = await UserModel.findOne({ _id: userId }).exec();
     if (!user) return { status: 406, message: 'No user found' };
@@ -339,36 +368,40 @@ const userComments = async (
             },
         ]);
 
-        console.log(user.notifications.newComment.orderIds);
-        let userOrders: mongoose.Types.ObjectId[] = [];
-        user.notifications.newComment.orderIds?.map((orderId) => {
-            userOrders.push(new mongoose.Types.ObjectId(orderId));
-        });
+        let productsToComment = undefined;
+        if (user.notifications.newComment.productIds && user.notifications.newComment.orderIds) {
+            let userOrders: mongoose.Types.ObjectId[] = [];
+            user.notifications.newComment.orderIds?.map((orderId) => {
+                userOrders.push(new mongoose.Types.ObjectId(orderId));
+            });
 
-        const newComments = await OrderModel.aggregate([
-            {
-                $match: {
-                    _id: {
-                        $in: userOrders,
+            const newComments = await OrderModel.aggregate([
+                {
+                    $match: {
+                        _id: {
+                            $in: userOrders,
+                        },
                     },
                 },
-            },
-            {
-                $project: {
-                    products: 1,
-                    transactionInfo: {
-                        date: 1,
+                {
+                    $project: {
+                        products: 1,
+                        transactionInfo: {
+                            date: 1,
+                        },
                     },
                 },
-            },
-        ]);
+            ]);
+
+            productsToComment = userProductsToComment(newComments, user.notifications.newComment.productIds);
+        }
 
         return {
             status: 200,
             message: 'User comments',
             commentsData: response,
             commentsCount: countComments,
-            newComments: newComments,
+            newComments: productsToComment,
         };
     } catch (err) {
         console.log(err);
