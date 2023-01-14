@@ -316,7 +316,6 @@ const userProductsToComment = (
             });
         });
     });
-    console.log(productsData);
     return productsData;
 };
 

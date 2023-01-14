@@ -252,7 +252,6 @@ const userProductsToComment = (newComments, productsIds) => {
             });
         });
     });
-    console.log(productsData);
     return productsData;
 };
 /** get user comments and number of his comments */
