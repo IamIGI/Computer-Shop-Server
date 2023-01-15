@@ -358,7 +358,6 @@ const removeNotification_ADD_COMMENT = (userData, productId, orderId) => __await
                 'notifications.newComment.productIds': productId,
             },
         });
-        console.log('Product  removed from newComment notification ' + productId);
         const orderData = (yield Orders_1.default.findOne({ _id: orderId }));
         if (orderData.products.length === 1) {
             yield Users_1.default.updateOne({ _id: userData._id }, {
@@ -366,7 +365,6 @@ const removeNotification_ADD_COMMENT = (userData, productId, orderId) => __await
                     'notifications.newComment.orderIds': orderId,
                 },
             });
-            console.log('Order removed from newComment notification ' + orderId);
         }
         console.log('Successfully removed product from user notifications');
     }

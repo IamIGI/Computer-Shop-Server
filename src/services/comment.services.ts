@@ -449,7 +449,7 @@ const removeNotification_ADD_COMMENT = async (
                 },
             }
         );
-        console.log('Product  removed from newComment notification ' + productId);
+
         const orderData = (await OrderModel.findOne({ _id: orderId })) as OrderDocument & {
             _id: mongoose.Types.ObjectId;
         };
@@ -463,7 +463,6 @@ const removeNotification_ADD_COMMENT = async (
                     },
                 }
             );
-            console.log('Order removed from newComment notification ' + orderId);
         }
 
         console.log('Successfully removed product from user notifications');
