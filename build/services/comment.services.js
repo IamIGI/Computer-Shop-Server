@@ -356,9 +356,16 @@ const removeNotification_ADD_COMMENT = (userData, productId, orderId) => __await
             $set: { 'notifications.newComment.showNotification': !lastNotification },
             $pull: {
                 'notifications.newComment.productIds': productId,
-                'notifications.newComment.orderIds': orderId,
             },
         });
+        const orderData = (yield Orders_1.default.findOne({ _id: orderId }));
+        if (orderData.products.length === 1) {
+            yield Users_1.default.updateOne({ _id: userData._id }, {
+                $pull: {
+                    'notifications.newComment.orderIds': orderId,
+                },
+            });
+        }
         console.log('Successfully removed product from user notifications');
     }
     catch (err) {

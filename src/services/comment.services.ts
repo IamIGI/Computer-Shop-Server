@@ -4,7 +4,7 @@ import CommentModel from '../model/Comments';
 import { apiErrorHandler } from '../middleware/errorHandlers';
 import { Request, Response } from 'express';
 import { UserDocument } from '../model/Users';
-import OrderModel from '../model/Orders';
+import OrderModel, { OrderDocument } from '../model/Orders';
 import UserModel from '../model/Users';
 import fileUpload from 'express-fileupload';
 import path from 'path';
@@ -446,10 +446,25 @@ const removeNotification_ADD_COMMENT = async (
                 $set: { 'notifications.newComment.showNotification': !lastNotification },
                 $pull: {
                     'notifications.newComment.productIds': productId,
-                    'notifications.newComment.orderIds': orderId,
                 },
             }
         );
+
+        const orderData = (await OrderModel.findOne({ _id: orderId })) as OrderDocument & {
+            _id: mongoose.Types.ObjectId;
+        };
+
+        if (orderData.products.length === 1) {
+            await UserModel.updateOne(
+                { _id: userData._id },
+                {
+                    $pull: {
+                        'notifications.newComment.orderIds': orderId,
+                    },
+                }
+            );
+        }
+
         console.log('Successfully removed product from user notifications');
     } catch (err) {
         throw err;
