@@ -7,9 +7,8 @@ export interface OrderedProductData {
     price: number;
     priceBeforeDiscount: number;
     isDiscount: boolean;
-    code: number;
+    code?: number;
     quantity: number;
-    filter?: any;
 }
 
 export interface ProductSpecification {
