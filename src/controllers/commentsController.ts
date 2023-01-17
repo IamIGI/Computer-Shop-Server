@@ -224,6 +224,7 @@ const deleteUserComment = async (req: Request, res: Response) => {
 
     const response = await commentServices.deleteUserComment(user, commentId, productId);
 
+    console.log({ userId, message: response });
     res.status(response.status).json({ userId: userId, message: response.message });
 };
 

@@ -65,7 +65,7 @@ const updateNotifications = async (req: Request, res: Response) => {
 
     try {
         await userServices.updateNotifications(userId, name, value);
-
+        console.log(`UserID: ${userId}.\t Account notifications updated.`);
         logEvents(`Status: 202\t UserID: ${userId}.\t Account notifications updated.`, `reqLog.Log`);
         res.status(202).json({ success: `UserID: ${userId}.  Account notifications updated.` });
     } catch (err) {

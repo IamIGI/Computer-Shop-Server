@@ -70,6 +70,7 @@ const updateNotifications = (req, res) => __awaiter(void 0, void 0, void 0, func
         return res.status(204).json({ message: `UserID: ${userId}. Given user does not exists in db` });
     try {
         yield user_services_1.default.updateNotifications(userId, name, value);
+        console.log(`UserID: ${userId}.\t Account notifications updated.`);
         (0, logEvents_1.logEvents)(`Status: 202\t UserID: ${userId}.\t Account notifications updated.`, `reqLog.Log`);
         res.status(202).json({ success: `UserID: ${userId}.  Account notifications updated.` });
     }
