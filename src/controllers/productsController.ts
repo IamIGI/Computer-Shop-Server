@@ -33,6 +33,18 @@ const getAllProducts = async (req: Request, res: Response) => {
     }
 };
 
+const getProductsForHomePage = async (req: Request, res: Response) => {
+    console.log(`${req.originalUrl}`);
+
+    try {
+        let response = await ProductModel.aggregate([{ $limit: 3 }]);
+        res.status(200).send(response);
+    } catch (err) {
+        console.log(err);
+        apiErrorHandler(req, res, err as Error); //send products as a response
+    }
+};
+
 const getProduct = async (req: Request, res: Response) => {
     console.log(`${req.originalUrl}`);
 
@@ -88,4 +100,4 @@ const getProductPDF = async (req: Request, res: Response) => {
     }
 };
 
-export default { getAllProducts, getProduct, getProductPDF };
+export default { getAllProducts, getProduct, getProductPDF, getProductsForHomePage };

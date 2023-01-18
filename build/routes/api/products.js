@@ -10,6 +10,7 @@ const router = express_1.default.Router();
 // logic----------
 router.route('/').post(productsController_1.default.getAllProducts);
 router.route('/all').post(productsController_1.default.getAllProducts);
+router.route('/home-page').get(productsController_1.default.getProductsForHomePage);
 router.route('/:code').get((0, validateResources_1.default)(product_schema_1.getProductSchema), productsController_1.default.getProduct);
 router.route('/pdf/:code').get((0, validateResources_1.default)(product_schema_1.getProductPDFSchema), productsController_1.default.getProductPDF);
 module.exports = router;
