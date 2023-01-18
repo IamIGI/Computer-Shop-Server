@@ -34,6 +34,17 @@ const getAllProducts = (req, res) => __awaiter(void 0, void 0, void 0, function*
         (0, errorHandlers_1.apiErrorHandler)(req, res, err); //send products as a response
     }
 });
+const getProductsForHomePage = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(`${req.originalUrl}`);
+    try {
+        let response = yield Products_1.default.aggregate([{ $limit: 3 }]);
+        res.status(200).send(response);
+    }
+    catch (err) {
+        console.log(err);
+        (0, errorHandlers_1.apiErrorHandler)(req, res, err); //send products as a response
+    }
+});
 const getProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(`${req.originalUrl}`);
     const productCode = req.params.code;
@@ -79,4 +90,4 @@ const getProductPDF = (req, res) => __awaiter(void 0, void 0, void 0, function* 
         (0, errorHandlers_1.apiErrorHandler)(req, res, err);
     }
 });
-exports.default = { getAllProducts, getProduct, getProductPDF };
+exports.default = { getAllProducts, getProduct, getProductPDF, getProductsForHomePage };

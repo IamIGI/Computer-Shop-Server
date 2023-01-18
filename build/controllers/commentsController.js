@@ -191,6 +191,7 @@ const deleteUserComment = (req, res) => __awaiter(void 0, void 0, void 0, functi
     if (!user)
         return res.status(204).json({ message: `UserID: ${userId}. Given user does not exists in db` });
     const response = yield comment_services_1.default.deleteUserComment(user, commentId, productId);
+    console.log({ userId, message: response });
     res.status(response.status).json({ userId: userId, message: response.message });
 });
 exports.default = { getComments, addComment, getProductAverageScore, likeComment, getUserComments, deleteUserComment };
