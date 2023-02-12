@@ -14,11 +14,11 @@ const handleLogin: RequestHandler = async (req, res) => {
     if (!email || !hashedPassword) return res.status(400).json({ message: 'Username and password are required.' });
 
     const foundUser = await User.findOne({ email }).exec();
+    console.log({ message: `No user match given email: ${email}` });
     if (!foundUser) return res.status(401).json({ message: `No user match given email: ${email}` });
 
     const match = await bcrypt.compare(hashedPassword, foundUser.hashedPassword);
     if (match) {
-        console.log(foundUser._id);
         const roles = Object.values(foundUser.roles);
         try {
             //creating Tokens
@@ -50,8 +50,16 @@ const handleLogin: RequestHandler = async (req, res) => {
                 'reqLog.Log'
             );
 
+            console.log({
+                // message: 'Log in successfully',
+                id: foundUser._id,
+                userName: foundUser.firstName,
+                roles: roles,
+                accessToken: accessToken,
+            });
+
             res.status(200).json({
-                message: 'Log in successfully',
+                // message: 'Log in successfully',
                 id: foundUser._id,
                 userName: foundUser.firstName,
                 roles: roles,

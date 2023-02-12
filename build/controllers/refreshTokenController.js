@@ -37,7 +37,8 @@ const handleRefreshToken = (req, res) => __awaiter(void 0, void 0, void 0, funct
         const accessToken = jsonwebtoken_1.default.sign({ _id: foundUser._id, roles: roles }, process.env.ACCESS_TOKEN_SECRET, {
             expiresIn: process.env.REFRESH_ACCESS_TOKEN_TIME, //change to 5 min in production
         });
-        res.json({ id, userName, roles, accessToken });
+        const email = foundUser.email;
+        res.json({ id, userName, roles, accessToken, email });
     });
 });
 exports.default = { handleRefreshToken };

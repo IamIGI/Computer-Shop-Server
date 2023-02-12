@@ -19,9 +19,6 @@ const getComments = async (req: Request, res: Response) => {
 
     // get images
     const usersImages = commentServices.getUsersProductImages(productId);
-    console.log('images:');
-    console.log(usersImages);
-    console.log('-----');
     try {
         const productComments = await CommentModel.findOne({ productId }).exec();
         if (!productComments) return res.status(204).send([]);
