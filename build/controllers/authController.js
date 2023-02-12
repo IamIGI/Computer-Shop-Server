@@ -25,11 +25,11 @@ const handleLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     if (!email || !hashedPassword)
         return res.status(400).json({ message: 'Username and password are required.' });
     const foundUser = yield Users_1.default.findOne({ email }).exec();
+    console.log({ message: `No user match given email: ${email}` });
     if (!foundUser)
         return res.status(401).json({ message: `No user match given email: ${email}` });
     const match = yield bcrypt_1.default.compare(hashedPassword, foundUser.hashedPassword);
     if (match) {
-        console.log(foundUser._id);
         const roles = Object.values(foundUser.roles);
         try {
             //creating Tokens
@@ -49,8 +49,15 @@ const handleLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
             });
             console.log(`$Status: 200\t User_Id: ${foundUser._id}\t Logged successfully`);
             (0, logEvents_1.logEvents)(`$Status: 200\t User_Id: ${foundUser._id}\t Logged successfully\t token : ${accessToken}`, 'reqLog.Log');
+            console.log({
+                // message: 'Log in successfully',
+                id: foundUser._id,
+                userName: foundUser.firstName,
+                roles: roles,
+                accessToken: accessToken,
+            });
             res.status(200).json({
-                message: 'Log in successfully',
+                // message: 'Log in successfully',
                 id: foundUser._id,
                 userName: foundUser.firstName,
                 roles: roles,

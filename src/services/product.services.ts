@@ -41,7 +41,7 @@ function productsDiscount(products: ProductDocument[]): ProductDocument[] {
     for (let i = 0; i < products.length; i++) {
         let product = products[i];
         if (product.special_offer.mode) {
-            product.price = product.price - product.special_offer.price;
+            product.price = Number((product.price - product.special_offer.price).toFixed(2));
         }
     }
     return products;
