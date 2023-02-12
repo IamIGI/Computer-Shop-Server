@@ -152,10 +152,12 @@ async function buildPDF(
     const productImage = await fetchImage(data.prevImg);
 
     if (data.special_offer.mode) {
-        const withoutPromoPrice = data.price + data.special_offer.price;
+        const withoutPromoPrice = (data.price + data.special_offer.price).toFixed(2);
         doc.font(robotoMedium)
             .fontSize(13)
-            .text(`${withoutPromoPrice} zł`, 222 + doc.widthOfString(`${data.price} zł`) + 10, 140, { strike: true });
+            .text(`${withoutPromoPrice} zł`, 222 + doc.widthOfString(`${data.price} zł`) + 10, 140, {
+                strike: true,
+            });
     }
     doc.image(productImage, 30, 85, { width: 180 });
     doc.font(robotoMedium).fontSize(13).text(data.name, 222, 110);
