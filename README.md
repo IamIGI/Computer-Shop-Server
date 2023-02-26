@@ -1,3 +1,4 @@
+## Project is no longer supported
 # Computer-Shop-Server
 Backend of project: "Computer-Shop". Project board: https://github.com/users/IamIGI/projects/1/views/1
 
